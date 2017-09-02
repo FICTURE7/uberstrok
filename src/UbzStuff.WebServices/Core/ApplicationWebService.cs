@@ -1,5 +1,6 @@
 ﻿using log4net;
 using System.Collections.Generic;
+using System.IO;
 using UbzStuff.Core.Common;
 using UbzStuff.Core.Views;
 
@@ -11,10 +12,13 @@ namespace UbzStuff.WebServices.Core
 
         public ApplicationWebService(WebServiceContext ctx) : base(ctx)
         {
-            // Space
+            var config = Utils.DeserializeJsonAt<ApplicationConfigurationView>("configs/game/application.json");
+            if (config == null)
+                throw new FileNotFoundException("configs/game/application.json file not found.");
+
+            _appConfig = config;
         }
 
-        private List<MapView> _maps;
         private ApplicationConfigurationView _appConfig;
 
         protected override AuthenticateApplicationView OnAuthenticateApplication(string clientVersion, ChannelType channelType, string publicKey)

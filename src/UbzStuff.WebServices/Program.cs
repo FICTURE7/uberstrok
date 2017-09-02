@@ -27,9 +27,11 @@ namespace UbzStuff.WebServices
                 Manager = new WebServiceManager();
                 Manager.Start();
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Unable to start web services. Press any key to exit...");
+                WebServiceManager.Log.Fatal($"Reason: {ex.Message}");
+
+                Console.WriteLine($"Unable to start web services. Press any key to exit...");
                 Console.ReadKey();
                 return 1;
             }

@@ -7,10 +7,12 @@ namespace UbzStuff.WebServices
 {
     public class WebServiceManager
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(WebServiceManager));
+        public static readonly ILog Log = LogManager.GetLogger(typeof(WebServiceManager));
 
         public WebServiceManager()
         {
+            Log.Info("Initializing web services...");
+
             // Load main config at configs/main.json or
             // create a new default main config file if it does not exists.
             var config = Utils.DeserializeJsonAt<WebServiceConfiguration>("configs/main.json");
@@ -24,12 +26,20 @@ namespace UbzStuff.WebServices
 
             _ctx = new WebServiceContext(this);
 
-            _users = new UserManager(_ctx);
-            _items = new ItemManager(_ctx);
-            _servers = new ServerManager(_ctx);
-            _maps = new MapManager(_ctx);
-
-            _services = new WebServiceCollection(_ctx);
+            try
+            {
+                _users = new UserManager(_ctx);
+                _items = new ItemManager(_ctx);
+                _servers = new ServerManager(_ctx);
+                _maps = new MapManager(_ctx);
+                _services = new WebServiceCollection(_ctx);
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex);
+                Log.Fatal("Unable to initialize web services.");
+                throw;
+            }
 
             _binding = new BasicHttpBinding();
         }
@@ -61,7 +71,6 @@ namespace UbzStuff.WebServices
             if (_started)
                 throw new InvalidOperationException("Web services already started.");
 
-            Log.Info("Initializing & starting web services...");
             Log.Info("Binding contracts...");
 
             var sw = Stopwatch.StartNew();
