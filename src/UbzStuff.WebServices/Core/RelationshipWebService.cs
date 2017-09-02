@@ -8,6 +8,8 @@ namespace UbzStuff.WebServices.Core
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class RelationshipWebService : BaseWebService, IRelationshipWebServiceContract
     {
+        //TODO: Implement BaseRelationshipWebService.
+
         private readonly static ILog Log = LogManager.GetLogger(typeof(RelationshipWebService));
 
         public RelationshipWebService(WebServiceContext ctx) : base(ctx)
