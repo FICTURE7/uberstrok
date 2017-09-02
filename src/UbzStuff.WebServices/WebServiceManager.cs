@@ -26,6 +26,8 @@ namespace UbzStuff.WebServices
 
             _users = new UserManager(_ctx);
             _items = new ItemManager(_ctx);
+            _servers = new ServerManager(_ctx);
+            _maps = new MapManager(_ctx);
 
             _services = new WebServiceCollection(_ctx);
 
@@ -34,6 +36,8 @@ namespace UbzStuff.WebServices
 
         public UserManager Users => _users;
         public ItemManager Items => _items;
+        public ServerManager Servers => _servers;
+        public MapManager Maps => _maps;
 
         public WebServiceConfiguration Configuration => _config;
         public WebServiceCollection Services => _services;
@@ -43,6 +47,8 @@ namespace UbzStuff.WebServices
 
         private readonly UserManager _users;
         private readonly ItemManager _items;
+        private readonly ServerManager _servers;
+        private readonly MapManager _maps;
 
         private readonly WebServiceConfiguration _config;
         private readonly WebServiceCollection _services;

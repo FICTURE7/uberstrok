@@ -55,6 +55,7 @@
     <Compile Include="Db\InventoryDb.cs" />
     <Compile Include="Db\ProfileDb.cs" />
     <Compile Include="ItemManager.cs" />
+    <Compile Include="MapManager.cs" />
     <Compile Include="ServerManager.cs" />
     <Compile Include="UserManager.cs" />
     <Compile Include="Db\WalletDb.cs" />
@@ -81,10 +82,10 @@
     <None Include="configs\main.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="configs\maps.json">
+    <None Include="configs\game\maps.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="configs\servers.json">
+    <None Include="configs\game\servers.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="Db\UserDb.cs" />
