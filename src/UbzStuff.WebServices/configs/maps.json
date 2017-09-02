@@ -1,0 +1,158 @@
+﻿[
+    {
+        "DisplayName": "Lost Paradise 2",
+        "Description": "Map Description",
+        "SceneName": "LostParadise2",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "The Warehouse",
+        "Description": "Map Description",
+        "SceneName": "TheWarehouse",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "Monkey Island 2",
+        "Description": "Map Description",
+        "SceneName": "MonkeyIsland",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "Temple of the Raven",
+        "Description": "Map Description",
+        "SceneName": "TempleOfTheRaven",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "Gideons Tower",
+        "Description": "Map Description",
+        "SceneName": "GideonsTower",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "Fort Winter",
+        "Description": "Map Description",
+        "SceneName": "FortWinter",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "CuberStrike",
+        "Description": "Map Description",
+        "SceneName": "CuberStrike",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "CuberSpace",
+        "Description": "Map Description",
+        "SceneName": "CuberSpace",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "Sky Garden",
+        "Description": "Map Description",
+        "SceneName": "SkyGarden",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "Aqualab Research Hub",
+        "Description": "Map Description",
+        "SceneName": "AqualabResearchHub",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "SuperPRISM Reactor",
+        "Description": "Map Description",
+        "SceneName": "SuperPRISMReactor",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "Apex Twin",
+        "Description": "Map Description",
+        "SceneName": "ApexTwin",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    },
+    {
+        "DisplayName": "Catalyst",
+        "Description": "Map Description",
+        "SceneName": "Catalyst",
+        "IsBlueBox": false,
+        "MaxPlayer": 32,
+        "Settings": {
+            "1": { },
+            "2": { },
+            "3": { }
+        }
+    }
+]

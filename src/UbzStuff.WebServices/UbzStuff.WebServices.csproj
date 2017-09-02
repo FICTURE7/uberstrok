@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{033FDB2F-09EF-4BF0-AB73-6E622703E1C0}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UbzStuff.WebServices</RootNamespace>
+    <AssemblyName>UbzStuff.WebServices</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.ServiceModel" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\ApplicationWebService.cs" />
+    <Compile Include="Core\AuthenticationWebService.cs" />
+    <Compile Include="Core\BaseApplicationWebService.cs" />
+    <Compile Include="Core\BaseAuthenticationWebService.cs" />
+    <Compile Include="Core\BaseShopWebService.cs" />
+    <Compile Include="Core\BaseUserWebService.cs" />
+    <Compile Include="Db\InventoryDb.cs" />
+    <Compile Include="Db\ProfileDb.cs" />
+    <Compile Include="ItemManager.cs" />
+    <Compile Include="ServerManager.cs" />
+    <Compile Include="UserManager.cs" />
+    <Compile Include="Db\WalletDb.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Core\RelationshipWebService.cs" />
+    <Compile Include="Core\ShopWebService.cs" />
+    <Compile Include="Core\BaseWebService.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="WebServiceCollection.cs" />
+    <Compile Include="WebServiceConfiguration.cs" />
+    <Compile Include="WebServiceContext.cs" />
+    <Compile Include="WebServiceManager.cs" />
+    <Compile Include="Core\UserWebService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="configs\application.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="configs\items.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="configs\main.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="configs\maps.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="configs\servers.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Db\UserDb.cs" />
+    <Compile Include="Db\LoadoutDb.cs" />
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UbzStuff.Core.Common\UbzStuff.Core.Common.csproj">
+      <Project>{F6AA8827-1031-4753-BE08-B0D7F3A98C75}</Project>
+      <Name>UbzStuff.Core.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UbzStuff.Core.Serialization\UbzStuff.Core.Serialization.csproj">
+      <Project>{31695DBE-D01C-4EA8-92CC-28541E9E0BC0}</Project>
+      <Name>UbzStuff.Core.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UbzStuff.Core.Views\UbzStuff.Core.Views.csproj">
+      <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
+      <Name>UbzStuff.Core.Views</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UbzStuff.WebServices.Contracts\UbzStuff.WebServices.Contracts.csproj">
+      <Project>{2B8BCCE1-CF4A-4DC4-8C55-0B18C9C644A4}</Project>
+      <Name>UbzStuff.WebServices.Contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

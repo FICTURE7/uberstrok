@@ -1,0 +1,13 @@
+﻿{
+    "service_base": "http://localhost/2.0",
+    "wallet": {
+        "starting_points": 10000,
+        "starting_credits": 10000
+    },
+    "loadout": {
+        "starting_items": [
+            1,
+            12
+        ]
+    }
+}
