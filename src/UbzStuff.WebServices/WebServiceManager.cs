@@ -1,5 +1,6 @@
 ﻿using log4net;
 using System;
+using System.Diagnostics;
 using System.ServiceModel;
 
 namespace UbzStuff.WebServices
@@ -57,6 +58,8 @@ namespace UbzStuff.WebServices
             Log.Info("Initializing & starting web services...");
             Log.Info("Binding contracts...");
 
+            var sw = Stopwatch.StartNew();
+
             try
             {
                 // Bind the services to the HTTP endpoint.
@@ -68,6 +71,8 @@ namespace UbzStuff.WebServices
                 Log.Fatal("Unable to bind contracts to endpoint.");
                 throw;
             }
+
+            Log.Info("Opening services...");
 
             try
             {
@@ -81,6 +86,8 @@ namespace UbzStuff.WebServices
                 throw;
             }
 
+            sw.Stop();
+            Log.Info($"Done in {sw.Elapsed.TotalSeconds}s.");
             _started = true;
         }
     }
