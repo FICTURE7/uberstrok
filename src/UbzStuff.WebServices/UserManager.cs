@@ -50,8 +50,8 @@ namespace UbzStuff.WebServices
 
             var memberWallet = new MemberWalletView(
                 cmid,
-                10000,
-                10000,
+                _ctx.Configuration.Wallet.StartingCredits,
+                _ctx.Configuration.Wallet.StartingPoints,
                 DateTime.MaxValue,
                 DateTime.MaxValue
             );

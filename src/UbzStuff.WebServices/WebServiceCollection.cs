@@ -88,8 +88,9 @@ namespace UbzStuff.WebServices
                 }
             }
 
+            // Should never happen.
             if (contractType == null)
-                throw new Exception("IMPOSSIBRU");
+                throw new Exception("Specified service did not have a ServiceContractAttribute.");
 
             //Log.Info($"Binding contract interface {contractInterface.Name}...");
 

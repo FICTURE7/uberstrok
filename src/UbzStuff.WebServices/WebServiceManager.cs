@@ -10,13 +10,16 @@ namespace UbzStuff.WebServices
 
         public WebServiceManager()
         {
+            // Load main config at configs/main.json or
+            // create a new default main config file if it does not exists.
             var config = Utils.DeserializeJsonAt<WebServiceConfiguration>("configs/main.json");
             if (config == null)
             {
                 config = WebServiceConfiguration.Default;
-
                 Utils.SerializeJsonAt("configs/main.json", config);
             }
+
+            _config = config;
 
             _ctx = new WebServiceContext(this);
 
@@ -59,8 +62,9 @@ namespace UbzStuff.WebServices
                 // Bind the services to the HTTP endpoint.
                 Services.Bind(_binding);
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Fatal(ex);
                 Log.Fatal("Unable to bind contracts to endpoint.");
                 throw;
             }
@@ -70,8 +74,9 @@ namespace UbzStuff.WebServices
                 // Open services once we done binding them.
                 Services.Open();
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Fatal(ex);
                 Log.Fatal("Unable to open service hosts.");
                 throw;
             }
