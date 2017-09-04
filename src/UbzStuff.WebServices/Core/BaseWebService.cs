@@ -13,13 +13,7 @@ namespace UbzStuff.WebServices.Core
         }
 
         protected WebServiceContext Context => _ctx;
-        protected UserManager Users => _ctx.Users;
 
         private readonly WebServiceContext _ctx;
-
-        protected internal virtual bool SetUp()
-        {
-            return true;
-        }
     }
 }

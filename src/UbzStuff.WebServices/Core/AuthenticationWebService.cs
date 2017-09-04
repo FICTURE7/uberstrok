@@ -17,7 +17,7 @@ namespace UbzStuff.WebServices.Core
 
         public override AccountCompletionResultView OnCompleteAccount(int cmid, string name, ChannelType channelType, string locale, string machineId)
         {
-            var member = Users.GetMember(cmid);
+            var member = Context.Users.GetMember(cmid);
             if (member == null)
             {
                 Log.Error("An unidentified CMID was passed.");
@@ -53,24 +53,24 @@ namespace UbzStuff.WebServices.Core
 
             // Load the user from the database using its steamId.
             var newMember = false;
-            var member = Users.Db.LoadMember(steamId);
+            var member = Context.Users.Db.LoadMember(steamId);
             if (member == null)
             {
                 Log.Info($"Member entry {steamId} does not exists, creating new entry");
 
                 // Create a new member if its not in the db.
                 newMember = true;
-                member = Users.NewMember();
+                member = Context.Users.NewMember();
 
                 // Link the Steam ID to the CMID.
-                linked = Users.Db.Link(steamId, member);
+                linked = Context.Users.Db.Link(steamId, member);
             }
 
             var result = MemberAuthenticationResult.Ok;
             if (!linked)
                 result = MemberAuthenticationResult.InvalidEsns;
 
-            var newAuthToken = Users.LogInUser(member);
+            var newAuthToken = Context.Users.LogInUser(member);
             var view = new MemberAuthenticationResultView
             {
                 MemberAuthenticationResult = result,
