@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.ServiceModel;
+﻿using System.IO;
 using UbzStuff.Core.Serialization;
 using UbzStuff.Core.Serialization.Views;
 using UbzStuff.Core.Views;

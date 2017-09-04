@@ -39,17 +39,15 @@ namespace UbzStuff.Realtime.Server.Comm
                 Channel = ChannelType.Steam,
                 Cmid = member.CmuneMemberView.PublicProfile.Cmid,
                 PlayerName = member.CmuneMemberView.PublicProfile.Name,                
-            };
+            }
+            ;
             var actor = new CommActor(Peer, view);
 
             Peer.Actor = actor;
-
             // Add user to the lobby room's actors.
-            LobbyRoomManager.Instance.Actors.Add(actor);
-
-            Peer.Events.SendLobbyEntered();
-            // Send all actors in the lobby to the player.
-            LobbyRoomManager.Instance.UpdateList();
+            LobbyManager.Instance.Add(actor);
+            // Update all peers' actor list including this peer.
+            LobbyManager.Instance.UpdateList();
         }
 
         public override void OnSendHeartbeatResponse(string authToken, string responseHash)
@@ -59,8 +57,8 @@ namespace UbzStuff.Realtime.Server.Comm
 
         public override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
         {
-            LobbyRoomManager.Instance.Actors.Remove(Peer.Actor);
-            LobbyRoomManager.Instance.UpdateList();
+            LobbyManager.Instance.Actors.Remove(Peer.Actor.Cmid);
+            LobbyManager.Instance.UpdateList();
         }
     }
 }

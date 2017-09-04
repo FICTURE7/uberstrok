@@ -54,7 +54,7 @@
     <Compile Include="CommPeerOperationHandler.cs" />
     <Compile Include="LobbyRoom.cs" />
     <Compile Include="LobbyRoomEvents.cs" />
-    <Compile Include="LobbyRoomManager.cs" />
+    <Compile Include="LobbyManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
