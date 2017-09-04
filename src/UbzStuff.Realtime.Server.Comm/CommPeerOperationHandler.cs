@@ -20,7 +20,7 @@ namespace UbzStuff.Realtime.Server.Comm
 
             Peer.Events.SendLobbyEntered();
             // Send all actors in the lobby to the player.
-            Peer.Lobby.Events.SendFullPlayerListUpdate(Peer.Lobby.Manager.Actors);
+            Peer.Lobby.Events.SendFullPlayerListUpdate(LobbyRoomManager.Instance.Actors);
         }
 
         public override void OnSendHeartbeatResponse(string authToken, string responseHash)
