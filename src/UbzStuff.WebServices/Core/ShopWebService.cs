@@ -8,7 +8,7 @@ namespace UbzStuff.WebServices.Core
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class ShopWebService : BaseShopWebService
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(ShopWebService));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(ShopWebService).Name);
 
         public ShopWebService(WebServiceContext ctx) : base(ctx)
         {

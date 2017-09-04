@@ -13,7 +13,7 @@ namespace UbzStuff.WebServices.Core
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public abstract class BaseAuthenticationWebService : BaseWebService, IAuthenticationWebServiceContract
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(BaseAuthenticationWebService));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(BaseAuthenticationWebService).Name);
 
         protected BaseAuthenticationWebService(WebServiceContext ctx) : base(ctx)
         {

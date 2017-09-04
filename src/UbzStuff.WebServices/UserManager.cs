@@ -11,7 +11,7 @@ namespace UbzStuff.WebServices
 {
     public class UserManager
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(UserManager));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(UserManager).Name);
 
         public UserManager(WebServiceContext ctx)
         {

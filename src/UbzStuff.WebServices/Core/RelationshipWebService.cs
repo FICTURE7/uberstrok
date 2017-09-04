@@ -10,7 +10,7 @@ namespace UbzStuff.WebServices.Core
     {
         //TODO: Implement BaseRelationshipWebService.
 
-        private readonly static ILog Log = LogManager.GetLogger(typeof(RelationshipWebService));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(RelationshipWebService).Name);
 
         public RelationshipWebService(WebServiceContext ctx) : base(ctx)
         {

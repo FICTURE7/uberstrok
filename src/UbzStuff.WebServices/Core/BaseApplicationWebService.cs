@@ -14,7 +14,7 @@ namespace UbzStuff.WebServices.Core
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public abstract class BaseApplicationWebService : BaseWebService, IApplicationWebServiceContract
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(BaseApplicationWebService));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(BaseApplicationWebService).Name);
 
         protected BaseApplicationWebService(WebServiceContext ctx) : base(ctx)
         {

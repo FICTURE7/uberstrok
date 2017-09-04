@@ -9,7 +9,7 @@ namespace UbzStuff.WebServices.Core
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class UserWebService : BaseUserWebService
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(UserWebService));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(UserWebService).Name);
 
         public UserWebService(WebServiceContext ctx) : base(ctx)
         {

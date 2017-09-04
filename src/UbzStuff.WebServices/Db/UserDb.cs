@@ -10,7 +10,7 @@ namespace UbzStuff.WebServices.Db
 {
     public class UserDb
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(UserDb));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(UserDb).Name);
 
         public UserDb()
         {

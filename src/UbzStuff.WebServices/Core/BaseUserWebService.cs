@@ -12,7 +12,7 @@ namespace UbzStuff.WebServices.Core
 {
     public abstract class BaseUserWebService : BaseWebService, IUserWebServiceContract
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(BaseUserWebService));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(BaseUserWebService).Name);
 
         protected BaseUserWebService(WebServiceContext ctx) : base(ctx)
         {

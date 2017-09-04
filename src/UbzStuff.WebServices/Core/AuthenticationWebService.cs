@@ -8,7 +8,7 @@ namespace UbzStuff.WebServices.Core
 {
     public class AuthenticationWebService : BaseAuthenticationWebService
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(AuthenticationWebService));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(AuthenticationWebService).Name);
 
         public AuthenticationWebService(WebServiceContext ctx) : base(ctx)
         {

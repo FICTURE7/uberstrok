@@ -11,7 +11,7 @@ namespace UbzStuff.WebServices.Core
 {
     public abstract class BaseShopWebService : BaseWebService, IShopWebServiceContract
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(BaseShopWebService));
+        private readonly static ILog Log = LogManager.GetLogger(typeof(BaseShopWebService).Name);
 
         protected BaseShopWebService(WebServiceContext ctx) : base(ctx)
         {

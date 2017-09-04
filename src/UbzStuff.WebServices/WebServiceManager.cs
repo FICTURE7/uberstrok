@@ -7,7 +7,7 @@ namespace UbzStuff.WebServices
 {
     public class WebServiceManager
     {
-        public static readonly ILog Log = LogManager.GetLogger(typeof(WebServiceManager));
+        public static readonly ILog Log = LogManager.GetLogger(typeof(WebServiceManager).Name);
 
         public WebServiceManager()
         {
