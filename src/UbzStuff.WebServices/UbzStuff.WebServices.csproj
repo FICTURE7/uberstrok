@@ -76,7 +76,7 @@
     <None Include="configs\game\application.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="configs\items.json">
+    <None Include="configs\game\items.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="configs\main.json">
