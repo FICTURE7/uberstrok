@@ -14,10 +14,11 @@ namespace UbzStuff.Realtime.Server.Comm.Tests
 
         public override void OnFullPlayerListUpdate(List<CommActorInfoView> players)
         {
+            Console.WriteLine("-----------------");
+            Console.WriteLine("Player List: ");
             foreach (var player in players)
-            {
-                Console.WriteLine(player.PlayerName);
-            }
+                Console.WriteLine($"[{player.Cmid}] {player.PlayerName}");
+            Console.WriteLine("-----------------");
         }
     }
 }

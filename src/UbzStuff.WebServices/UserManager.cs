@@ -128,7 +128,7 @@ namespace UbzStuff.WebServices
 
             // Encore ServiceBase URL into the AuthToken so the realtime servers can figure out
             // where the user came from.
-            var data = _ctx.ServiceBase + "#####" + DateTime.UtcNow.ToString();
+            var data = _ctx.ServiceBase + "#####" + DateTime.UtcNow.ToFileTime();
             var bytes = Encoding.UTF8.GetBytes(data);
             var authToken = Convert.ToBase64String(bytes);
 

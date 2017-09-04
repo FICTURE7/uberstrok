@@ -1,6 +1,5 @@
 ﻿using log4net;
 using Photon.SocketServer;
-using UbzStuff.Core.Views;
 
 namespace UbzStuff.Realtime.Server.Comm
 {

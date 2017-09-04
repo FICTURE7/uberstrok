@@ -4,6 +4,8 @@ namespace UbzStuff.WebServices.Client.Tests
 {
     public static class Program
     {
+        //TODO: Write some stress test code or some stuff.
+
         public static void Main(string[] args)
         {
             var userServiceClient = new UserWebServiceClient("http://localhost/2.0");

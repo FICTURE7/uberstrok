@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using log4net;
+using System.Collections.Generic;
 using UbzStuff.Core.Views;
 
 namespace UbzStuff.Realtime.Server.Comm
 {
     public class LobbyManager
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(LobbyManager));
+
         public static LobbyManager Instance => s_instance;
         private static LobbyManager s_instance = new LobbyManager();
 
@@ -22,14 +25,11 @@ namespace UbzStuff.Realtime.Server.Comm
             lock (_actors)
             {
                 var views = new List<CommActorInfoView>(_actors.Count);
-                for (int i = 0; i < _actors.Count; i++)
-                    views.Add(_actors[i].View);
+                foreach (var actor in _actors.Values)
+                    views.Add(actor.View);
 
-                for (int i = 0; i < _actors.Count; i++)
-                {
-                    var actor = _actors[i];
+                foreach (var actor in _actors.Values)
                     actor.Peer.Lobby.Events.SendFullPlayerListUpdate(views);
-                }
             }
         }
 
@@ -38,6 +38,8 @@ namespace UbzStuff.Realtime.Server.Comm
             lock (_actors)
             {
                 _actors.Add(actor.Cmid, actor);
+
+                Log.Info($"{actor.Cmid} Joined the lobby");
 
                 // Notify the peer that it entered the lobby.
                 actor.Peer.Events.SendLobbyEntered();
@@ -50,6 +52,7 @@ namespace UbzStuff.Realtime.Server.Comm
             {
                 _actors.Remove(cmid);
 
+                Log.Info($"{cmid} Left the lobby");
                 //TODO: Tell the web servers to close the user's session or something.
             }
         }

@@ -1,16 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace UbzStuff.Realtime.Server.Comm.Tests
 {
-    public class Program
+    public static class Program
     {
+        public static List<TestCommPeer> Peers { get; set; }
+
         public static void Main(string[] args)
         {
-            var commPeer = new TestCommPeer();
-            if (!commPeer.Authenticate())
-                return;
+            Peers = new List<TestCommPeer>();
+            for (int i = 0; i < 19; i++)
+            {
+                var peer = new TestCommPeer();
+                if (!peer.Authenticate())
+                    continue;
 
-            commPeer.Connect("127.0.0.1:5055");
+                peer.Connect("127.0.0.1:5055");
+                Peers.Add(peer);
+            }
+
 
             Console.ReadLine();
         }
