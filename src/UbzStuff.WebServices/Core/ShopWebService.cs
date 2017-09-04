@@ -1,6 +1,4 @@
 ﻿using log4net;
-using Newtonsoft.Json;
-using System.IO;
 using System.ServiceModel;
 using UbzStuff.Core.Common;
 using UbzStuff.Core.Views;
@@ -26,10 +24,9 @@ namespace UbzStuff.WebServices.Core
                 return BuyItemResult.InvalidData;
             }
 
-            //TODO: Calculate expiration date?
-
             var cmid = member.PublicProfile.Cmid;
             var inventory = Context.Users.Db.Inventories.Load(member.PublicProfile.Cmid);
+
             inventory.Add(new ItemInventoryView(itemId, null, -1, cmid));
 
             Context.Users.Db.Inventories.Save(cmid, inventory);
@@ -38,9 +35,7 @@ namespace UbzStuff.WebServices.Core
 
         public override UberStrikeItemShopClientView OnGetShop()
         {
-            var viewJson = File.ReadAllText("configs/items.json");
-            var view = JsonConvert.DeserializeObject<UberStrikeItemShopClientView>(viewJson);
-            return view;
+            return Context.Items.GetShop();
         }
     }
 }
