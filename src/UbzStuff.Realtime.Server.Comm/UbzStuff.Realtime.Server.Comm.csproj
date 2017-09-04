@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseCommPeerOperationHandler.cs" />
+    <Compile Include="CommActor.cs" />
     <Compile Include="CommApplication.cs" />
     <Compile Include="CommPeer.cs" />
     <Compile Include="CommPeerEvents.cs" />

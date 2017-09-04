@@ -13,8 +13,7 @@ namespace UbzStuff.Realtime.Server.Comm
         {
             Log.Info($"Accepted new connection at {initRequest.RemoteIP}:{initRequest.RemotePort}");
 
-            var peer = new CommPeer(initRequest);
-            return peer;
+            return new CommPeer(initRequest);
         }
 
         protected override void Setup()

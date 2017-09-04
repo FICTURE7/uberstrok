@@ -28,6 +28,7 @@ namespace UbzStuff.WebServices.Core
             for (int i = 0; i < member.MemberItems.Count; i++) // The client seem to ignore the value of the dictionary.
                 itemsAttributed.Add(member.MemberItems[i], 0);
 
+            member.PublicProfile.Name = name;
             // Set email status to complete so we don't ask for the player name again.
             member.PublicProfile.EmailAddressStatus = EmailAddressStatus.Verified;
             // Save the profile since we modified it.
@@ -51,7 +52,6 @@ namespace UbzStuff.WebServices.Core
 
         public override MemberAuthenticationResultView OnLoginSteam(string steamId, string authToken, string machineId)
         {
-
             // Figure out if the account has been linked.
             var linked = true;
             // Figure out if the account existed. true -> existed otherwise false.

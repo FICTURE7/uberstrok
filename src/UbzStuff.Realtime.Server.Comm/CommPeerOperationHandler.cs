@@ -4,6 +4,7 @@ using System.Text;
 using UbzStuff.Core.Common;
 using UbzStuff.Core.Views;
 using UbzStuff.WebServices.Client;
+using PhotonHostRuntimeInterfaces;
 
 namespace UbzStuff.Realtime.Server.Comm
 {
@@ -32,13 +33,14 @@ namespace UbzStuff.Realtime.Server.Comm
             var client = new UserWebServiceClient(webServer);
             var member = client.GetMember(authToken);
 
-            var actor = new CommActorInfoView
+            var view = new CommActorInfoView
             {
                 AccessLevel = member.CmuneMemberView.PublicProfile.AccessLevel,
                 Channel = ChannelType.Steam,
                 Cmid = member.CmuneMemberView.PublicProfile.Cmid,
                 PlayerName = member.CmuneMemberView.PublicProfile.Name,                
             };
+            var actor = new CommActor(Peer, view);
 
             Peer.Actor = actor;
 
@@ -47,12 +49,18 @@ namespace UbzStuff.Realtime.Server.Comm
 
             Peer.Events.SendLobbyEntered();
             // Send all actors in the lobby to the player.
-            Peer.Lobby.Events.SendFullPlayerListUpdate(LobbyRoomManager.Instance.Actors);
+            LobbyRoomManager.Instance.UpdateList();
         }
 
         public override void OnSendHeartbeatResponse(string authToken, string responseHash)
         {
             // Space
+        }
+
+        public override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
+        {
+            LobbyRoomManager.Instance.Actors.Remove(Peer.Actor);
+            LobbyRoomManager.Instance.UpdateList();
         }
     }
 }

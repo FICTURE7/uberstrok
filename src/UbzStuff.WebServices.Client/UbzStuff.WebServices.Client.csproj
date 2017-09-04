@@ -37,10 +37,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationWebServiceClient.cs" />
+    <Compile Include="AuthenticationWebServiceClient.cs" />
+    <Compile Include="BaseWebServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserWebServiceClient.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\UbzStuff.Core.Common\UbzStuff.Core.Common.csproj">
+      <Project>{F6AA8827-1031-4753-BE08-B0D7F3A98C75}</Project>
+      <Name>UbzStuff.Core.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UbzStuff.Core.Serialization\UbzStuff.Core.Serialization.csproj">
       <Project>{31695DBE-D01C-4EA8-92CC-28541E9E0BC0}</Project>
       <Name>UbzStuff.Core.Serialization</Name>

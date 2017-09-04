@@ -17,7 +17,7 @@ namespace UbzStuff.Realtime.Server.Comm
             //AddOpHandler(new LobbyRoomOperationHandler(this));
         }
 
-        public CommActorInfoView Actor { get; set; }
+        public CommActor Actor { get; set; }
 
         public CommPeerEvents Events => _events;
         public LobbyRoom Lobby => _lobby;

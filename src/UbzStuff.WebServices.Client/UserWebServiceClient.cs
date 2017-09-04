@@ -8,25 +8,12 @@ using UbzStuff.WebServices.Contracts;
 
 namespace UbzStuff.WebServices.Client
 {
-    public class UserWebServiceClient
+    public class UserWebServiceClient : BaseWebServiceClient<IUserWebServiceContract>
     {
-        public UserWebServiceClient(string webServer)
+        public UserWebServiceClient(string endPoint) : base(endPoint, "UserWebService")
         {
-            if (webServer == null)
-                throw new ArgumentNullException(nameof(webServer));
-
-            var builder = new UriBuilder(webServer);
-            builder.Path = Path.Combine(builder.Path, "UserWebService");
-
-            var endPoint = new EndpointAddress(builder.Uri);
-
-            var binding = new BasicHttpBinding();
-            var factory = new ChannelFactory<IUserWebServiceContract>(binding, endPoint);
-
-            _service = factory.CreateChannel();
+            // Space
         }
-
-        private readonly IUserWebServiceContract _service;
 
         public  UberstrikeUserView GetMember(string authToken)
         {
@@ -34,12 +21,9 @@ namespace UbzStuff.WebServices.Client
             {
                 StringProxy.Serialize(bytes, authToken);
 
-                var data = _service.GetMember(bytes.ToArray());
+                var data = Channel.GetMember(bytes.ToArray());
                 using (var inBytes = new MemoryStream(data))
-                {
-                    var member = UberstrikeUserViewProxy.Deserialize(inBytes);
-                    return member;
-                }
+                    return UberstrikeUserViewProxy.Deserialize(inBytes);
             }
         }
     }
