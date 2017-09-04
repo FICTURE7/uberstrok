@@ -30,6 +30,8 @@ namespace UbzStuff.WebServices.Core
 
             // Set email status to complete so we don't ask for the player name again.
             member.PublicProfile.EmailAddressStatus = EmailAddressStatus.Verified;
+            // Save the profile since we modified it.
+            Context.Users.Db.Profiles.Save(member.PublicProfile);
 
             /*
              * result:
@@ -49,7 +51,6 @@ namespace UbzStuff.WebServices.Core
 
         public override MemberAuthenticationResultView OnLoginSteam(string steamId, string authToken, string machineId)
         {
-            Log.Info($"Logging in member {steamId}:{machineId}");
 
             // Figure out if the account has been linked.
             var linked = true;
@@ -95,6 +96,9 @@ namespace UbzStuff.WebServices.Core
                     WeaponStatistics = new PlayerWeaponStatisticsView()
                 },
             };
+
+            Log.Info($"Logging in member {steamId}:{newAuthToken}");
+
             return view;
         }
     }

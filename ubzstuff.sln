@@ -42,6 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{854F4D7F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbzStuff.Realtime.Client", "src\UbzStuff.Realtime.Client\UbzStuff.Realtime.Client.csproj", "{07AC73AC-E7F0-463C-A9CD-1538546FD44A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbzStuff.WebServices.Client.Tests", "src\UbzStuff.WebServices.Client.Tests\UbzStuff.WebServices.Client.Tests.csproj", "{3005F905-E2BE-46C3-A249-41CEF098708D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,10 @@ Global
 		{07AC73AC-E7F0-463C-A9CD-1538546FD44A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07AC73AC-E7F0-463C-A9CD-1538546FD44A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07AC73AC-E7F0-463C-A9CD-1538546FD44A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3005F905-E2BE-46C3-A249-41CEF098708D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3005F905-E2BE-46C3-A249-41CEF098708D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3005F905-E2BE-46C3-A249-41CEF098708D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3005F905-E2BE-46C3-A249-41CEF098708D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,5 +122,6 @@ Global
 		{4D189442-E12E-4016-BF73-DCBD41AF42BC} = {68AB459A-15D6-4F40-B9FC-EFD26B8BA49A}
 		{854F4D7F-5E9F-44E5-AF1C-6BCC721FB6BE} = {61BF1225-0BEF-40D8-A70B-9A69CDB6D379}
 		{07AC73AC-E7F0-463C-A9CD-1538546FD44A} = {B408F019-9656-4641-BB73-B55BF7DB3F58}
+		{3005F905-E2BE-46C3-A249-41CEF098708D} = {4D189442-E12E-4016-BF73-DCBD41AF42BC}
 	EndGlobalSection
 EndGlobal

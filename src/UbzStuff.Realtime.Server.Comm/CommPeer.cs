@@ -1,5 +1,6 @@
 ﻿using log4net;
 using Photon.SocketServer;
+using UbzStuff.Core.Views;
 
 namespace UbzStuff.Realtime.Server.Comm
 {
@@ -15,6 +16,8 @@ namespace UbzStuff.Realtime.Server.Comm
             AddOpHandler(new CommPeerOperationHandler(this));
             //AddOpHandler(new LobbyRoomOperationHandler(this));
         }
+
+        public CommActorInfoView Actor { get; set; }
 
         public CommPeerEvents Events => _events;
         public LobbyRoom Lobby => _lobby;
