@@ -18,7 +18,7 @@ namespace UbzStuff.WebServices
             _ctx = ctx;
             _db = new UserDb();
 
-            _authedMembers = new Dictionary<string, MemberView>();
+            _sessions = new Dictionary<string, MemberView>();
             _nextCmid = _db.GetNextCmid();
             if (_nextCmid == -1)
             {
@@ -31,7 +31,7 @@ namespace UbzStuff.WebServices
 
         private int _nextCmid;
         private readonly UserDb _db;
-        private readonly Dictionary<string, MemberView> _authedMembers; // AuthToken -> MemberView
+        private readonly Dictionary<string, MemberView> _sessions; // AuthToken -> MemberView
 
         private readonly WebServiceContext _ctx;
 
@@ -91,16 +91,15 @@ namespace UbzStuff.WebServices
             return member;
         }
 
-
         public MemberView GetMember(string authToken)
         {
             if (authToken == null)
                 throw new ArgumentNullException(nameof(authToken));
 
             var member = default(MemberView);
-            lock (_authedMembers)
+            lock (_sessions)
             {
-                if (!_authedMembers.TryGetValue(authToken, out member))
+                if (!_sessions.TryGetValue(authToken, out member))
                     return null;
             }
             return member;
@@ -111,9 +110,9 @@ namespace UbzStuff.WebServices
             if (cmid <= 0)
                 throw new ArgumentException("CMID must be greater than 0.");
 
-            lock (_authedMembers)
+            lock (_sessions)
             {
-                foreach (var value in _authedMembers.Values)
+                foreach (var value in _sessions.Values)
                 {
                     if (value.PublicProfile.Cmid == cmid)
                         return value;
@@ -127,17 +126,19 @@ namespace UbzStuff.WebServices
             if (member == null)
                 throw new ArgumentNullException(nameof(member));
 
-            var date = _ctx.ServiceBase + ":" + DateTime.UtcNow.ToString();
-            var bytes = Encoding.UTF8.GetBytes(date);
+            // Encore ServiceBase URL into the AuthToken so the realtime servers can figure out
+            // where the user came from.
+            var data = _ctx.ServiceBase + "#####" + DateTime.UtcNow.ToString();
+            var bytes = Encoding.UTF8.GetBytes(data);
             var authToken = Convert.ToBase64String(bytes);
 
             member.PublicProfile.LastLoginDate = DateTime.UtcNow;
 
-            lock (_authedMembers)
-                _authedMembers.Add(authToken, member);
+            lock (_sessions)
+                _sessions.Add(authToken, member);
 
+            // Save only profile since we only modified the profile.
             Db.Profiles.Save(member.PublicProfile);
-
             return authToken;
         }
 

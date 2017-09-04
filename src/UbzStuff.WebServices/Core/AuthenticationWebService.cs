@@ -28,6 +28,9 @@ namespace UbzStuff.WebServices.Core
             for (int i = 0; i < member.MemberItems.Count; i++) // The client seem to ignore the value of the dictionary.
                 itemsAttributed.Add(member.MemberItems[i], 0);
 
+            // Set email status to complete so we don't ask for the player name again.
+            member.PublicProfile.EmailAddressStatus = EmailAddressStatus.Verified;
+
             /*
              * result:
              * 1 -> Success
@@ -50,16 +53,17 @@ namespace UbzStuff.WebServices.Core
 
             // Figure out if the account has been linked.
             var linked = true;
+            // Figure out if the account existed. true -> existed otherwise false.
+            var inComplete = false;
 
             // Load the user from the database using its steamId.
-            var newMember = false;
             var member = Context.Users.Db.LoadMember(steamId);
             if (member == null)
             {
                 Log.Info($"Member entry {steamId} does not exists, creating new entry");
 
                 // Create a new member if its not in the db.
-                newMember = true;
+                inComplete = true;
                 member = Context.Users.NewMember();
 
                 // Link the Steam ID to the CMID.
@@ -70,12 +74,17 @@ namespace UbzStuff.WebServices.Core
             if (!linked)
                 result = MemberAuthenticationResult.InvalidEsns;
 
+            // Use the PublicProfile.EmailAddrsessStatus to figure out if its an incomplete account,
+            // because why not.
+            if (member.PublicProfile.EmailAddressStatus == EmailAddressStatus.Unverified)
+                inComplete = true;
+
             var newAuthToken = Context.Users.LogInUser(member);
             var view = new MemberAuthenticationResultView
             {
                 MemberAuthenticationResult = result,
                 AuthToken = newAuthToken,
-                IsAccountComplete = !newMember,
+                IsAccountComplete = !inComplete,
                 ServerTime = DateTime.Now,
 
                 MemberView = member,

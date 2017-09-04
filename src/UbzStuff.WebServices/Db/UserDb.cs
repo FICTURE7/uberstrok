@@ -110,20 +110,14 @@ namespace UbzStuff.WebServices.Db
 
         private bool LoadSteamIds()
         {
-            if (File.Exists("data/steam_id.json"))
-            {
-                var json = File.ReadAllText("data/steam_id.json");
-                _steamId2Cmid = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
-                return true;
-            }
-            return false;
+            _steamId2Cmid = Utils.DeserializeJsonAt<Dictionary<string, int>>("data/steam_id.json");
+            return _steamId2Cmid != null;
         }
 
         private void SaveSteamIds()
         {
             Debug.Assert(_steamId2Cmid != null);
 
-            // Should never really happen, but just in case.
             if (_steamId2Cmid == null)
                 _steamId2Cmid = new Dictionary<string, int>();
 
