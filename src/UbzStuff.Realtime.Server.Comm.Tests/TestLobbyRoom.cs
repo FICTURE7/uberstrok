@@ -20,5 +20,13 @@ namespace UbzStuff.Realtime.Server.Comm.Tests
                 Console.WriteLine($"[{player.Cmid}] {player.PlayerName}");
             Console.WriteLine("-----------------");
         }
+
+        public override void OnLobbyChatMessage(int cmid, string name, string message)
+        {
+            Console.WriteLine($"LOBBY: [{cmid}][{name}] {message}");
+
+            if (!name.StartsWith("Realtime.Comm.Tests"))
+                Operations.SendChatToAll($"Yooo mah bitch {name}");
+        }
     }
 }

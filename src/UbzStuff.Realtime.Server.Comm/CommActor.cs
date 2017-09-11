@@ -17,6 +17,7 @@ namespace UbzStuff.Realtime.Server.Comm
         }
 
         public int Cmid => _view.Cmid;
+        public string Name => _view.PlayerName;
 
         public CommPeer Peer => _peer;
         public CommActorInfoView View => _view;

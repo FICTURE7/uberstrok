@@ -5,9 +5,11 @@
         public LobbyRoom(CommPeer peer)
         {
             _events = new LobbyRoomEvents(peer);
+
+            peer.AddOpHandler(new LobbyRoomOperationHandler(peer));
         }
 
-        private readonly LobbyRoomEvents _events;
         public LobbyRoomEvents Events => _events;
+        private readonly LobbyRoomEvents _events;
     }
 }

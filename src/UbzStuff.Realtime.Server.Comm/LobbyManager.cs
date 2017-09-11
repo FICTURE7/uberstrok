@@ -13,29 +13,44 @@ namespace UbzStuff.Realtime.Server.Comm
 
         private LobbyManager()
         {
+            _sync = new object();
             _actors = new Dictionary<int, CommActor>();
         }
 
-        public Dictionary<int, CommActor> Actors => _actors;
+        public IEnumerable<CommActor> Actors => _actors.Values;
 
+        private readonly object _sync;
         private readonly Dictionary<int, CommActor> _actors;
 
         public void UpdateList()
         {
-            lock (_actors)
+            lock (_sync)
             {
                 var views = new List<CommActorInfoView>(_actors.Count);
-                foreach (var actor in _actors.Values)
+                foreach (var actor in Actors)
                     views.Add(actor.View);
 
-                foreach (var actor in _actors.Values)
+                foreach (var actor in Actors)
                     actor.Peer.Lobby.Events.SendFullPlayerListUpdate(views);
+            }
+        }
+
+        public void ChatToAll(CommActor actor, string message)
+        {
+            lock (_sync)
+            {
+                foreach (var a in Actors)
+                {
+                    // Don't send back the message sent by the actor to itself.
+                    if (a.Cmid != actor.Cmid)
+                        a.Peer.Lobby.Events.SendLobbyChatMessage(actor.Cmid, actor.Name, message);
+                }
             }
         }
 
         public void Add(CommActor actor)
         {
-            lock (_actors)
+            lock (_sync)
             {
                 _actors.Add(actor.Cmid, actor);
 
@@ -48,7 +63,7 @@ namespace UbzStuff.Realtime.Server.Comm
 
         public void Remove(int cmid)
         {
-            lock (_actors)
+            lock (_sync)
             {
                 _actors.Remove(cmid);
 

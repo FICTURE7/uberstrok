@@ -17,7 +17,7 @@ namespace UbzStuff.Realtime.Server
     }
 
     // Just to save us from casting some stuff.
-    public abstract class BaseOperationHandler<TPeer> :BaseOperationHandler where TPeer : BasePeer
+    public abstract class BaseOperationHandler<TPeer> : BaseOperationHandler where TPeer : BasePeer
     {
         public BaseOperationHandler(TPeer peer)
         {

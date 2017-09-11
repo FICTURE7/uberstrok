@@ -48,7 +48,7 @@ namespace UbzStuff.Realtime.Client
 
         public void OnStatusChanged(StatusCode statusCode)
         {
-            switch(statusCode)
+            switch (statusCode)
             {
                 case StatusCode.Connect:
                     _peer.OnConnect(string.Empty);

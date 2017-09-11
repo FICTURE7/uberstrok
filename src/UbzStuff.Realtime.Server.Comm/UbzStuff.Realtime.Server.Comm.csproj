@@ -55,6 +55,8 @@
     <Compile Include="LobbyRoom.cs" />
     <Compile Include="LobbyRoomEvents.cs" />
     <Compile Include="LobbyManager.cs" />
+    <Compile Include="BaseLobbyRoomOperationHandler.cs" />
+    <Compile Include="LobbyRoomOperationHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

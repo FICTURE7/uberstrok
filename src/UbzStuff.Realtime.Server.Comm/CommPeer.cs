@@ -9,11 +9,10 @@ namespace UbzStuff.Realtime.Server.Comm
 
         public CommPeer(InitRequest initRequest) : base(initRequest)
         {
-            _events = new CommPeerEvents(this);
             _lobby = new LobbyRoom(this);
+            _events = new CommPeerEvents(this);
 
             AddOpHandler(new CommPeerOperationHandler(this));
-            //AddOpHandler(new LobbyRoomOperationHandler(this));
         }
 
         public CommActor Actor { get; set; }

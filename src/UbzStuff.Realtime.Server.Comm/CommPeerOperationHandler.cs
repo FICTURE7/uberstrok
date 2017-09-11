@@ -4,7 +4,6 @@ using System.Text;
 using UbzStuff.Core.Common;
 using UbzStuff.Core.Views;
 using UbzStuff.WebServices.Client;
-using PhotonHostRuntimeInterfaces;
 
 namespace UbzStuff.Realtime.Server.Comm
 {
@@ -16,8 +15,6 @@ namespace UbzStuff.Realtime.Server.Comm
         {
             // Space
         }
-
-        public override int Id => 1;
 
         public override void OnAuthenticationRequest(string authToken, string magicHash)
         {
@@ -53,12 +50,6 @@ namespace UbzStuff.Realtime.Server.Comm
         public override void OnSendHeartbeatResponse(string authToken, string responseHash)
         {
             // Space
-        }
-
-        public override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
-        {
-            LobbyManager.Instance.Actors.Remove(Peer.Actor.Cmid);
-            LobbyManager.Instance.UpdateList();
         }
     }
 }

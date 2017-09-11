@@ -45,6 +45,7 @@
     <Compile Include="ICommPeerEventsType.cs" />
     <Compile Include="ICommPeerOperationsType.cs" />
     <Compile Include="ILobbyRoomEventsType.cs" />
+    <Compile Include="ILobbyRoomOperationsType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealtimeVersion.cs" />
   </ItemGroup>

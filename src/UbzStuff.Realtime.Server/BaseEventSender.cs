@@ -1,4 +1,5 @@
-﻿using Photon.SocketServer;
+﻿using log4net;
+using Photon.SocketServer;
 using System.Collections.Generic;
 using System.IO;
 
@@ -6,6 +7,8 @@ namespace UbzStuff.Realtime.Server
 {
     public abstract class BaseEventSender
     {
+        private static ILog Log = LogManager.GetLogger(typeof(BaseEventSender));
+
         public BaseEventSender(BasePeer peer)
         {
             _peer = peer;
@@ -14,13 +17,17 @@ namespace UbzStuff.Realtime.Server
         private readonly BasePeer _peer;
         protected BasePeer Peer => _peer;
 
-        protected void SendEvent(byte opCode, MemoryStream bytes)
+        protected SendResult SendEvent(byte opCode, MemoryStream bytes)
         {
             var eventData = new EventData(opCode, new Dictionary<byte, object>
             {
                 {0,  bytes.ToArray() }
             });
-            _peer.SendEvent(eventData, new SendParameters());
+
+            var result =  _peer.SendEvent(eventData, new SendParameters());
+            if (result != SendResult.Ok)
+                Log.Error($"Send event failed {opCode} -> {result}");
+            return result;
         }
     }
 }

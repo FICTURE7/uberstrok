@@ -20,7 +20,6 @@ namespace UbzStuff.Realtime.Server.Comm.Tests
                 Peers.Add(peer);
             }
 
-
             Console.ReadLine();
         }
     }
