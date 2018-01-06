@@ -78,6 +78,10 @@ namespace UberStrok.Realtime.Server
                     }
                 }
             }
+            else
+            {
+                Log.Warn($"Unable to handle operation request -> not implemented operation handler: {opHandlerId}");
+            }
         }
     }
 }
