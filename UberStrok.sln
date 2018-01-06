@@ -42,7 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{854F4D7F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Client", "src\UberStrok.Realtime.Client\UberStrok.Realtime.Client.csproj", "{07AC73AC-E7F0-463C-A9CD-1538546FD44A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.WebServices.Client.Tests", "src\UbzStuff.WebServices.Client.Tests\UberStrok.WebServices.Client.Tests.csproj", "{3005F905-E2BE-46C3-A249-41CEF098708D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.WebServices.Client.Tests", "src\UberStrok.WebServices.Client.Tests\UberStrok.WebServices.Client.Tests.csproj", "{3005F905-E2BE-46C3-A249-41CEF098708D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gen", "gen", "{A83B68F8-7A05-462E-AFA4-77D5BE488A23}"
 EndProject

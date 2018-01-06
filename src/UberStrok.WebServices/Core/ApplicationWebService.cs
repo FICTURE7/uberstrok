@@ -37,6 +37,7 @@ namespace UberStrok.WebServices.Core
                 IsEnabled = true,
                 WarnPlayer = false,
 
+                // Let the client know where the Comm servers and game servers are.
                 CommServer = Context.Servers.CommServer,
                 GameServers = Context.Servers.GameServers
             };

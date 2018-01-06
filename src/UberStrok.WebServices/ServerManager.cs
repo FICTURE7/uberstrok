@@ -7,6 +7,9 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.WebServices
 {
+    /**
+     *  Manages Comm servers and game servers.
+     */
     public class ServerManager
     {
         public ServerManager(WebServiceContext ctx)

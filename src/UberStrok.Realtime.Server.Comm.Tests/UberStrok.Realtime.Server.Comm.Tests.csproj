@@ -57,7 +57,7 @@
       <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
       <Name>Uberstrok.Core.Views</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UbzStuff.Realtime.Client\UberStrok.Realtime.Client.csproj">
+    <ProjectReference Include="..\UberStrok.Realtime.Client\UberStrok.Realtime.Client.csproj">
       <Project>{07AC73AC-E7F0-463C-A9CD-1538546FD44A}</Project>
       <Name>UberStrok.Realtime.Client</Name>
     </ProjectReference>
