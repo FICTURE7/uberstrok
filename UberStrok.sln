@@ -32,7 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "realtime", "realtime", "{B4
 		PhotonServer.config = PhotonServer.config
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "webservices", "webservices", "{68AB459A-15D6-4F40-B9FC-EFD26B8BA49A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{68AB459A-15D6-4F40-B9FC-EFD26B8BA49A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CEACCD26-CB32-46CF-8AEA-E3020185AA47}"
 EndProject
