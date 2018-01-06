@@ -1,6 +1,9 @@
 # Visual Studio
 .vs/
 
+# Logging files.
+*.log
+
 # NuGet
 packages/
 
@@ -9,7 +12,7 @@ bin/
 obj/
 
 # Libraries
-lib/*.dll
+lib/uberstrike/*.dll
 
 # Photon SDK
 photon/
