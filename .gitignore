@@ -9,7 +9,7 @@ bin/
 obj/
 
 # Libraries
-lib/
+lib/*.dll
 
 # Photon SDK
 photon/

@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{31695DBE-D01C-4EA8-92CC-28541E9E0BC0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UbzStuff.Core.Serialization</RootNamespace>
+    <AssemblyName>UbzStuff.Core.Serialization</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BooleanProxy.cs" />
+    <Compile Include="ByteProxy.cs" />
+    <Compile Include="DateTimeProxy.cs" />
+    <Compile Include="DictionaryProxy.cs" />
+    <Compile Include="EnumProxy.cs" />
+    <Compile Include="Int16Proxy.cs" />
+    <Compile Include="Int32Proxy.cs" />
+    <Compile Include="Int64Proxy.cs" />
+    <Compile Include="ListProxy.cs" />
+    <Compile Include="Views\AccountCompletionResultViewProxy.cs" />
+    <Compile Include="Views\ApplicationConfigurationViewProxy.cs" />
+    <Compile Include="Views\AuthenticateApplicationViewProxy.cs" />
+    <Compile Include="Views\BundleItemViewProxy.cs" />
+    <Compile Include="Views\CommActorInfoViewProxy.cs" />
+    <Compile Include="Views\ConnectionAddressViewProxy.cs" />
+    <Compile Include="Views\GameRoomViewProxy.cs" />
+    <Compile Include="Views\ItemInventoryViewProxy.cs" />
+    <Compile Include="Views\ItemPriceViewProxy.cs" />
+    <Compile Include="Views\LoadoutViewProxy.cs" />
+    <Compile Include="Views\LuckyDrawSetUnityViewProxy.cs" />
+    <Compile Include="Views\LuckyDrawUnityViewProxy.cs" />
+    <Compile Include="Views\MapSettingsViewProxy.cs" />
+    <Compile Include="Views\MapViewProxy.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SingleProxy.cs" />
+    <Compile Include="StringProxy.cs" />
+    <Compile Include="UInt16Proxy.cs" />
+    <Compile Include="Views\MemberAuthenticationResultViewProxy.cs" />
+    <Compile Include="Views\MemberViewProxy.cs" />
+    <Compile Include="Views\MemberWalletViewProxy.cs" />
+    <Compile Include="Views\PhotonViewProxy.cs" />
+    <Compile Include="Views\PlayerCardViewProxy.cs" />
+    <Compile Include="Views\PlayerPersonalRecordStatisticsViewProxy.cs" />
+    <Compile Include="Views\PlayerStatisticsViewProxy.cs" />
+    <Compile Include="Views\PlayerWeaponStatisticsViewProxy.cs" />
+    <Compile Include="Views\PublicProfileViewProxy.cs" />
+    <Compile Include="Views\ServerConnectionViewProxy.cs" />
+    <Compile Include="Views\UberStrikeItemFunctionalViewProxy.cs" />
+    <Compile Include="Views\UberStrikeItemGearViewProxy.cs" />
+    <Compile Include="Views\UberStrikeItemQuickViewProxy.cs" />
+    <Compile Include="Views\UberStrikeItemShopClientViewProxy.cs" />
+    <Compile Include="Views\UberStrikeItemWeaponViewProxy.cs" />
+    <Compile Include="Views\UberstrikeMemberViewProxy.cs" />
+    <Compile Include="Views\UberstrikeUserViewProxy.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UberStrok.Core.Common\UberStrok.Core.Common.csproj">
+      <Project>{F6AA8827-1031-4753-BE08-B0D7F3A98C75}</Project>
+      <Name>UberStrok.Core.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UberStrok.Core.Views\Uberstrok.Core.Views.csproj">
+      <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
+      <Name>Uberstrok.Core.Views</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
