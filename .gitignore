@@ -1,3 +1,6 @@
+# Logging files
+*.log
+
 # Visual Studio
 .vs/
 
