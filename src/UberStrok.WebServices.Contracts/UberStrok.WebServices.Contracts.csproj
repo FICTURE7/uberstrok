@@ -7,8 +7,8 @@
     <ProjectGuid>{2B8BCCE1-CF4A-4DC4-8C55-0B18C9C644A4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.WebServices.Contracts</RootNamespace>
-    <AssemblyName>UbzStuff.WebServices.Contracts</AssemblyName>
+    <RootNamespace>UberStrok.WebServices.Contracts</RootNamespace>
+    <AssemblyName>UberStrok.WebServices.Contracts</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -7,8 +7,8 @@
     <ProjectGuid>{116D2F7F-9F5E-4287-B152-BDD31DFF34C4}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.Realtime.Server.Comm.Tests</RootNamespace>
-    <AssemblyName>UbzStuff.Realtime.Server.Comm.Tests</AssemblyName>
+    <RootNamespace>UberStrok.Realtime.Server.Comm.Tests</RootNamespace>
+    <AssemblyName>UberStrok.Realtime.Server.Comm.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -7,8 +7,8 @@
     <ProjectGuid>{033FDB2F-09EF-4BF0-AB73-6E622703E1C0}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.WebServices</RootNamespace>
-    <AssemblyName>UbzStuff.WebServices</AssemblyName>
+    <RootNamespace>UberStrok.WebServices</RootNamespace>
+    <AssemblyName>UberStrok.WebServices</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

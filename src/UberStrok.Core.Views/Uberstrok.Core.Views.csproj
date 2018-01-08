@@ -7,8 +7,8 @@
     <ProjectGuid>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.Core.Views</RootNamespace>
-    <AssemblyName>UbzStuff.Core.Views</AssemblyName>
+    <RootNamespace>UberStrok.Core.Views</RootNamespace>
+    <AssemblyName>UberStrok.Core.Views</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

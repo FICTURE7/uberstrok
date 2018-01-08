@@ -7,8 +7,8 @@
     <ProjectGuid>{78369A8E-687E-4B7E-AE45-E3F2CEE641A2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.Realtime.Server.Comm</RootNamespace>
-    <AssemblyName>UbzStuff.Realtime.Server.Comm</AssemblyName>
+    <RootNamespace>UberStrok.Realtime.Server.Comm</RootNamespace>
+    <AssemblyName>UberStrok.Realtime.Server.Comm</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -92,7 +92,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>python $(SolutionDir)/scripts/postbuild.py $(TargetName) $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>python "$(SolutionDir)\scripts\postbuild.py" "$(ProjectName)" "$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

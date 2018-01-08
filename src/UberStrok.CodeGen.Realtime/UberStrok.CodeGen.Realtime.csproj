@@ -7,8 +7,8 @@
     <ProjectGuid>{FD8539F5-C109-4264-8228-3A0235899E5A}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.CodeGen.Realtime</RootNamespace>
-    <AssemblyName>UbzStuff.CodeGen.Realtime</AssemblyName>
+    <RootNamespace>UberStrok.CodeGen.Realtime</RootNamespace>
+    <AssemblyName>UberStrok.CodeGen.Realtime</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

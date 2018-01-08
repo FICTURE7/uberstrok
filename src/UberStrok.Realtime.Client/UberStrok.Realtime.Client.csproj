@@ -7,8 +7,8 @@
     <ProjectGuid>{07AC73AC-E7F0-463C-A9CD-1538546FD44A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.Realtime.Client</RootNamespace>
-    <AssemblyName>UbzStuff.Realtime.Client</AssemblyName>
+    <RootNamespace>UberStrok.Realtime.Client</RootNamespace>
+    <AssemblyName>UberStrok.Realtime.Client</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

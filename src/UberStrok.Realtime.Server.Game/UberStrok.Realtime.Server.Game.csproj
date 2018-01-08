@@ -7,8 +7,8 @@
     <ProjectGuid>{030FFB86-1B74-47E5-A5D4-DCBDE195F533}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.Realtime.Server.Game</RootNamespace>
-    <AssemblyName>UbzStuff.Realtime.Server.Game</AssemblyName>
+    <RootNamespace>UberStrok.Realtime.Server.Game</RootNamespace>
+    <AssemblyName>UberStrok.Realtime.Server.Game</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -7,8 +7,8 @@
     <ProjectGuid>{31695DBE-D01C-4EA8-92CC-28541E9E0BC0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.Core.Serialization</RootNamespace>
-    <AssemblyName>UbzStuff.Core.Serialization</AssemblyName>
+    <RootNamespace>UberStrok.Core.Serialization</RootNamespace>
+    <AssemblyName>UberStrok.Core.Serialization</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

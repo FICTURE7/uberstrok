@@ -7,8 +7,8 @@
     <ProjectGuid>{3005F905-E2BE-46C3-A249-41CEF098708D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UbzStuff.WebServices.Client.Tests</RootNamespace>
-    <AssemblyName>UbzStuff.WebServices.Client.Tests</AssemblyName>
+    <RootNamespace>UberStrok.WebServices.Client.Tests</RootNamespace>
+    <AssemblyName>UberStrok.WebServices.Client.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
