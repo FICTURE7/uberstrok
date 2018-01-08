@@ -46,11 +46,27 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseGamePeerOperationHandler.cs" />
+    <Compile Include="BaseGameRoomOperationHandler.cs" />
     <Compile Include="GameApplication.cs" />
+    <Compile Include="GameManager.cs" />
     <Compile Include="GamePeer.cs" />
+    <Compile Include="GamePeerEvents.cs" />
+    <Compile Include="GamePeerOperationHandler.cs" />
+    <Compile Include="GameRoom.cs" />
+    <Compile Include="GameRoomEvents.cs" />
+    <Compile Include="GameRoomOperationHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\UberStrok.Core.Serialization\UberStrok.Core.Serialization.csproj">
+      <Project>{31695DBE-D01C-4EA8-92CC-28541E9E0BC0}</Project>
+      <Name>UberStrok.Core.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UberStrok.Core.Views\Uberstrok.Core.Views.csproj">
+      <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
+      <Name>Uberstrok.Core.Views</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UberStrok.Realtime.Server\UberStrok.Realtime.Server.csproj">
       <Project>{D1F31A89-C971-4FBA-8795-95D79CB420C9}</Project>
       <Name>UberStrok.Realtime.Server</Name>

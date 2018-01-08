@@ -73,7 +73,7 @@ namespace UberStrok.Realtime.Server
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"Error while handling request {handler.GetType().Name}:{opHandlerId} -> {operationRequest.OperationCode}");
+                        Log.Error($"Error while handling request {handler.GetType().Name}:{opHandlerId} -> OpCode: {operationRequest.OperationCode}");
                         Log.Error(ex);
                     }
                 }

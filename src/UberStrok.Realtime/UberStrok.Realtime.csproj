@@ -44,6 +44,8 @@
   <ItemGroup>
     <Compile Include="ICommPeerEventsType.cs" />
     <Compile Include="ICommPeerOperationsType.cs" />
+    <Compile Include="IGamePeerEventsType.cs" />
+    <Compile Include="IGamePeerOperationsType.cs" />
     <Compile Include="ILobbyRoomEventsType.cs" />
     <Compile Include="ILobbyRoomOperationsType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -75,11 +75,22 @@
         "DisplayName": "CuberStrike",
         "Description": "Map Description",
         "SceneName": "CuberStrike",
+        "MapId": 1,
         "IsBlueBox": false,
         "MaxPlayer": 32,
         "Settings": {
             "1": { },
-            "2": { },
+            "2": {
+                "KillsMin": 1,
+                "KillsMax": 200,
+                "KillsCurrent": 100,
+                "PlayersMin": 2,
+                "PlayersMax": 50,
+                "PlayersCurrent": 10,
+                "TimeMin": 1,
+                "TimeMax": 30,
+                "TimeCurrent": 10
+            },
             "3": { }
         }
     },

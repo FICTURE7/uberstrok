@@ -9,6 +9,8 @@ namespace UberStrok.Realtime.Server.Game
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(GameApplication));
 
+        public static new GameApplication Instance => (GameApplication)ApplicationBase.Instance;
+
         protected override PeerBase CreatePeer(InitRequest initRequest)
         {
             Log.Info($"Accepted new connection at {initRequest.RemoteIP}:{initRequest.RemotePort}");
@@ -30,7 +32,7 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void TearDown()
         {
-            // Space
+            Log.Info("Stopped CommServer...");
         }
     }
 }

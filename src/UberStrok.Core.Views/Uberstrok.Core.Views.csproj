@@ -42,6 +42,7 @@
     <Compile Include="BundleItemView.cs" />
     <Compile Include="CommActorInfoView.cs" />
     <Compile Include="ConnectionAddressView.cs" />
+    <Compile Include="GameRoomDataView.cs" />
     <Compile Include="GameRoomView.cs" />
     <Compile Include="ItemInventoryView.cs" />
     <Compile Include="ItemPriceView.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="MemberAuthenticationResultView.cs" />
     <Compile Include="MemberView.cs" />
     <Compile Include="MemberWalletView.cs" />
+    <Compile Include="PhotonServerLoadView.cs" />
     <Compile Include="PhotonView.cs" />
     <Compile Include="PlayerCardView.cs" />
     <Compile Include="PlayerPersonalRecordStatisticsView.cs" />
@@ -60,6 +62,7 @@
     <Compile Include="PlayerWeaponStatisticsView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicProfileView.cs" />
+    <Compile Include="RoomDataView.cs" />
     <Compile Include="ServerConnectionView.cs" />
     <Compile Include="UberStrikeItemFunctionalView.cs" />
     <Compile Include="UberStrikeItemGearView.cs" />
