@@ -8,14 +8,15 @@ namespace UberStrok.Realtime.Server.Game
     {
         public GamePeer(InitRequest initRequest) : base(initRequest)
         {
-            AddOpHandler(new GamePeerOperationHandler(this));
-
             _events = new GamePeerEvents(this);
+
+            AddOpHandler(new GamePeerOperationHandler(this));
         }
 
         public UberstrikeUserView Member { get; set; }
         public ushort Ping { get; set; }
 
+        [Obsolete]
         public GameRoom Game
         {
             get { return _game; }

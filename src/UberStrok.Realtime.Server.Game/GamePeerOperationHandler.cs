@@ -9,6 +9,8 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeerOperationHandler : BaseGamePeerOperationHandler
     {
+        private static readonly ILog Log = LogManager.GetLogger(nameof(GamePeerOperationHandler));
+
         public GamePeerOperationHandler(GamePeer peer) : base(peer)
         {
             // Space
@@ -20,30 +22,35 @@ namespace UberStrok.Realtime.Server.Game
             // Clear the client list of games available.
             Peer.Events.SendGameListUpdateEnd();
 
-            var rooms = new List<GameRoomDataView>(GameManager.Instance.Rooms.Count);
-            foreach (var room in GameManager.Instance.Rooms)
-                rooms.Add(room.Value.Data);
+            var rooms = new List<GameRoomDataView>(GameApplication.Instance.Games.Rooms.Count);
+            foreach (var room in GameApplication.Instance.Games.Rooms.Values)
+                rooms.Add(room.Data);
 
-            LogManager.GetLogger(typeof(GamePeerOperationHandler)).Info($"Room count -> {rooms.Count}");
             Peer.Events.SendGameListUpdate(rooms, new List<int>());
+
+            Log.Info($"OnGetGameListUpdates: Room Count -> {rooms.Count}");
         }
 
         protected override void OnGetServerLoad()
         {
             var view = new PhotonServerLoadView
             {
-                Latency = Peer.RoundTripTime / 2, // UberStrike does not care about this value, it uses its client side value.
+                // UberStrike does not care about this value, it uses its client side value.
+                Latency = Peer.RoundTripTime / 2,
                 State = PhotonServerLoadView.Status.Alive,
                 MaxPlayerCount = 100,
 
                 PeersConnected = GameApplication.Instance.PeerCount,
-                PlayersConnected = 1, // UberStrike also does not care about this value, it uses PeersConnected.
+                // UberStrike also does not care about this value, it uses PeersConnected.
+                PlayersConnected = GameApplication.Instance.PeerCount,
 
-                RoomsCreated = GameManager.Instance.Rooms.Count,
+                RoomsCreated = GameApplication.Instance.Games.Rooms.Count,
                 TimeStamp = DateTime.UtcNow
             };
 
             Peer.Events.SendServerLoadData(view);
+
+            Log.Info($"OnGetServerLoad: Load -> {view.PeersConnected}/{view.MaxPlayerCount} Rooms: {view.RoomsCreated}");
         }
 
         protected override void OnCreateRoom(GameRoomDataView roomData, string password, string clientVersion, string authToken, string magicHash)
@@ -57,15 +64,14 @@ namespace UberStrok.Realtime.Server.Game
             var client = new UserWebServiceClient(webServer);
             var member = client.GetMember(authToken);
 
-            LogManager.GetLogger(typeof(GamePeerOperationHandler)).Info($"Member -> {member}");
             Peer.Member = member;
 
-            GameManager.Instance.AddRoom(roomData, password);
+            GameApplication.Instance.Games.AddRoom(roomData, password);
 
             LogManager.GetLogger(typeof(GamePeerOperationHandler)).Info($"Creating new room -> {roomData.Name}:{roomData.Number}");
 
             var room = default(GameManager.Room);
-            if (GameManager.Instance.Rooms.TryGetValue(roomData.Number, out room))
+            if (GameApplication.Instance.Games.Rooms.TryGetValue(roomData.Number, out room))
             {
                 Peer.Game = new GameRoom(Peer, room);
                 Peer.Events.SendRoomEntered(room.Data);
@@ -92,7 +98,7 @@ namespace UberStrok.Realtime.Server.Game
             Peer.Member = member;
 
             var room = default(GameManager.Room);
-            if (GameManager.Instance.Rooms.TryGetValue(roomId, out room))
+            if (GameApplication.Instance.Games.Rooms.TryGetValue(roomId, out room))
             {
                 LogManager.GetLogger(typeof(GamePeerOperationHandler)).Info("Joining stuff ey!");
                 if (room.Data.IsPasswordProtected)

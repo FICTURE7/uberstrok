@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using UberStrok.Core.Views;
 
@@ -7,23 +6,20 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameManager
     {
-        public static GameManager Instance => s_instance;
-        private static GameManager s_instance = new GameManager();
-
         public GameManager()
         {
-            if (s_instance != null)
-                throw new Exception();
-
-            Rooms = new Dictionary<int, Room>();
+            _rooms = new Dictionary<int, Room>();
         }
 
+        // Next room ID.
         private int _roomId = 0;
+        private Dictionary<int, Room> _rooms;
 
-        public Dictionary<int, Room> Rooms { get; set; }
+        public Dictionary<int, Room> Rooms => _rooms;
 
         public void AddRoom(GameRoomDataView roomData, string password)
         {
+            // Set those to 0, so the client knows there is not level restriction.
             if (roomData.LevelMin == 1 && roomData.LevelMax == 80)
             {
                 roomData.LevelMin = 0;

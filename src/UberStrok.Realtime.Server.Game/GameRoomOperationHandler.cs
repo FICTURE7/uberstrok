@@ -16,6 +16,9 @@ namespace UberStrok.Realtime.Server.Game
 
         public override int Id => 0;
 
+        private List<Vector3> _respawns;
+        private List<byte> _respawnRotations;
+
         protected override void OnJoinTeam(TeamID team)
         {
             var player = new GameActorInfoView
@@ -30,11 +33,43 @@ namespace UberStrok.Realtime.Server.Game
                 PlayerName = Peer.Member.CmuneMemberView.PublicProfile.Name,
                 PlayerId = 1,
                 Weapons = Peer.Member.CmuneMemberView.MemberItems,
-                PlayerState = PlayerStates.Ready          
+                PlayerState = PlayerStates.Ready
             };
 
             LogManager.GetLogger(typeof(GameRoomOperationHandler)).Info($"Joining team -> CMID:{player.Cmid}:{team}");
+
+            int index = new Random().Next(_respawnRotations.Count);
             Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
+            Peer.Game.Events.SendMatchStart(0, Peer.Game.Room.Data.TimeLimit);
+            Peer.Game.Events.SendPlayerRespawned(player.Cmid, _respawns[index], _respawnRotations[index]);
+            
+            /*
+            GameApplication.Instance.Scheduler.Add(() =>
+            {
+                Peer.Game.Events.SendMatchStartCountdown(1);
+            }, DateTime.UtcNow.AddSeconds(3));
+            GameApplication.Instance.Scheduler.Add(() =>
+            {
+                Peer.Game.Events.SendMatchStartCountdown(2);
+            }, DateTime.UtcNow.AddSeconds(2));
+            GameApplication.Instance.Scheduler.Add(() =>
+            {
+                Peer.Game.Events.SendMatchStartCountdown(3);
+            }, DateTime.UtcNow.AddSeconds(1));
+
+            GameApplication.Instance.Scheduler.Add(() =>
+            {
+                //Peer.Game.Events.SendMatchStart(0, Peer.Game.Room.Data.TimeLimit);
+            }, DateTime.UtcNow.AddSeconds(4));
+            */
+
+            /*
+            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
+            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
+            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
+            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
+            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
+            */
         }
 
         protected override void OnPowerUpRespawnTimes(List<ushort> respawnTimes)
@@ -51,6 +86,9 @@ namespace UberStrok.Realtime.Server.Game
 
             for (int i = 0; i < positions.Count; i++)
                 builder.AppendLine($" - {positions[i]}: {rotations[i]}");
+
+            _respawns = positions;
+            _respawnRotations = rotations;
 
             LogManager.GetLogger(typeof(GameRoomOperationHandler)).Info($"Spawn Points -> {builder}");
         }

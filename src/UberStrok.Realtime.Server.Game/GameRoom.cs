@@ -17,5 +17,6 @@
 
         public GameManager.Room Room => _room;
         public GameRoomEvents Events => _events;
+
     }
 }
