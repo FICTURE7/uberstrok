@@ -7,6 +7,9 @@
 # Logging files.
 *.log
 
+# Cleaner tool.
+bfg.jar
+
 # NuGet
 packages/
 
