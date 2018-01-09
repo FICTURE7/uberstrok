@@ -42,22 +42,30 @@
     <Compile Include="BuyingRecommendationType.cs" />
     <Compile Include="BuyItemResult.cs" />
     <Compile Include="ChannelType.cs" />
+    <Compile Include="Color.cs" />
     <Compile Include="DefinitionType.cs" />
     <Compile Include="EmailAddressStatus.cs" />
+    <Compile Include="FireMode.cs" />
     <Compile Include="GameModeType.cs" />
     <Compile Include="ItemPropertyType.cs" />
     <Compile Include="ItemShopHighlightType.cs" />
+    <Compile Include="MathUtils.cs" />
     <Compile Include="MemberAccessLevel.cs" />
     <Compile Include="MemberAuthenticationResult.cs" />
     <Compile Include="MemberOperationResult.cs" />
     <Compile Include="PackType.cs" />
     <Compile Include="PhotonUsageType.cs" />
+    <Compile Include="PlayerMovement.cs" />
+    <Compile Include="PlayerStates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuickItemLogic.cs" />
     <Compile Include="RegionType.cs" />
+    <Compile Include="SurfaceType.cs" />
+    <Compile Include="TeamID.cs" />
     <Compile Include="UberStrikeCurrencyType.cs" />
     <Compile Include="UberstrikeItemClass.cs" />
     <Compile Include="UberstrikeItemType.cs" />
+    <Compile Include="Vector3.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

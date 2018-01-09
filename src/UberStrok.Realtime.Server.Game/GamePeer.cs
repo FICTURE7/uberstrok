@@ -1,5 +1,6 @@
 ﻿using Photon.SocketServer;
 using System;
+using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -12,6 +13,7 @@ namespace UberStrok.Realtime.Server.Game
             _events = new GamePeerEvents(this);
         }
 
+        public UberstrikeUserView Member { get; set; }
         public ushort Ping { get; set; }
 
         public GameRoom Game
@@ -19,11 +21,13 @@ namespace UberStrok.Realtime.Server.Game
             get { return _game; }
             set
             {
-                // Remove the GameRoomOperationHandler thingy.
-                //TODO: Figure out something better.
-                RemoteOpHandler(1);
-
                 _game = value;
+                if (_game == null)
+                {
+                    // Remove the GameRoomOperationHandler thingy.
+                    //TODO: Figure out something better.
+                    RemoteOpHandler(0);
+                }
             }
         }
 

@@ -1,7 +1,9 @@
 ﻿using log4net;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UberStrok.Core.Views;
+using UberStrok.WebServices.Client;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -46,14 +48,49 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnCreateRoom(GameRoomDataView roomData, string password, string clientVersion, string authToken, string magicHash)
         {
-            //TODO: Talk to the web server to get the player data off the authToken.
+            var bytes = Convert.FromBase64String(authToken);
+            var data = Encoding.UTF8.GetString(bytes);
+
+            var webServer = data.Substring(0, data.IndexOf("#####"));
+
+            // Retrieve user data from the web server.
+            var client = new UserWebServiceClient(webServer);
+            var member = client.GetMember(authToken);
+
+            LogManager.GetLogger(typeof(GamePeerOperationHandler)).Info($"Member -> {member}");
+            Peer.Member = member;
+
             GameManager.Instance.AddRoom(roomData, password);
 
             LogManager.GetLogger(typeof(GamePeerOperationHandler)).Info($"Creating new room -> {roomData.Name}:{roomData.Number}");
+
+            var room = default(GameManager.Room);
+            if (GameManager.Instance.Rooms.TryGetValue(roomData.Number, out room))
+            {
+                Peer.Game = new GameRoom(Peer, room);
+                Peer.Events.SendRoomEntered(room.Data);
+
+                Peer.Game.Room.Data.ConnectedPlayers++;
+            }
+            else
+            {
+                // wtf fam?
+            }
         }
 
         protected override void OnJoinRoom(int roomId, string password, string clientVersion, string authToken, string magicHash)
         {
+            var bytes = Convert.FromBase64String(authToken);
+            var data = Encoding.UTF8.GetString(bytes);
+
+            var webServer = data.Substring(0, data.IndexOf("#####"));
+
+            // Retrieve user data from the web server.
+            var client = new UserWebServiceClient(webServer);
+            var member = client.GetMember(authToken);
+
+            Peer.Member = member;
+
             var room = default(GameManager.Room);
             if (GameManager.Instance.Rooms.TryGetValue(roomId, out room))
             {

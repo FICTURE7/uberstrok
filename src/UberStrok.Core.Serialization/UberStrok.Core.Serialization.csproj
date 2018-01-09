@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="BooleanProxy.cs" />
     <Compile Include="ByteProxy.cs" />
+    <Compile Include="ColorProxy.cs" />
     <Compile Include="DateTimeProxy.cs" />
     <Compile Include="DictionaryProxy.cs" />
     <Compile Include="EnumProxy.cs" />
@@ -44,12 +45,16 @@
     <Compile Include="Int32Proxy.cs" />
     <Compile Include="Int64Proxy.cs" />
     <Compile Include="ListProxy.cs" />
+    <Compile Include="PlayerMovementProxy.cs" />
+    <Compile Include="ShortVector3Proxy.cs" />
+    <Compile Include="Vector3Proxy.cs" />
     <Compile Include="Views\AccountCompletionResultViewProxy.cs" />
     <Compile Include="Views\ApplicationConfigurationViewProxy.cs" />
     <Compile Include="Views\AuthenticateApplicationViewProxy.cs" />
     <Compile Include="Views\BundleItemViewProxy.cs" />
     <Compile Include="Views\CommActorInfoViewProxy.cs" />
     <Compile Include="Views\ConnectionAddressViewProxy.cs" />
+    <Compile Include="Views\GameActorInfoViewProxy.cs" />
     <Compile Include="Views\GameRoomDataViewProxy.cs" />
     <Compile Include="Views\GameRoomViewProxy.cs" />
     <Compile Include="Views\ItemInventoryViewProxy.cs" />
