@@ -29,7 +29,7 @@ namespace UberStrok.Realtime.Server
             _opHandlers.Add(handler.Id, handler);
         }
 
-        public void RemoteOpHandler(int id)
+        public void RemoveOpHandler(int id)
         {
             _opHandlers.Remove(id);
         }
@@ -38,10 +38,7 @@ namespace UberStrok.Realtime.Server
         {
             foreach (var opHandler in _opHandlers.Values)
             {
-                try
-                {
-                    opHandler.OnDisconnect(reasonCode, reasonDetail);
-                }
+                try { opHandler.OnDisconnect(this, reasonCode, reasonDetail); }
                 catch (Exception ex)
                 {
                     Log.Error($"Error while handling disconnection of peer -> {opHandler.GetType().Name}");
@@ -52,7 +49,15 @@ namespace UberStrok.Realtime.Server
 
         protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
         {
-            // Check if we've got enough parameters.
+            /* 
+                OperationRequest should contain 1 parameters.
+                [0] -> (Int32 - OperationHandler ID) ->> (Byte[] - Data).
+
+                Then we use OperationRequest.OperationCode & OperationHandler ID to,
+                determine how to read stuff.
+
+                Check if we've got enough parameters.
+             */
             if (operationRequest.Parameters.Count < 1)
             {
                 Log.Warn("Disconnecting client since its does not have enough parameters!");
@@ -67,10 +72,7 @@ namespace UberStrok.Realtime.Server
                 var data = (byte[])operationRequest.Parameters[opHandlerId];
                 using (var bytes = new MemoryStream(data))
                 {
-                    try
-                    {
-                        handler.OnOperationRequest(operationRequest.OperationCode, bytes);
-                    }
+                    try { handler.OnOperationRequest(this, operationRequest.OperationCode, bytes); }
                     catch (Exception ex)
                     {
                         Log.Error($"Error while handling request {handler.GetType().Name}:{opHandlerId} -> OpCode: {operationRequest.OperationCode}");

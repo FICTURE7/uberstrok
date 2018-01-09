@@ -1,6 +1,7 @@
 ﻿using log4net;
 using log4net.Config;
 using Photon.SocketServer;
+using System;
 using System.IO;
 
 namespace UberStrok.Realtime.Server.Game
@@ -11,11 +12,24 @@ namespace UberStrok.Realtime.Server.Game
 
         public static new GameApplication Instance => (GameApplication)ApplicationBase.Instance;
 
-        public GameManager Games => _games;
+        private GameRoomManager _rooms;
+        private JobManager _jobs;
+
+        public GameRoomManager Rooms => _rooms;
         public JobManager Jobs => _jobs;
 
-        private GameManager _games;
-        private JobManager _jobs;
+        public int PlayerCount
+        {
+            get
+            {
+                /* Total players in all game rooms. */
+                var sum = 0;
+                foreach(var room in Rooms)
+                    sum += room.Peers.Count;
+
+                return sum;
+            }
+        }
 
         protected override PeerBase CreatePeer(InitRequest initRequest)
         {
@@ -35,31 +49,13 @@ namespace UberStrok.Realtime.Server.Game
 
             Log.Info("Started GameServer...");
 
+            _rooms = new GameRoomManager();
             _jobs = new JobManager();
-            _games = new GameManager();
-
-            var rooom = new TestRoom();
         }
 
         protected override void TearDown()
         {
             Log.Info("Stopped CommServer...");
-        }
-
-        private class TestRoom : BaseRooms<GamePeer>
-        {
-            public int Id { get; set; }
-            public string Password { get; set; }
-
-            public override void OnJoin(GamePeer peer)
-            {
-                
-            }
-
-            public override void OnLeave(GamePeer peer)
-            {
-
-            }
         }
     }
 }

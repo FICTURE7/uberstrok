@@ -8,30 +8,25 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract class BaseGameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {
-        public BaseGameRoomOperationHandler(GamePeer peer) : base(peer)
-        {
-            // Space
-        }
+        protected abstract void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes);
+        protected abstract void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations);
+        protected abstract void OnJoinTeam(GamePeer peer, TeamID team);
 
-        protected abstract void OnPowerUpRespawnTimes(List<ushort> respawnTimes);
-        protected abstract void OnSpawnPositions(TeamID team, List<Vector3> positions, List<byte> rotations);
-        protected abstract void OnJoinTeam(TeamID team);
-
-        public override void OnOperationRequest(byte opCode, MemoryStream bytes)
+        public override void OnOperationRequest(GamePeer peer, byte opCode, MemoryStream bytes)
         {
             var operation = (IGameRoomOperationsType)opCode;
             switch(operation)
             {
                 case IGameRoomOperationsType.PowerUpRespawnTimes:
-                    PowerUpRespawnTimes(bytes);
+                    PowerUpRespawnTimes(peer, bytes);
                     break;
 
                 case IGameRoomOperationsType.SpawnPositions:
-                    SpawnPositions(bytes);
+                    SpawnPositions(peer, bytes);
                     break;
 
                 case IGameRoomOperationsType.JoinGame:
-                    JoinGame(bytes);
+                    JoinGame(peer, bytes);
                     break;
 
                 default:
@@ -39,27 +34,27 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        private void PowerUpRespawnTimes(MemoryStream bytes)
+        private void PowerUpRespawnTimes(GamePeer peer, MemoryStream bytes)
         {
             var respawnTimes = ListProxy<ushort>.Deserialize(bytes, UInt16Proxy.Deserialize);
 
-            OnPowerUpRespawnTimes(respawnTimes);
+            OnPowerUpRespawnTimes(peer, respawnTimes);
         }
 
-        private void SpawnPositions(MemoryStream bytes)
+        private void SpawnPositions(GamePeer peer,MemoryStream bytes)
         {
             var team = EnumProxy<TeamID>.Deserialize(bytes);
             var positions = ListProxy<Vector3>.Deserialize(bytes, Vector3Proxy.Deserialize);
             var rotations = ListProxy<byte>.Deserialize(bytes, ByteProxy.Deserialize);
 
-            OnSpawnPositions(team, positions, rotations);
+            OnSpawnPositions(peer, team, positions, rotations);
         }
 
-        private void JoinGame(MemoryStream bytes)
+        private void JoinGame(GamePeer peer,MemoryStream bytes)
         {
             var team = EnumProxy<TeamID>.Deserialize(bytes);
 
-            OnJoinTeam(team);
+            OnJoinTeam(peer, team);
         }
     }
 }

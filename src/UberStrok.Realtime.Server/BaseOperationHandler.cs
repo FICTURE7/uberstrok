@@ -1,5 +1,4 @@
 ﻿using PhotonHostRuntimeInterfaces;
-using System;
 using System.IO;
 
 namespace UberStrok.Realtime.Server
@@ -8,9 +7,9 @@ namespace UberStrok.Realtime.Server
     {
         public abstract int Id { get; }
 
-        public abstract void OnOperationRequest(byte opCode, MemoryStream bytes);
+        public abstract void OnOperationRequest(BasePeer peer, byte opCode, MemoryStream bytes);
 
-        public virtual void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
+        public virtual void OnDisconnect(BasePeer peer, DisconnectReason reasonCode, string reasonDetail)
         {
             // Space
         }
@@ -19,16 +18,21 @@ namespace UberStrok.Realtime.Server
     // Just to save us from casting some stuff.
     public abstract class BaseOperationHandler<TPeer> : BaseOperationHandler where TPeer : BasePeer
     {
-        public BaseOperationHandler(TPeer peer)
+        public virtual void OnDisconnect(TPeer peer, DisconnectReason reasonCode, string reasonDetail)
         {
-            if (peer == null)
-                throw new ArgumentNullException(nameof(peer));
-
-            _peer = peer;
+            // Space
         }
 
-        protected TPeer Peer => _peer;
+        public sealed override void OnDisconnect(BasePeer peer, DisconnectReason reasonCode, string reasonDetail)
+        {
+            OnDisconnect((TPeer)peer, reasonCode, reasonDetail);
+        }
 
-        private readonly TPeer _peer;
+        public abstract void OnOperationRequest(TPeer peer, byte opCode, MemoryStream bytes);
+
+        public sealed override void OnOperationRequest(BasePeer peer, byte opCode, MemoryStream bytes)
+        {
+            OnOperationRequest((TPeer)peer, opCode, bytes);
+        }
     }
 }

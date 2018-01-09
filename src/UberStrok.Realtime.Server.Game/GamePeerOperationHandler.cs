@@ -11,128 +11,131 @@ namespace UberStrok.Realtime.Server.Game
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(GamePeerOperationHandler));
 
+        /*
         public GamePeerOperationHandler(GamePeer peer) : base(peer)
+        */
+        public GamePeerOperationHandler()
         {
-            // Space
+            _loadView = new PhotonServerLoadView
+            {
+                /* TODO: Implement some configs or somethings. */
+                MaxPlayerCount = 100,
+                State = PhotonServerLoadView.Status.Alive,
+            };
         }
 
-        protected override void OnGetGameListUpdates()
+        /* Be GC friendly a little bit. */
+        private readonly PhotonServerLoadView _loadView;
+
+        protected override void OnGetGameListUpdates(GamePeer peer)
         {
             //TODO: Don't use that, cause apparently there is a FullGameList event which we can send to wipe stuff and things.
             // Clear the client list of games available.
-            Peer.Events.SendGameListUpdateEnd();
+            peer.Events.SendGameListUpdateEnd();
 
-            var rooms = new List<GameRoomDataView>(GameApplication.Instance.Games.Rooms.Count);
-            foreach (var room in GameApplication.Instance.Games.Rooms.Values)
+            var rooms = new List<GameRoomDataView>(GameApplication.Instance.Rooms.Count);
+            foreach (var room in GameApplication.Instance.Rooms)
                 rooms.Add(room.Data);
 
-            Peer.Events.SendGameListUpdate(rooms, new List<int>());
+            peer.Events.SendGameListUpdate(rooms, new List<int>());
 
-            Log.Info($"OnGetGameListUpdates: Room Count -> {rooms.Count}");
+            Log.Debug($"OnGetGameListUpdates: Room Count -> {rooms.Count}");
         }
 
-        protected override void OnGetServerLoad()
+        protected override void OnGetServerLoad(GamePeer peer)
         {
-            var view = new PhotonServerLoadView
-            {
-                // UberStrike does not care about this value, it uses its client side value.
-                Latency = Peer.RoundTripTime / 2,
-                State = PhotonServerLoadView.Status.Alive,
-                MaxPlayerCount = 100,
+            /* UberStrike does not care about this value, it uses its client side value. */
+            _loadView.Latency = peer.RoundTripTime / 2;
+            _loadView.PeersConnected = GameApplication.Instance.PlayerCount;
+            /* UberStrike also does not care about this value, it uses PeersConnected. */
+            _loadView.PlayersConnected = GameApplication.Instance.PlayerCount;
+            _loadView.RoomsCreated = GameApplication.Instance.Rooms.Count;
+            _loadView.TimeStamp = DateTime.UtcNow;
 
-                PeersConnected = GameApplication.Instance.PeerCount,
-                // UberStrike also does not care about this value, it uses PeersConnected.
-                PlayersConnected = GameApplication.Instance.PeerCount,
-
-                RoomsCreated = GameApplication.Instance.Games.Rooms.Count,
-                TimeStamp = DateTime.UtcNow
-            };
-
-            Peer.Events.SendServerLoadData(view);
-
-            Log.Info($"OnGetServerLoad: Load -> {view.PeersConnected}/{view.MaxPlayerCount} Rooms: {view.RoomsCreated}");
+            peer.Events.SendServerLoadData(_loadView);
+            Log.Debug($"OnGetServerLoad: Load -> {_loadView.PeersConnected}/{_loadView.MaxPlayerCount} Rooms: {_loadView.RoomsCreated}");
         }
 
-        protected override void OnCreateRoom(GameRoomDataView roomData, string password, string clientVersion, string authToken, string magicHash)
+        protected override void OnCreateRoom(GamePeer peer, GameRoomDataView roomData, string password, string clientVersion, string authToken, string magicHash)
         {
-            var bytes = Convert.FromBase64String(authToken);
-            var data = Encoding.UTF8.GetString(bytes);
+            /* Check the client version. */
+            if (clientVersion != "4.7.1")
+                peer.Disconnect();
 
-            var webServer = data.Substring(0, data.IndexOf("#####"));
+            peer.Member = GetMemberFromAuthToken(authToken);
 
-            // Retrieve user data from the web server.
-            var client = new UserWebServiceClient(webServer);
-            var member = client.GetMember(authToken);
-
-            Peer.Member = member;
-
-            GameApplication.Instance.Games.AddRoom(roomData, password);
-
-            LogManager.GetLogger(typeof(GamePeerOperationHandler)).Info($"Creating new room -> {roomData.Name}:{roomData.Number}");
-
-            var room = default(GameManager.Room);
-            if (GameApplication.Instance.Games.Rooms.TryGetValue(roomData.Number, out room))
+            var room = GameApplication.Instance.Rooms.Create(roomData, password);
+            if (room != null)
             {
-                Peer.Game = new GameRoom(Peer, room);
-                Peer.Events.SendRoomEntered(room.Data);
-
-                Peer.Game.Room.Data.ConnectedPlayers++;
+                room.OnJoin(peer);
+                Log.Debug($"OnCreateRoom: Created new room: {room.Id} and made the client to join it.");
             }
             else
             {
-                // wtf fam?
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Room does not exist anymore.");
+                Log.Warn($"OnCreateRoom: Client wanted to create a room, but Rooms.Create returned null.");
             }
         }
 
-        protected override void OnJoinRoom(int roomId, string password, string clientVersion, string authToken, string magicHash)
+        protected override void OnJoinRoom(GamePeer peer, int roomId, string password, string clientVersion, string authToken, string magicHash)
         {
-            var bytes = Convert.FromBase64String(authToken);
-            var data = Encoding.UTF8.GetString(bytes);
+            /* Check the client version. */
+            if (clientVersion != "4.7.1")
+                peer.Disconnect();
 
-            var webServer = data.Substring(0, data.IndexOf("#####"));
+            peer.Member = GetMemberFromAuthToken(authToken);
 
-            // Retrieve user data from the web server.
-            var client = new UserWebServiceClient(webServer);
-            var member = client.GetMember(authToken);
-
-            Peer.Member = member;
-
-            var room = default(GameManager.Room);
-            if (GameApplication.Instance.Games.Rooms.TryGetValue(roomId, out room))
+            var room = GameApplication.Instance.Rooms.Get(roomId);
+            if (room != null)
             {
-                LogManager.GetLogger(typeof(GamePeerOperationHandler)).Info("Joining stuff ey!");
-                if (room.Data.IsPasswordProtected)
-                {
-                    //TODO: Check password.
-                    Peer.Events.SendRoomEntered(room.Data);
-                }
+                Log.Debug($"OnJoinRoom: Room: {roomId} IsPasswordProcted: {room.Data.IsPasswordProtected}");
+
+                /* Request password if the room is password protected & check password.*/
+                if (room.Data.IsPasswordProtected && password != room.Password)
+                    peer.Events.SendRequestPasswordForRoom(room.Data.Server.ConnectionString, room.Id);
                 else
-                {
-                    Peer.Game = new GameRoom(Peer, room);
-                    Peer.Events.SendRoomEntered(room.Data);
-
-                    Peer.Game.Room.Data.ConnectedPlayers++;
-                }
+                    room.OnJoin(peer);
             }
             else
             {
-                // SendRoomEnterFailed
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Room does not exist anymore.");
+                Log.Warn($"OnJoinRoom: Client wanted to join a room, but Rooms.Get returned null.");
             }
         }
 
-        protected override void OnLeaveRoom()
+        protected override void OnLeaveRoom(GamePeer peer)
         {
             //TODO: Kill room if the number of connected players is 0.
-            //TODO: Thread safety cause we need it, possibly.
-
-            Peer.Game.Room.Data.ConnectedPlayers--;
-            Peer.Game = null;
+            if (peer.Room != null)
+            {
+                peer.Room.OnLeave(peer);
+            }
+            else
+            {
+                /* wtf fam?*/
+                Log.Error("A client tried to a leave a game room even though it was not in a room.");
+            }
         }
 
-        protected override void OnUpdatePing(ushort ping)
+        protected override void OnUpdatePing(GamePeer peer, ushort ping)
         {
             //TODO: Client should not have the ability to change its ping but it can cause uberstrike.
-            Peer.Ping = ping;
+            peer.Ping = ping;
+        }
+
+        private UberstrikeUserView GetMemberFromAuthToken(string authToken)
+        {
+            var bytes = Convert.FromBase64String(authToken);
+            var data = Encoding.UTF8.GetString(bytes);
+
+            var webServer = data.Substring(0, data.IndexOf("#####"));
+
+            Log.Debug($"Retrieving user data {authToken} from the web server {webServer}");
+
+            // Retrieve user data from the web server.
+            var client = new UserWebServiceClient(webServer);
+            var member = client.GetMember(authToken);
+            return member;
         }
     }
 }

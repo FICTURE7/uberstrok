@@ -8,47 +8,42 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract class BaseGamePeerOperationHandler : BaseOperationHandler<GamePeer>
     {
-        public BaseGamePeerOperationHandler(GamePeer peer) : base(peer)
-        {
-            // Space
-        }
+        public sealed override int Id => 1;
 
-        public override int Id => 1;
+        protected abstract void OnGetGameListUpdates(GamePeer peer);
+        protected abstract void OnGetServerLoad(GamePeer peer);
+        protected abstract void OnCreateRoom(GamePeer peer, GameRoomDataView roomData, string password, string clientVersion, string authToken, string magicHash);
+        protected abstract void OnJoinRoom(GamePeer peer, int roomId, string password, string clientVersion, string authToken, string magicHash);
+        protected abstract void OnLeaveRoom(GamePeer peer);
+        protected abstract void OnUpdatePing(GamePeer peer, ushort ping);
 
-        protected abstract void OnGetGameListUpdates();
-        protected abstract void OnGetServerLoad();
-        protected abstract void OnCreateRoom(GameRoomDataView roomData, string password, string clientVersion, string authToken, string magicHash);
-        protected abstract void OnJoinRoom(int roomId, string password, string clientVersion, string authToken, string magicHash);
-        protected abstract void OnLeaveRoom();
-        protected abstract void OnUpdatePing(ushort ping);
-
-        public override void OnOperationRequest(byte opCode, MemoryStream bytes)
+        public override void OnOperationRequest(GamePeer peer, byte opCode, MemoryStream bytes)
         {
             var operation = (IGamePeerOperationsType)opCode;
             switch (operation)
             {
                 case IGamePeerOperationsType.GetGameListUpdates:
-                    GetGameListUpdates(bytes);
+                    GetGameListUpdates(peer, bytes);
                     break;
 
                 case IGamePeerOperationsType.GetServerLoad:
-                    GetServerLoad(bytes);
+                    GetServerLoad(peer, bytes);
                     break;
 
                 case IGamePeerOperationsType.CreateRoom:
-                    CreateRoom(bytes);
+                    CreateRoom(peer, bytes);
                     break;
 
                 case IGamePeerOperationsType.EnterRoom:
-                    EnterRoom(bytes);
+                    EnterRoom(peer, bytes);
                     break;
 
                 case IGamePeerOperationsType.LeaveRoom:
-                    LeaveRoom(bytes);
+                    LeaveRoom(peer, bytes);
                     break;
 
                 case IGamePeerOperationsType.UpdatePing:
-                    UpdatePing(bytes);
+                    UpdatePing(peer, bytes);
                     break;
 
                 default:
@@ -56,17 +51,17 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        private void GetGameListUpdates(MemoryStream bytes)
+        private void GetGameListUpdates(GamePeer peer, MemoryStream bytes)
         {
-            OnGetGameListUpdates();
+            OnGetGameListUpdates(peer);
         }
 
-        private void GetServerLoad(MemoryStream bytes)
+        private void GetServerLoad(GamePeer peer, MemoryStream bytes)
         {
-            OnGetServerLoad();
+            OnGetServerLoad(peer);
         }
 
-        private void CreateRoom(MemoryStream bytes)
+        private void CreateRoom(GamePeer peer, MemoryStream bytes)
         {
             var roomData = GameRoomDataViewProxy.Deserialize(bytes);
             var password = StringProxy.Deserialize(bytes);
@@ -74,10 +69,10 @@ namespace UberStrok.Realtime.Server.Game
             var authToken = StringProxy.Deserialize(bytes);
             var magicHash = StringProxy.Deserialize(bytes);
 
-            OnCreateRoom(roomData, password, clientVersion, authToken, magicHash);
+            OnCreateRoom(peer, roomData, password, clientVersion, authToken, magicHash);
         }
 
-        private void EnterRoom(MemoryStream bytes)
+        private void EnterRoom(GamePeer peer, MemoryStream bytes)
         {
             var roomId = Int32Proxy.Deserialize(bytes);
             var password = StringProxy.Deserialize(bytes);
@@ -85,19 +80,19 @@ namespace UberStrok.Realtime.Server.Game
             var authToken = StringProxy.Deserialize(bytes);
             var magicHash = StringProxy.Deserialize(bytes);
 
-            OnJoinRoom(roomId, password, clientVersion, authToken, magicHash);
+            OnJoinRoom(peer, roomId, password, clientVersion, authToken, magicHash);
         }
 
-        private void LeaveRoom(MemoryStream bytes)
+        private void LeaveRoom(GamePeer peer, MemoryStream bytes)
         {
-            OnLeaveRoom();
+            OnLeaveRoom(peer);
         }
 
-        private void UpdatePing(MemoryStream bytes)
+        private void UpdatePing(GamePeer peer, MemoryStream bytes)
         {
             var ping = UInt16Proxy.Deserialize(bytes);
 
-            OnUpdatePing(ping);
+            OnUpdatePing(peer, ping);
         }
     }
 }

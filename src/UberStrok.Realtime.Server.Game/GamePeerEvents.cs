@@ -8,10 +8,13 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeerEvents : BaseEventSender
     {
-        public GamePeerEvents(BasePeer peer) : base(peer)
+        public GamePeerEvents(GamePeer peer) : base(peer)
         {
-            // Space
+            _game = new GameRoomEvents(peer);
         }
+
+        private readonly GameRoomEvents _game;
+        public GameRoomEvents Game => _game;
 
         public void SendGameListUpdate(List<GameRoomDataView> updatedGames, List<int> removedGames)
         {
@@ -45,6 +48,29 @@ namespace UberStrok.Realtime.Server.Game
             {
                 GameRoomDataViewProxy.Serialize(bytes, view);
                 SendEvent((byte)IGamePeerEventsType.RoomEntered, bytes);
+            }
+        }
+
+        public void SendRequestPasswordForRoom(string server, int roomId)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                StringProxy.Serialize(bytes, server);
+                Int32Proxy.Serialize(bytes, roomId);
+
+                SendEvent((byte)IGamePeerEventsType.RequestPasswordForRoom, bytes);
+            }
+        }
+
+        public void SendRoomEnterFailed(string server, int roomId, string message)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                StringProxy.Serialize(bytes, server);
+                Int32Proxy.Serialize(bytes, roomId);
+                StringProxy.Serialize(bytes, message);
+
+                SendEvent((byte)IGamePeerEventsType.RoomEnterFailed, bytes);
             }
         }
     }
