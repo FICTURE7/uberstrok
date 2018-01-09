@@ -9,36 +9,46 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameRoomOperationHandler : BaseGameRoomOperationHandler
     {
+        public GameRoomOperationHandler(BaseGameRoom room)
+        {
+            if (room == null)
+                throw new ArgumentNullException(nameof(room));
+
+            _room = room;
+        }
+        
         public override int Id => 0;
+
+        protected BaseGameRoom Room => _room;
 
         private List<Vector3> _respawns;
         private List<byte> _respawnRotations;
+        private readonly BaseGameRoom _room;
 
         protected override void OnJoinTeam(GamePeer peer, TeamID team)
         {
             var player = new GameActorInfoView
             {
-                Cmid = peer.Member.CmuneMemberView.PublicProfile.Cmid,
                 TeamID = team,
-                ClanTag = peer.Member.CmuneMemberView.PublicProfile.GroupTag,
-                Channel = ChannelType.Steam,
-                AccessLevel = peer.Member.CmuneMemberView.PublicProfile.AccessLevel,
                 Health = 100,
+                PlayerId = 1,
+                Channel = ChannelType.Steam,
+                PlayerState = PlayerStates.None,
+
+                Cmid = peer.Member.CmuneMemberView.PublicProfile.Cmid,
+                ClanTag = peer.Member.CmuneMemberView.PublicProfile.GroupTag,
+                AccessLevel = peer.Member.CmuneMemberView.PublicProfile.AccessLevel,
                 Ping = (ushort)(peer.RoundTripTime / 2),
                 PlayerName = peer.Member.CmuneMemberView.PublicProfile.Name,
-                PlayerId = 1,
                 Weapons = peer.Member.CmuneMemberView.MemberItems,
-                PlayerState = PlayerStates.Ready
             };
 
             LogManager.GetLogger(typeof(GameRoomOperationHandler)).Info($"Joining team -> CMID:{player.Cmid}:{team}");
 
-            /*
             int index = new Random().Next(_respawnRotations.Count);
-            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
-            Peer.Game.Events.SendMatchStart(0, Peer.Game.Room.Data.TimeLimit);
-            Peer.Game.Events.SendPlayerRespawned(player.Cmid, _respawns[index], _respawnRotations[index]);
-            */
+            peer.Events.Game.SendPlayerJoinGame(player, new PlayerMovement());
+            peer.Events.Game.SendMatchStart(0, peer.Room.Data.TimeLimit);
+            peer.Events.Game.SendPlayerRespawned(player.Cmid, _respawns[index], _respawnRotations[index]);
 
             /*
             GameApplication.Instance.Scheduler.Add(() =>

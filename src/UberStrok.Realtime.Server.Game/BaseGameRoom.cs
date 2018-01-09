@@ -11,7 +11,7 @@ namespace UberStrok.Realtime.Server.Game
                 throw new ArgumentNullException(nameof(data));
 
             _data = data;
-            _handler = new GameRoomOperationHandler();
+            _handler = new GameRoomOperationHandler(this);
         }
 
         public int Id
