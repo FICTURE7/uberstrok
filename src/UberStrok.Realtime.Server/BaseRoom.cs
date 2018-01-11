@@ -5,6 +5,9 @@ namespace UberStrok.Realtime.Server
 {
     public abstract class BaseRoom<T> where T : BasePeer
     {
+        private readonly List<T> _peers;
+        private readonly IReadOnlyCollection<T> _peersReadOnly;
+
         public BaseRoom()
         {
             _peers = new List<T>();
@@ -12,9 +15,6 @@ namespace UberStrok.Realtime.Server
         }
 
         public IReadOnlyCollection<T> Peers => _peersReadOnly;
-
-        private readonly List<T> _peers;
-        private readonly IReadOnlyCollection<T> _peersReadOnly;
 
         public virtual void OnJoin(T peer)
         {

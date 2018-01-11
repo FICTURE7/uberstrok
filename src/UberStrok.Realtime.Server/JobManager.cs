@@ -7,7 +7,7 @@ namespace UberStrok.Realtime.Server
 {
     public class JobManager
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(JobManager));
+        private static readonly ILog s_log = LogManager.GetLogger(nameof(JobManager));
 
         public JobManager()
         {
@@ -48,7 +48,7 @@ namespace UberStrok.Realtime.Server
                             currentJob.Action();
                             _hasJob = _jobs.TryDequeue(out _currentJob);
 
-                            Log.Info($"Running Job! {_jobs.Count}:{_hasJob}");
+                            s_log.Info($"Running Job! {_jobs.Count}:{_hasJob}");
                         }
                     }
 
@@ -61,7 +61,7 @@ namespace UberStrok.Realtime.Server
             }
             catch (Exception e)
             {
-                Log.Error("Out-Loop scheduler failed.", e);
+                s_log.Error("Out-Loop scheduler failed.", e);
             }
         }
 

@@ -11,7 +11,9 @@ namespace UberStrok.Realtime.Server
     /* Server -> Client. */
     public class BasePeer : ClientPeer
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(BasePeer));
+        private readonly static ILog s_log = LogManager.GetLogger(nameof(BasePeer));
+
+        private readonly ConcurrentDictionary<int, BaseOperationHandler> _opHandlers;
 
         public BasePeer(InitRequest initRequest) : base(initRequest)
         {
@@ -21,8 +23,6 @@ namespace UberStrok.Realtime.Server
 
             _opHandlers = new ConcurrentDictionary<int, BaseOperationHandler>();
         }
-
-        private readonly ConcurrentDictionary<int, BaseOperationHandler> _opHandlers;
 
         public void AddOperationHandler(BaseOperationHandler handler)
         {
@@ -46,7 +46,7 @@ namespace UberStrok.Realtime.Server
                 try { opHandler.OnDisconnect(this, reasonCode, reasonDetail); }
                 catch (Exception ex)
                 {
-                    Log.Error($"Error while handling disconnection of peer -> {opHandler.GetType().Name}", ex);
+                    s_log.Error($"Error while handling disconnection of peer -> {opHandler.GetType().Name}", ex);
                 }
             }
         }
@@ -64,7 +64,7 @@ namespace UberStrok.Realtime.Server
              */
             if (operationRequest.Parameters.Count < 1)
             {
-                Log.Warn("Disconnecting client since its does not have enough parameters!");
+                s_log.Warn("Disconnecting client since its does not have enough parameters!");
                 Disconnect();
                 return;
             }
@@ -79,13 +79,13 @@ namespace UberStrok.Realtime.Server
                     try { handler.OnOperationRequest(this, operationRequest.OperationCode, bytes); }
                     catch (Exception ex)
                     {
-                        Log.Error($"Error while handling request {handler.GetType().Name}:{handlerId} -> OpCode: {operationRequest.OperationCode}", ex);
+                        s_log.Error($"Error while handling request {handler.GetType().Name}:{handlerId} -> OpCode: {operationRequest.OperationCode}", ex);
                     }
                 }
             }
             else
             {
-                Log.Warn($"Unable to handle operation request -> not implemented operation handler: {handlerId}");
+                s_log.Warn($"Unable to handle operation request -> not implemented operation handler: {handlerId}");
             }
         }
     }
