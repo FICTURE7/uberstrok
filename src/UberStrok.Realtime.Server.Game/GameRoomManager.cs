@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -8,13 +10,13 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameRoomManager : IEnumerable<BaseGameRoom>
     {
+        private int _roomId;
+        private readonly ConcurrentDictionary<int, BaseGameRoom> _rooms;
+
         public GameRoomManager()
         {
-            _rooms = new Dictionary<int, BaseGameRoom>();
+            _rooms = new ConcurrentDictionary<int, BaseGameRoom>();
         }
-
-        private int _roomId;
-        private readonly Dictionary<int, BaseGameRoom> _rooms;
 
         public int Count => _rooms.Count;
 
@@ -27,7 +29,8 @@ namespace UberStrok.Realtime.Server.Game
 
         public void Remove(int roomId)
         {
-            _rooms.Remove(roomId);
+            var room = default(BaseGameRoom);
+            _rooms.TryRemove(roomId, out room);
         }
 
         public BaseGameRoom Create(GameRoomDataView data, string password)
@@ -53,10 +56,13 @@ namespace UberStrok.Realtime.Server.Game
                     throw new NotSupportedException();
             }
 
-            room.Id = ++_roomId;
+            room.Id = Interlocked.Increment(ref _roomId);
             room.Password = password;
 
-            _rooms.Add(room.Id, room);
+            /* Should never really happen */
+            if (!_rooms.TryAdd(room.Id, room))
+                throw new Exception("Already contains a game room with the specified room ID.");
+
             return room;
         }
 

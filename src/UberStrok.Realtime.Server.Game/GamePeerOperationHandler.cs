@@ -61,17 +61,25 @@ namespace UberStrok.Realtime.Server.Game
 
             peer.Member = GetMemberFromAuthToken(authToken);
 
-            var room = GameApplication.Instance.Rooms.Create(roomData, password);
-            if (room != null)
+            var room = default(BaseGameRoom);
+            try
             {
-                room.OnJoin(peer);
-                s_log.Debug($"OnCreateRoom: Created new room: {room.Id} and made the client to join it.");
+                room = GameApplication.Instance.Rooms.Create(roomData, password);
             }
-            else
+            catch (NotSupportedException)
             {
-                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Room does not exist anymore.");
-                s_log.Warn($"OnCreateRoom: Client wanted to create a room, but Rooms.Create returned null.");
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, "UberStrok does not support the selected game mode.");
+                s_log.Debug($"OnCreateRoom: Client tried to create a game mode which is not supported.");
+                return;
             }
+            catch (Exception e)
+            {
+                s_log.Error($"OnCreateRoom: Unable to create game room.", e);
+                return;
+            }
+
+            room.OnJoin(peer);
+            s_log.Debug($"OnCreateRoom: Created new room: {room.Id} and made the client to join it.");
         }
 
         protected override void OnJoinRoom(GamePeer peer, int roomId, string password, string clientVersion, string authToken, string magicHash)
@@ -103,15 +111,12 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnLeaveRoom(GamePeer peer)
         {
             //TODO: Kill room if the number of connected players is 0.
+
             if (peer.Room != null)
-            {
                 peer.Room.OnLeave(peer);
-            }
             else
-            {
                 /* wtf fam?*/
                 s_log.Error("A client tried to a leave a game room even though it was not in a room.");
-            }
         }
 
         protected override void OnUpdatePing(GamePeer peer, ushort ping)
