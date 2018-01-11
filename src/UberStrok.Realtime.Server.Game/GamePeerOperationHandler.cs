@@ -9,14 +9,14 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeerOperationHandler : BaseGamePeerOperationHandler
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(GamePeerOperationHandler));
+        /* Be GC friendly a little bit. By allocating it once. */
+        private readonly static PhotonServerLoadView s_loadView;
+        private readonly static ILog s_log;
 
-        /*
-        public GamePeerOperationHandler(GamePeer peer) : base(peer)
-        */
-        public GamePeerOperationHandler()
+        static GamePeerOperationHandler()
         {
-            _loadView = new PhotonServerLoadView
+            s_log = LogManager.GetLogger(nameof(GamePeerOperationHandler));
+            s_loadView = new PhotonServerLoadView
             {
                 /* TODO: Implement some configs or somethings. */
                 MaxPlayerCount = 100,
@@ -24,12 +24,9 @@ namespace UberStrok.Realtime.Server.Game
             };
         }
 
-        /* Be GC friendly a little bit. */
-        private readonly PhotonServerLoadView _loadView;
-
         protected override void OnGetGameListUpdates(GamePeer peer)
         {
-            //TODO: Don't use that, cause apparently there is a FullGameList event which we can send to wipe stuff and things.
+            // TODO: Don't use that, cause apparently there is a FullGameList event which we can send to wipe stuff and things.
             // Clear the client list of games available.
             peer.Events.SendGameListUpdateEnd();
 
@@ -39,21 +36,21 @@ namespace UberStrok.Realtime.Server.Game
 
             peer.Events.SendGameListUpdate(rooms, new List<int>());
 
-            Log.Debug($"OnGetGameListUpdates: Room Count -> {rooms.Count}");
+            s_log.Debug($"OnGetGameListUpdates: Room Count -> {rooms.Count}");
         }
 
         protected override void OnGetServerLoad(GamePeer peer)
         {
             /* UberStrike does not care about this value, it uses its client side value. */
-            _loadView.Latency = peer.RoundTripTime / 2;
-            _loadView.PeersConnected = GameApplication.Instance.PlayerCount;
+            s_loadView.Latency = peer.RoundTripTime / 2;
+            s_loadView.PeersConnected = GameApplication.Instance.PlayerCount;
             /* UberStrike also does not care about this value, it uses PeersConnected. */
-            _loadView.PlayersConnected = GameApplication.Instance.PlayerCount;
-            _loadView.RoomsCreated = GameApplication.Instance.Rooms.Count;
-            _loadView.TimeStamp = DateTime.UtcNow;
+            s_loadView.PlayersConnected = GameApplication.Instance.PlayerCount;
+            s_loadView.RoomsCreated = GameApplication.Instance.Rooms.Count;
+            s_loadView.TimeStamp = DateTime.UtcNow;
 
-            peer.Events.SendServerLoadData(_loadView);
-            Log.Debug($"OnGetServerLoad: Load -> {_loadView.PeersConnected}/{_loadView.MaxPlayerCount} Rooms: {_loadView.RoomsCreated}");
+            peer.Events.SendServerLoadData(s_loadView);
+            s_log.Debug($"OnGetServerLoad: Load -> {s_loadView.PeersConnected}/{s_loadView.MaxPlayerCount} Rooms: {s_loadView.RoomsCreated}");
         }
 
         protected override void OnCreateRoom(GamePeer peer, GameRoomDataView roomData, string password, string clientVersion, string authToken, string magicHash)
@@ -68,12 +65,12 @@ namespace UberStrok.Realtime.Server.Game
             if (room != null)
             {
                 room.OnJoin(peer);
-                Log.Debug($"OnCreateRoom: Created new room: {room.Id} and made the client to join it.");
+                s_log.Debug($"OnCreateRoom: Created new room: {room.Id} and made the client to join it.");
             }
             else
             {
                 peer.Events.SendRoomEnterFailed(string.Empty, 0, "Room does not exist anymore.");
-                Log.Warn($"OnCreateRoom: Client wanted to create a room, but Rooms.Create returned null.");
+                s_log.Warn($"OnCreateRoom: Client wanted to create a room, but Rooms.Create returned null.");
             }
         }
 
@@ -88,7 +85,7 @@ namespace UberStrok.Realtime.Server.Game
             var room = GameApplication.Instance.Rooms.Get(roomId);
             if (room != null)
             {
-                Log.Debug($"OnJoinRoom: Room: {roomId} IsPasswordProcted: {room.Data.IsPasswordProtected}");
+                s_log.Debug($"OnJoinRoom: Room: {roomId} IsPasswordProcted: {room.Data.IsPasswordProtected}");
 
                 /* Request password if the room is password protected & check password.*/
                 if (room.Data.IsPasswordProtected && password != room.Password)
@@ -99,7 +96,7 @@ namespace UberStrok.Realtime.Server.Game
             else
             {
                 peer.Events.SendRoomEnterFailed(string.Empty, 0, "Room does not exist anymore.");
-                Log.Warn($"OnJoinRoom: Client wanted to join a room, but Rooms.Get returned null.");
+                s_log.Warn($"OnJoinRoom: Client wanted to join a room, but Rooms.Get returned null.");
             }
         }
 
@@ -113,7 +110,7 @@ namespace UberStrok.Realtime.Server.Game
             else
             {
                 /* wtf fam?*/
-                Log.Error("A client tried to a leave a game room even though it was not in a room.");
+                s_log.Error("A client tried to a leave a game room even though it was not in a room.");
             }
         }
 
@@ -125,12 +122,14 @@ namespace UberStrok.Realtime.Server.Game
 
         private UberstrikeUserView GetMemberFromAuthToken(string authToken)
         {
+            //TODO: Provide some base class for this kind of server-server communications.
+
             var bytes = Convert.FromBase64String(authToken);
             var data = Encoding.UTF8.GetString(bytes);
 
             var webServer = data.Substring(0, data.IndexOf("#####"));
 
-            Log.Debug($"Retrieving user data {authToken} from the web server {webServer}");
+            s_log.Debug($"Retrieving user data {authToken} from the web server {webServer}");
 
             // Retrieve user data from the web server.
             var client = new UserWebServiceClient(webServer);
