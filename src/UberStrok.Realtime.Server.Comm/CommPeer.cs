@@ -14,7 +14,7 @@ namespace UberStrok.Realtime.Server.Comm
             _lobby = new LobbyRoom(this);
             _events = new CommPeerEvents(this);
 
-            AddOpHandler(new CommPeerOperationHandler(this));
+            AddOperationHandler(new CommPeerOperationHandler(this));
         }
 
         public CommActor Actor { get; set; }

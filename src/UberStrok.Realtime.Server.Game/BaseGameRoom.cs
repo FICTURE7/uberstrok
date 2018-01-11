@@ -43,7 +43,7 @@ namespace UberStrok.Realtime.Server.Game
             peer.Room = this;
             peer.Events.SendRoomEntered(Data);
 
-            peer.AddOpHandler(_handler);
+            peer.AddOperationHandler(_handler);
 
             //TODO: Count players who are playing and not spectating and stuff.
             _data.ConnectedPlayers = Peers.Count;
@@ -54,7 +54,7 @@ namespace UberStrok.Realtime.Server.Game
             base.OnLeave(peer);
 
             peer.Room = null;
-            peer.RemoveOpHandler(_handler.Id);
+            peer.RemoveOperationHandler(_handler.Id);
 
             _data.ConnectedPlayers = Peers.Count;
         }

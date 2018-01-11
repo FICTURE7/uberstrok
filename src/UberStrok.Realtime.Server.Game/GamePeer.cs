@@ -10,7 +10,7 @@ namespace UberStrok.Realtime.Server.Game
             _events = new GamePeerEvents(this);
 
             /* Could make GamePeerOperationHandler a singleton but what ever. */
-            AddOpHandler(new GamePeerOperationHandler());
+            AddOperationHandler(new GamePeerOperationHandler());
         }
 
         public ushort Ping { get; set; }

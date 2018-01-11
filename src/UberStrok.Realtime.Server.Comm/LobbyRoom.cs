@@ -6,7 +6,7 @@
         {
             _events = new LobbyRoomEvents(peer);
 
-            peer.AddOpHandler(new LobbyRoomOperationHandler(peer));
+            peer.AddOperationHandler(new LobbyRoomOperationHandler(peer));
         }
 
         public LobbyRoomEvents Events => _events;
