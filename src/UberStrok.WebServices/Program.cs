@@ -31,7 +31,9 @@ namespace UberStrok.WebServices
             {
                 WebServiceManager.Log.Fatal($"Reason: {ex.Message}");
 
-                Console.WriteLine($"Unable to start web services. Press any key to exit...");
+                Console.WriteLine(ex);
+                Console.WriteLine();
+                Console.WriteLine("Unable to start web services. Press any key to exit...");
                 Console.ReadKey();
                 return 1;
             }

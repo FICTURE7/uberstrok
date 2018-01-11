@@ -72,9 +72,16 @@ namespace UberStrok.Realtime.Server.Game
                 s_log.Debug($"OnCreateRoom: Client tried to create a game mode which is not supported.");
                 return;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                s_log.Error($"OnCreateRoom: Unable to create game room.", e);
+#if !DEBUG
+                var message = "Failed to create game room.";
+#else
+                var message = "Failed to create game room. Check logs: " + ex.Message;
+#endif
+
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, message);
+                s_log.Error($"OnCreateRoom: Unable to create game room.", ex);
                 return;
             }
 
