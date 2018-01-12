@@ -86,7 +86,7 @@ namespace UberStrok.Realtime.Server.Game
                 return;
             }
 
-            room.OnJoin(peer);
+            room.Join(peer);
             s_log.Debug($"OnCreateRoom: Created new room: {room.Number} and made the client to join it.");
         }
 
@@ -108,7 +108,7 @@ namespace UberStrok.Realtime.Server.Game
                 if (room.Data.IsPasswordProtected && password != room.Password)
                     peer.Events.SendRequestPasswordForRoom(room.Data.Server.ConnectionString, room.Number);
                 else
-                    room.OnJoin(peer);
+                    room.Join(peer);
             }
             else
             {
@@ -122,7 +122,7 @@ namespace UberStrok.Realtime.Server.Game
             //TODO: Kill room if the number of connected players is 0.
 
             if (peer.Room != null)
-                peer.Room.OnLeave(peer);
+                peer.Room.Leave(peer);
             else
                 /* wtf fam?*/
                 s_log.Error("A client tried to a leave a game room even though it was not in a room.");

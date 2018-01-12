@@ -55,7 +55,6 @@
     <Compile Include="GamePeerOperationHandler.cs" />
     <Compile Include="BaseGameRoom.cs" />
     <Compile Include="GameRoomEvents.cs" />
-    <Compile Include="GameRoomOperationHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeamDeathMatchGameRoom.cs" />
   </ItemGroup>

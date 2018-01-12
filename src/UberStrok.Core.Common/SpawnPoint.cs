@@ -10,5 +10,10 @@
             Position = position;
             Rotation = rotation;
         }
+
+        public override string ToString()
+        {
+            return $"{Position}:{Rotation}";
+        }
     }
 }

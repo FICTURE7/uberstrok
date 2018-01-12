@@ -15,6 +15,12 @@ namespace UberStrok.Realtime.Server.Game
 
         private GamePeer _peer;
 
+        public void SendWaitingForPlayer()
+        {
+            using (var bytes = new MemoryStream())
+                SendEvent((byte)IGameRoomEventsType.WaitingForPlayers, bytes);
+        }
+
         public void SendChatMessage(int cmid, string name, string message, MemberAccessLevel accessLevel, ChatContext context)
         {
             using (var bytes = new MemoryStream())

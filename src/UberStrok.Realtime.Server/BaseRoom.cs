@@ -7,9 +7,9 @@ namespace UberStrok.Realtime.Server
     {
         IReadOnlyCollection<T> Peers { get; }
 
-        void OnJoin(T peer);
+        void Join(T peer);
 
-        void OnLeave(T peer);
+        void Leave(T peer);
     }
 
     [Obsolete]
