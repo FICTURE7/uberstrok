@@ -8,6 +8,7 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract class BaseGameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {
+        protected abstract void OnChatMessage(GamePeer peer, string message, ChatContext context);
         protected abstract void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes);
         protected abstract void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations);
         protected abstract void OnJoinTeam(GamePeer peer, TeamID team);
@@ -15,8 +16,12 @@ namespace UberStrok.Realtime.Server.Game
         public override void OnOperationRequest(GamePeer peer, byte opCode, MemoryStream bytes)
         {
             var operation = (IGameRoomOperationsType)opCode;
-            switch(operation)
+            switch (operation)
             {
+                case IGameRoomOperationsType.ChatMessage:
+                    ChatMessage(peer, bytes);
+                    break;
+
                 case IGameRoomOperationsType.PowerUpRespawnTimes:
                     PowerUpRespawnTimes(peer, bytes);
                     break;
@@ -34,6 +39,14 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        private void ChatMessage(GamePeer peer, MemoryStream bytes)
+        {
+            var message = StringProxy.Deserialize(bytes);
+            var context = ByteProxy.Deserialize(bytes);
+
+            OnChatMessage(peer, message, (ChatContext)context);
+        }
+
         private void PowerUpRespawnTimes(GamePeer peer, MemoryStream bytes)
         {
             var respawnTimes = ListProxy<ushort>.Deserialize(bytes, UInt16Proxy.Deserialize);
@@ -41,7 +54,7 @@ namespace UberStrok.Realtime.Server.Game
             OnPowerUpRespawnTimes(peer, respawnTimes);
         }
 
-        private void SpawnPositions(GamePeer peer,MemoryStream bytes)
+        private void SpawnPositions(GamePeer peer, MemoryStream bytes)
         {
             var team = EnumProxy<TeamID>.Deserialize(bytes);
             var positions = ListProxy<Vector3>.Deserialize(bytes, Vector3Proxy.Deserialize);
@@ -50,7 +63,7 @@ namespace UberStrok.Realtime.Server.Game
             OnSpawnPositions(peer, team, positions, rotations);
         }
 
-        private void JoinGame(GamePeer peer,MemoryStream bytes)
+        private void JoinGame(GamePeer peer, MemoryStream bytes)
         {
             var team = EnumProxy<TeamID>.Deserialize(bytes);
 

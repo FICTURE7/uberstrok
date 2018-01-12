@@ -13,6 +13,7 @@ namespace UberStrok.Realtime.Server.Game
             AddOperationHandler(new GamePeerOperationHandler());
         }
 
+        public string AuthToken { get; set; }
         public ushort Ping { get; set; }
         public BaseGameRoom Room { get; set; }
         public UberstrikeUserView Member { get; set; }

@@ -15,6 +15,20 @@ namespace UberStrok.Realtime.Server.Game
 
         private GamePeer _peer;
 
+        public void SendChatMessage(int cmid, string name, string message, MemberAccessLevel accessLevel, ChatContext context)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, cmid);
+                StringProxy.Serialize(bytes, name);
+                StringProxy.Serialize(bytes, message);
+                EnumProxy<MemberAccessLevel>.Serialize(bytes, accessLevel);
+                ByteProxy.Serialize(bytes, (byte)context);
+
+                SendEvent((byte)IGameRoomEventsType.ChatMessage, bytes);
+            }
+        }
+
         public void SendPlayerJoinGame(GameActorInfoView actor, PlayerMovement movement)
         {
             using (var bytes = new MemoryStream())

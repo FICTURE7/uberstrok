@@ -42,6 +42,7 @@
     <Compile Include="BuyingRecommendationType.cs" />
     <Compile Include="BuyItemResult.cs" />
     <Compile Include="ChannelType.cs" />
+    <Compile Include="ChatContext.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="DefinitionType.cs" />
     <Compile Include="EmailAddressStatus.cs" />

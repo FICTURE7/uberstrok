@@ -59,6 +59,7 @@ namespace UberStrok.Realtime.Server.Game
             if (clientVersion != "4.7.1")
                 peer.Disconnect();
 
+            peer.AuthToken = authToken;
             peer.Member = GetMemberFromAuthToken(authToken);
 
             var room = default(BaseGameRoom);
@@ -77,7 +78,7 @@ namespace UberStrok.Realtime.Server.Game
 #if !DEBUG
                 var message = "Failed to create game room.";
 #else
-                var message = "Failed to create game room. Check logs: " + ex.Message;
+                var message = "Failed to create game room. \nCheck logs: " + ex.Message;
 #endif
 
                 peer.Events.SendRoomEnterFailed(string.Empty, 0, message);
@@ -95,6 +96,7 @@ namespace UberStrok.Realtime.Server.Game
             if (clientVersion != "4.7.1")
                 peer.Disconnect();
 
+            peer.AuthToken = authToken;
             peer.Member = GetMemberFromAuthToken(authToken);
 
             var room = GameApplication.Instance.Rooms.Get(roomId);

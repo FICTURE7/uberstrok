@@ -1,14 +1,17 @@
-﻿using log4net;
+using log4net;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UberStrok.Core.Common;
-using System;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
     public class GameRoomOperationHandler : BaseGameRoomOperationHandler
     {
+        private readonly static ILog s_log = LogManager.GetLogger(nameof(GameRoomOperationHandler));
+        private readonly BaseGameRoom _room;
+
         public GameRoomOperationHandler(BaseGameRoom room)
         {
             if (room == null)
@@ -16,14 +19,22 @@ namespace UberStrok.Realtime.Server.Game
 
             _room = room;
         }
-        
-        public override int Id => 0;
 
+        public override int Id => 0;
         protected BaseGameRoom Room => _room;
 
-        private List<Vector3> _respawns;
-        private List<byte> _respawnRotations;
-        private readonly BaseGameRoom _room;
+        protected override void OnChatMessage(GamePeer peer, string message, ChatContext context)
+        {
+            var cmid = peer.Member.CmuneMemberView.PublicProfile.Cmid;
+            var name = peer.Member.CmuneMemberView.PublicProfile.Name;
+            var accessLevel = peer.Member.CmuneMemberView.PublicProfile.AccessLevel;
+
+            foreach (var opeer in Room.Peers)
+            {
+                if (opeer.Member.CmuneMemberView.PublicProfile.Cmid != cmid)
+                    opeer.Events.Game.SendChatMessage(cmid, name, message, accessLevel, context);
+            }
+        }
 
         protected override void OnJoinTeam(GamePeer peer, TeamID team)
         {
@@ -43,12 +54,10 @@ namespace UberStrok.Realtime.Server.Game
                 Weapons = peer.Member.CmuneMemberView.MemberItems,
             };
 
-            LogManager.GetLogger(typeof(GameRoomOperationHandler)).Info($"Joining team -> CMID:{player.Cmid}:{team}");
+            foreach (var opeer in Room.Peers)
+                opeer.Events.Game.SendPlayerJoinGame(player, new PlayerMovement());
 
-            int index = new Random().Next(_respawnRotations.Count);
-            peer.Events.Game.SendPlayerJoinGame(player, new PlayerMovement());
-            peer.Events.Game.SendMatchStart(0, peer.Room.Data.TimeLimit);
-            peer.Events.Game.SendPlayerRespawned(player.Cmid, _respawns[index], _respawnRotations[index]);
+            s_log.Info($"Joining team -> CMID:{player.Cmid}:{team}");
 
             /*
             GameApplication.Instance.Scheduler.Add(() =>
@@ -69,21 +78,13 @@ namespace UberStrok.Realtime.Server.Game
                 //Peer.Game.Events.SendMatchStart(0, Peer.Game.Room.Data.TimeLimit);
             }, DateTime.UtcNow.AddSeconds(4));
             */
-
-            /*
-            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
-            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
-            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
-            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
-            Peer.Game.Events.SendPlayerJoinGame(player, new PlayerMovement());
-            */
         }
 
         protected override void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes)
         {
             var times = string.Join(", ", respawnTimes);
 
-            LogManager.GetLogger(typeof(GameRoomOperationHandler)).Info($"Respawn Times -> {times}");
+            s_log.Info($"Respawn Times -> {times}");
         }
 
         protected override void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations)
@@ -94,10 +95,12 @@ namespace UberStrok.Realtime.Server.Game
             for (int i = 0; i < positions.Count; i++)
                 builder.AppendLine($" - {positions[i]}: {rotations[i]}");
 
+            /*
             _respawns = positions;
             _respawnRotations = rotations;
+            */
 
-            LogManager.GetLogger(typeof(GameRoomOperationHandler)).Info($"Spawn Points -> {builder}");
+            s_log.Info($"Spawn Points -> {builder}");
         }
     }
 }
