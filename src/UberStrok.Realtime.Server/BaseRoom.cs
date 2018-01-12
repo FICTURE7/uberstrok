@@ -3,6 +3,16 @@ using System.Collections.Generic;
 
 namespace UberStrok.Realtime.Server
 {
+    public interface IRoom<T> where T : BasePeer
+    {
+        IReadOnlyCollection<T> Peers { get; }
+
+        void OnJoin(T peer);
+
+        void OnLeave(T peer);
+    }
+
+    [Obsolete]
     public abstract class BaseRoom<T> where T : BasePeer
     {
         private readonly List<T> _peers;

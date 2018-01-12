@@ -56,11 +56,11 @@ namespace UberStrok.Realtime.Server.Game
                     throw new NotSupportedException();
             }
 
-            room.Id = Interlocked.Increment(ref _roomId);
+            room.Number = Interlocked.Increment(ref _roomId);
             room.Password = password;
 
             /* Should never really happen */
-            if (!_rooms.TryAdd(room.Id, room))
+            if (!_rooms.TryAdd(room.Number, room))
                 throw new Exception("Already contains a game room with the specified room ID.");
 
             return room;

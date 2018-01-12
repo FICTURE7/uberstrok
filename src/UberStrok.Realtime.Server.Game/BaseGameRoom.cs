@@ -1,20 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public abstract class BaseGameRoom : BaseRoom<GamePeer>
+    public abstract class BaseGameRoom : GameRoomOperationHandler, IRoom<GamePeer>
     {
+        private string _password;
+        private readonly GameRoomDataView _data;
+        private readonly List<GamePeer> _peers;
+        private readonly IReadOnlyCollection<GamePeer> _peersReadOnly;
+
         public BaseGameRoom(GameRoomDataView data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
 
+            _peers = new List<GamePeer>();
+            _peersReadOnly = _peers.AsReadOnly();
             _data = data;
-            _handler = new GameRoomOperationHandler(this);
         }
 
-        public int Id
+        public IReadOnlyCollection<GamePeer> Peers => _peersReadOnly;
+
+        public int Number
         {
             get { return _data.Number; }
             set { _data.Number = value; }
@@ -32,29 +41,31 @@ namespace UberStrok.Realtime.Server.Game
 
         public GameRoomDataView Data => _data;
 
-        private string _password;
-        private readonly GameRoomDataView _data;
-        private readonly GameRoomOperationHandler _handler;
-
-        public override void OnJoin(GamePeer peer)
+        public void OnJoin(GamePeer peer)
         {
-            base.OnJoin(peer);
+            if (peer == null)
+                throw new ArgumentNullException(nameof(peer));
+
+            _peers.Add(peer);
 
             peer.Room = this;
             peer.Events.SendRoomEntered(Data);
 
-            peer.AddOperationHandler(_handler);
+            peer.AddOperationHandler(this);
 
             //TODO: Count players who are playing and not spectating and stuff.
             _data.ConnectedPlayers = Peers.Count;
         }
 
-        public override void OnLeave(GamePeer peer)
+        public void OnLeave(GamePeer peer)
         {
-            base.OnLeave(peer);
+            if (peer == null)
+                throw new ArgumentNullException(nameof(peer));
+
+            _peers.Remove(peer);
 
             peer.Room = null;
-            peer.RemoveOperationHandler(_handler.Id);
+            peer.RemoveOperationHandler(Id);
 
             _data.ConnectedPlayers = Peers.Count;
         }

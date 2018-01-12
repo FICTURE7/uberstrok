@@ -87,7 +87,7 @@ namespace UberStrok.Realtime.Server.Game
             }
 
             room.OnJoin(peer);
-            s_log.Debug($"OnCreateRoom: Created new room: {room.Id} and made the client to join it.");
+            s_log.Debug($"OnCreateRoom: Created new room: {room.Number} and made the client to join it.");
         }
 
         protected override void OnJoinRoom(GamePeer peer, int roomId, string password, string clientVersion, string authToken, string magicHash)
@@ -106,7 +106,7 @@ namespace UberStrok.Realtime.Server.Game
 
                 /* Request password if the room is password protected & check password.*/
                 if (room.Data.IsPasswordProtected && password != room.Password)
-                    peer.Events.SendRequestPasswordForRoom(room.Data.Server.ConnectionString, room.Id);
+                    peer.Events.SendRequestPasswordForRoom(room.Data.Server.ConnectionString, room.Number);
                 else
                     room.OnJoin(peer);
             }

@@ -12,6 +12,11 @@ namespace UberStrok.Realtime.Server.Game
         private readonly static ILog s_log = LogManager.GetLogger(nameof(GameRoomOperationHandler));
         private readonly BaseGameRoom _room;
 
+        public GameRoomOperationHandler()
+        {
+            // Space
+        }
+
         public GameRoomOperationHandler(BaseGameRoom room)
         {
             if (room == null)
