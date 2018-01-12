@@ -1,5 +1,5 @@
 ## UberStrok
-An effort to write shitty UberStrike back-end implementation intended for educational purposes.
+An effort to write a shitty UberStrike back-end implementation intended for educational purposes.
 It was made mainly because [dropshot](https://www.github.com/festivaldev/dropshot) seem to be inactive.
 
 ### Building
