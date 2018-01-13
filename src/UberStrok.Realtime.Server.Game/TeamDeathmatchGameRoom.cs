@@ -35,9 +35,11 @@ namespace UberStrok.Realtime.Server.Game
             foreach (var playerPeer in Players)
             {
                 allPlayers.Add(playerPeer.Actor.View);
-                allPositions.Add(playerPeer.Actor.Movement);
+                /* Actor.Movement can be null when the actor is in the 'waiting for players' state. */
+                allPositions.Add(playerPeer.Actor.Movement ?? new PlayerMovement());
             }
 
+            s_log.Debug($"Sent {Players.Count}");
             peer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
         }
 
@@ -152,6 +154,31 @@ namespace UberStrok.Realtime.Server.Game
                 var time = TimeSpan.FromSeconds(respawnTimes[i]);
                 PickupRespawnTimes.Add(time);
             }
+        }
+
+        protected override void OnIsFiring(GamePeer peer, bool on)
+        {
+            // Space
+        }
+
+        protected override void OnJump(GamePeer peer, Vector3 position)
+        {
+            // Space
+        }
+
+        protected override void OnUpdatePositionAndRotation(GamePeer peer, Vector3 position, Vector3 velocity, byte horizontalRotation, byte verticalRotation, byte moveState)
+        {
+            // Space
+        }
+
+        protected override void OnSwitchWeapon(GamePeer peer, byte slot)
+        {
+            // Space
+        }
+
+        protected override void OnIsPaued(GamePeer peer, bool on)
+        {
+            // Space
         }
     }
 }

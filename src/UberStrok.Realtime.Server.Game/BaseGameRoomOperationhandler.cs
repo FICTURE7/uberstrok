@@ -8,6 +8,9 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract class BaseGameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {
+        protected abstract void OnSwitchWeapon(GamePeer peer, byte slot);
+        protected abstract void OnIsPaued(GamePeer peer, bool on);
+        protected abstract void OnIsFiring(GamePeer peer, bool on);
         protected abstract void OnJump(GamePeer peer, Vector3 position);
         protected abstract void OnUpdatePositionAndRotation(GamePeer peer, Vector3 position, Vector3 velocity, byte horizontalRotation, byte verticalRotation, byte moveState);
         protected abstract void OnChatMessage(GamePeer peer, string message, ChatContext context);
@@ -20,6 +23,18 @@ namespace UberStrok.Realtime.Server.Game
             var operation = (IGameRoomOperationsType)opCode;
             switch (operation)
             {
+                case IGameRoomOperationsType.SwitchWeapon:
+                    SwitchWeapon(peer, bytes);
+                    break;
+
+                case IGameRoomOperationsType.IsPaused:
+                    IsPaused(peer, bytes);
+                    break;
+
+                case IGameRoomOperationsType.IsFiring:
+                    IsFiring(peer, bytes);
+                    break;
+
                 case IGameRoomOperationsType.Jump:
                     Jump(peer, bytes);
                     break;
@@ -47,6 +62,27 @@ namespace UberStrok.Realtime.Server.Game
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private void SwitchWeapon(GamePeer peer, MemoryStream bytes)
+        {
+            var slot = ByteProxy.Deserialize(bytes);
+
+            OnSwitchWeapon(peer, slot);
+        }
+
+        private void IsPaused(GamePeer peer, MemoryStream bytes)
+        {
+            var on = BooleanProxy.Deserialize(bytes);
+
+            OnIsFiring(peer, on);
+        }
+
+        private void IsFiring(GamePeer peer, MemoryStream bytes)
+        {
+            var on = BooleanProxy.Deserialize(bytes);
+
+            OnIsFiring(peer, on);
         }
 
         private void Jump(GamePeer peer, MemoryStream bytes)
