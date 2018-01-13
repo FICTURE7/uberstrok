@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using PhotonHostRuntimeInterfaces;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -81,6 +82,11 @@ namespace UberStrok.Realtime.Server.Game
             _data.ConnectedPlayers = Players.Count;
         }
 
+        public override void OnDisconnect(GamePeer peer, DisconnectReason reasonCode, string reasonDetail)
+        {
+            Leave(peer);
+        }
+
         protected override void OnChatMessage(GamePeer peer, string message, ChatContext context)
         {
             var cmid = peer.Member.CmuneMemberView.PublicProfile.Cmid;
@@ -114,6 +120,7 @@ namespace UberStrok.Realtime.Server.Game
                 PlayerName = peer.Member.CmuneMemberView.PublicProfile.Name,
                 Weapons = peer.Member.CmuneMemberView.MemberItems,
             };
+            peer.Actor = actor;
 
             foreach (var opeer in Peers)
                 opeer.Events.Game.SendPlayerJoinGame(actor, new PlayerMovement());

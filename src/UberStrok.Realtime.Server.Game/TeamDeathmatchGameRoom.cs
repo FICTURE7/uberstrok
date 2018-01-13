@@ -10,40 +10,57 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(TeamDeathMatchGameRoom));
 
-        private bool _waitingForPlayers;
+        private bool _started;
 
+        private readonly Dictionary<TeamID, List<SpawnPoint>> _spawnPoints;
         private readonly Random _rand;
 
         public TeamDeathMatchGameRoom(GameRoomDataView data) : base(data)
         {
-            _waitingForPlayers = true;
+            _started = false;
             _rand = new Random();
-
-            SpawnPoints = new Dictionary<TeamID, List<SpawnPoint>>();
+            _spawnPoints = new Dictionary<TeamID, List<SpawnPoint>>();
         }
 
-        public Dictionary<TeamID, List<SpawnPoint>> SpawnPoints { get; set; }
+        public Dictionary<TeamID, List<SpawnPoint>> SpawnPoints => _spawnPoints;
         public List<TimeSpan> PickupRespawnTimes { get; set; }
+
+        private void StartMatch()
+        {
+            foreach (var peer in Peers)
+            {
+                var point = GetRandomSpawn(peer);
+
+                peer.Events.Game.SendMatchStart(0, Data.TimeLimit * 1000);
+                peer.Events.Game.SendPlayerJoinGame(peer.Actor, new PlayerMovement());
+                peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
+
+                s_log.Debug($"Spawned: {peer.Member.CmuneMemberView.PublicProfile.Cmid} at: {point}");
+            }
+
+            _started = true;
+        }
+
+        private SpawnPoint GetRandomSpawn(GamePeer peer)
+        {
+            var point = SpawnPoints[peer.Actor.TeamID][_rand.Next(SpawnPoints.Count)];
+            return point;
+        }
 
         protected override void OnJoinTeam(GamePeer peer, TeamID team)
         {
             base.OnJoinTeam(peer, team);
 
-            var point = SpawnPoints[team][_rand.Next(SpawnPoints.Count)];
-            if (_waitingForPlayers)
-            {
+            var point = GetRandomSpawn(peer);
+            if (!_started)
                 peer.Events.Game.SendWaitingForPlayer();
-                peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
-            }
             else
-            {
-                foreach (var opeer in Peers)
-                    opeer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
-            }
+                peer.Events.Game.SendMatchStart(0, 0);
 
-            _waitingForPlayers = Players.Count > 1;
+            peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
 
-            s_log.Debug($"Spawned: {peer.Member.CmuneMemberView.PublicProfile.Cmid} at: {point}");
+            if (!_started && Players.Count > 1)
+                StartMatch();
         }
 
         protected override void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations)
