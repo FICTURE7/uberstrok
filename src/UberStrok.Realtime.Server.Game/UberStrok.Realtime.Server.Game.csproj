@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="BaseGamePeerOperationHandler.cs" />
     <Compile Include="BaseGameRoomOperationHandler.cs" />
+    <Compile Include="GameActor.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="GameRoomManager.cs" />
     <Compile Include="GamePeer.cs" />

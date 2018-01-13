@@ -55,7 +55,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public GameRoomDataView Data => _data;
 
-        public void Join(GamePeer peer)
+        public virtual void Join(GamePeer peer)
         {
             if (peer == null)
                 throw new ArgumentNullException(nameof(peer));
@@ -119,7 +119,7 @@ namespace UberStrok.Realtime.Server.Game
             for (int i = 0; i < 4 - k; i++)
                 weapons.Add(0);
 
-            var actor = new GameActorInfoView
+            var view = new GameActorInfoView
             {
                 TeamID = team,
                 Health = 100,
@@ -135,14 +135,13 @@ namespace UberStrok.Realtime.Server.Game
                 Weapons = weapons,
                 Gear = gear
             };
+            var actor = new GameActor
+            {
+                View = view
+            };
             peer.Actor = actor;
 
-            /*
-            foreach (var opeer in Peers)
-                opeer.Events.Game.SendPlayerJoinGame(actor, new PlayerMovement());
-            */
-
-            s_log.Info($"Joining team -> CMID:{actor.Cmid}:{team}");
+            s_log.Info($"Joining team -> CMID:{view.Cmid}:{team}");
         }
 
         protected override void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes)

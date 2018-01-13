@@ -26,6 +26,21 @@ namespace UberStrok.Realtime.Server.Game
         public Dictionary<TeamID, List<SpawnPoint>> SpawnPoints => _spawnPoints;
         public List<TimeSpan> PickupRespawnTimes { get; set; }
 
+        public override void Join(GamePeer peer)
+        {
+            base.Join(peer);
+
+            var allPlayers = new List<GameActorInfoView>(Players.Count);
+            var allPositions = new List<PlayerMovement>(Players.Count);
+            foreach (var playerPeer in Players)
+            {
+                allPlayers.Add(playerPeer.Actor.View);
+                allPositions.Add(playerPeer.Actor.Movement);
+            }
+
+            peer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
+        }
+
         public override void Leave(GamePeer peer)
         {
             base.Leave(peer);
@@ -44,13 +59,16 @@ namespace UberStrok.Realtime.Server.Game
             foreach (var peer in Peers)
             {
                 var point = GetRandomSpawn(peer);
-
-                peer.Events.Game.SendMatchStart(0, _endTime);
-                peer.Events.Game.SendPlayerJoinedGame(peer.Actor, new PlayerMovement
+                var movement = new PlayerMovement
                 {
                     Position = point.Position,
                     HorizontalRotation = point.Rotation
-                });
+                };
+
+                peer.Actor.Movement = movement;
+
+                peer.Events.Game.SendMatchStart(0, _endTime);
+                peer.Events.Game.SendPlayerJoinedGame(peer.Actor.View, movement);
                 peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
 
                 s_log.Debug($"Spawned: {peer.Member.CmuneMemberView.PublicProfile.Cmid} at: {point}");
@@ -61,7 +79,7 @@ namespace UberStrok.Realtime.Server.Game
 
         private SpawnPoint GetRandomSpawn(GamePeer peer)
         {
-            var point = SpawnPoints[peer.Actor.TeamID][_rand.Next(SpawnPoints.Count)];
+            var point = SpawnPoints[peer.Actor.Team][_rand.Next(SpawnPoints.Count)];
             return point;
         }
 
@@ -77,21 +95,22 @@ namespace UberStrok.Realtime.Server.Game
 
             if (!_started)
             {
-                peer.Events.Game.SendPlayerJoinedGame(peer.Actor, new PlayerMovement());
+                peer.Events.Game.SendPlayerJoinedGame(peer.Actor.View, new PlayerMovement());
                 peer.Events.Game.SendWaitingForPlayer();
             }
             else
             {
                 var point = GetRandomSpawn(peer);
+                var movement = new PlayerMovement
+                {
+                    Position = point.Position,
+                    HorizontalRotation = point.Rotation
+                };
+
+                peer.Actor.Movement = movement;
 
                 foreach (var otherPeer in Peers)
-                {
-                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor, new PlayerMovement
-                    {
-                        Position = point.Position,
-                        HorizontalRotation = point.Rotation
-                    });
-                }
+                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor.View, movement);
 
                 peer.Events.Game.SendMatchStart(0, _endTime);
                 peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);

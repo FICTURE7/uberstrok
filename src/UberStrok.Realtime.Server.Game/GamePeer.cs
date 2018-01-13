@@ -15,7 +15,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public string AuthToken { get; set; }
         public ushort Ping { get; set; }
-        public GameActorInfoView Actor { get; set; }
+        public GameActor Actor { get; set; }
         public BaseGameRoom Room { get; set; }
         public UberstrikeUserView Member { get; set; }
 

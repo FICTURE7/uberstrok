@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using UberStrok.Core.Common;
 using UberStrok.Core.Serialization;
 using UberStrok.Core.Serialization.Views;
@@ -14,6 +15,18 @@ namespace UberStrok.Realtime.Server.Game
         }
 
         private GamePeer _peer;
+
+        public void SendAllPlayers(List<GameActorInfoView> allPlayers, List<PlayerMovement> allPositions, ushort gameFrame)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                ListProxy<GameActorInfoView>.Serialize(bytes, allPlayers, GameActorInfoViewProxy.Serialize);
+                ListProxy<PlayerMovement>.Serialize(bytes, allPositions, PlayerMovementProxy.Serialize);
+                UInt16Proxy.Serialize(bytes, gameFrame);
+
+                SendEvent((byte)IGameRoomEventsType.AllPlayers, bytes);
+            }
+        }
 
         public void SendPlayerLeftGame(int cmid)
         {
