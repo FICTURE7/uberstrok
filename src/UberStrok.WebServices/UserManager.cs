@@ -11,7 +11,13 @@ namespace UberStrok.WebServices
 {
     public class UserManager
     {
-        private readonly static ILog Log = LogManager.GetLogger(typeof(UserManager).Name);
+        private readonly static ILog s_log = LogManager.GetLogger(typeof(UserManager).Name);
+
+        private int _nextCmid;
+        private readonly UserDb _db;
+        private readonly Dictionary<string, MemberView> _sessions; // AuthToken -> MemberView
+
+        private readonly WebServiceContext _ctx;
 
         public UserManager(WebServiceContext ctx)
         {
@@ -28,12 +34,6 @@ namespace UberStrok.WebServices
         }
 
         public UserDb Db => _db;
-
-        private int _nextCmid;
-        private readonly UserDb _db;
-        private readonly Dictionary<string, MemberView> _sessions; // AuthToken -> MemberView
-
-        private readonly WebServiceContext _ctx;
 
         public MemberView NewMember()
         {
@@ -161,8 +161,13 @@ namespace UberStrok.WebServices
             /* Fake the cmid after we've save, so we don't mess with the save. */
             if (fakeCmid)
             {
+                var originalCmid = member.PublicProfile.Cmid;
+                var fakedCmid = Utils.Random.Next();
+
                 /* Make the client thinks he's another guy when playing against itself. */
-                member.PublicProfile.Cmid = Utils.Random.Next();
+                member.PublicProfile.Cmid = fakedCmid;
+
+                s_log.Debug($"Faking member cmid: {originalCmid} with: {fakedCmid}");
             }
 #endif
             return authToken;
