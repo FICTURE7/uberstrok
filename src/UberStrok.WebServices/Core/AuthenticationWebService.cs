@@ -55,7 +55,7 @@ namespace UberStrok.WebServices.Core
             // Figure out if the account has been linked.
             var linked = true;
             // Figure out if the account existed. true -> existed otherwise false.
-            var inComplete = false;
+            var incomplete = false;
 
             // Load the user from the database using its steamId.
             var member = Context.Users.Db.LoadMember(steamId);
@@ -64,12 +64,23 @@ namespace UberStrok.WebServices.Core
                 Log.Info($"Member entry {steamId} does not exists, creating new entry");
 
                 // Create a new member if its not in the db.
-                inComplete = true;
+                incomplete = true;
                 member = Context.Users.NewMember();
 
                 // Link the Steam ID to the CMID.
                 linked = Context.Users.Db.Link(steamId, member);
             }
+#if DEBUG
+            else
+            {
+                var memoryMember = Context.Users.GetMember(member.PublicProfile.Cmid);
+                if (memoryMember != null)
+                {
+                    member = Context.Users.NewMember();
+                    Log.Info($"Faking member {memoryMember.PublicProfile.Cmid} with {member.PublicProfile.Cmid}");
+                }
+            }
+#endif
 
             var result = MemberAuthenticationResult.Ok;
             if (!linked)
@@ -78,14 +89,14 @@ namespace UberStrok.WebServices.Core
             // Use the PublicProfile.EmailAddrsessStatus to figure out if its an incomplete account,
             // because why not.
             if (member.PublicProfile.EmailAddressStatus == EmailAddressStatus.Unverified)
-                inComplete = true;
+                incomplete = true;
 
             var newAuthToken = Context.Users.LogInUser(member);
             var view = new MemberAuthenticationResultView
             {
                 MemberAuthenticationResult = result,
                 AuthToken = newAuthToken,
-                IsAccountComplete = !inComplete,
+                IsAccountComplete = !incomplete,
                 ServerTime = DateTime.Now,
 
                 MemberView = member,
