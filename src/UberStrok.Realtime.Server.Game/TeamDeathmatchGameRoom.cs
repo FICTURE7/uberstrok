@@ -34,7 +34,11 @@ namespace UberStrok.Realtime.Server.Game
                 var point = GetRandomSpawn(peer);
 
                 peer.Events.Game.SendMatchStart(0, _endTime);
-                peer.Events.Game.SendPlayerJoinGame(peer.Actor, new PlayerMovement());
+                peer.Events.Game.SendPlayerJoinGame(peer.Actor, new PlayerMovement
+                {
+                    Position = point.Position,
+                    HorizontalRotation = point.Rotation
+                });
                 peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
 
                 s_log.Debug($"Spawned: {peer.Member.CmuneMemberView.PublicProfile.Cmid} at: {point}");
@@ -53,16 +57,33 @@ namespace UberStrok.Realtime.Server.Game
         {
             base.OnJoinTeam(peer, team);
 
-            var point = GetRandomSpawn(peer);
-            if (!_started)
-                peer.Events.Game.SendWaitingForPlayer();
-            else
-                peer.Events.Game.SendMatchStart(0, _endTime);
-
-            peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
-
             if (!_started && Players.Count > 1)
+            {
                 StartMatch();
+                return;
+            }
+
+            if (!_started)
+            {
+                peer.Events.Game.SendPlayerJoinGame(peer.Actor, new PlayerMovement());
+                peer.Events.Game.SendWaitingForPlayer();
+            }
+            else
+            {
+                var point = GetRandomSpawn(peer);
+
+                foreach (var opeer in Peers)
+                {
+                    opeer.Events.Game.SendPlayerJoinGame(peer.Actor, new PlayerMovement
+                    {
+                        Position = point.Position,
+                        HorizontalRotation = point.Rotation
+                    });
+                }
+
+                peer.Events.Game.SendMatchStart(0, _endTime);
+                peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
+            }
         }
 
         protected override void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations)

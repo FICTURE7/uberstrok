@@ -105,6 +105,20 @@ namespace UberStrok.Realtime.Server.Game
             _players.Add(peer);
             _data.ConnectedPlayers = Players.Count;
 
+            /*
+                Create the the gear list and weapons list.
+                The client does not like it when its not of the proper size. 
+             */
+            var gear = new List<int>(7);
+            var weapons = new List<int>(peer.Member.CmuneMemberView.MemberItems);
+
+            for (int i = 0; i < 7; i++)
+                gear.Add(0);
+
+            var k = peer.Member.CmuneMemberView.MemberItems.Count;
+            for (int i = 0; i < 4 - k; i++)
+                weapons.Add(0);
+
             var actor = new GameActorInfoView
             {
                 TeamID = team,
@@ -118,34 +132,17 @@ namespace UberStrok.Realtime.Server.Game
                 AccessLevel = peer.Member.CmuneMemberView.PublicProfile.AccessLevel,
                 Ping = (ushort)(peer.RoundTripTime / 2),
                 PlayerName = peer.Member.CmuneMemberView.PublicProfile.Name,
-                Weapons = peer.Member.CmuneMemberView.MemberItems,
+                Weapons = weapons,
+                Gear = gear
             };
             peer.Actor = actor;
 
+            /*
             foreach (var opeer in Peers)
                 opeer.Events.Game.SendPlayerJoinGame(actor, new PlayerMovement());
+            */
 
             s_log.Info($"Joining team -> CMID:{actor.Cmid}:{team}");
-
-            /*
-            GameApplication.Instance.Scheduler.Add(() =>
-            {
-                Peer.Game.Events.SendMatchStartCountdown(1);
-            }, DateTime.UtcNow.AddSeconds(3));
-            GameApplication.Instance.Scheduler.Add(() =>
-            {
-                Peer.Game.Events.SendMatchStartCountdown(2);
-            }, DateTime.UtcNow.AddSeconds(2));
-            GameApplication.Instance.Scheduler.Add(() =>
-            {
-                Peer.Game.Events.SendMatchStartCountdown(3);
-            }, DateTime.UtcNow.AddSeconds(1));
-
-            GameApplication.Instance.Scheduler.Add(() =>
-            {
-                //Peer.Game.Events.SendMatchStart(0, Peer.Game.Room.Data.TimeLimit);
-            }, DateTime.UtcNow.AddSeconds(4));
-            */
         }
 
         protected override void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes)
