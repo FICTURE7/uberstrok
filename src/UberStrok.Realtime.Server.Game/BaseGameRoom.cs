@@ -109,7 +109,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 TeamID = team,
                 Health = 100,
-                PlayerId = 1,
+                PlayerId = (byte)Players.Count,
                 Channel = ChannelType.Steam,
                 PlayerState = PlayerStates.None,
 
