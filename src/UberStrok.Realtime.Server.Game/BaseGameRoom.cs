@@ -68,7 +68,7 @@ namespace UberStrok.Realtime.Server.Game
             peer.AddOperationHandler(this);
         }
 
-        public void Leave(GamePeer peer)
+        public virtual void Leave(GamePeer peer)
         {
             if (peer == null)
                 throw new ArgumentNullException(nameof(peer));

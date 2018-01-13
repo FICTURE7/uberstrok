@@ -26,6 +26,18 @@ namespace UberStrok.Realtime.Server.Game
         public Dictionary<TeamID, List<SpawnPoint>> SpawnPoints => _spawnPoints;
         public List<TimeSpan> PickupRespawnTimes { get; set; }
 
+        public override void Leave(GamePeer peer)
+        {
+            base.Leave(peer);
+            foreach (var opeer in Peers)
+            {
+                if (opeer.Actor.Cmid != peer.Actor.Cmid)
+                    opeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
+            }
+
+            peer.Actor = null;
+        }
+
         private void StartMatch()
         {
             _endTime = Environment.TickCount + Data.TimeLimit * 1000;
@@ -34,7 +46,7 @@ namespace UberStrok.Realtime.Server.Game
                 var point = GetRandomSpawn(peer);
 
                 peer.Events.Game.SendMatchStart(0, _endTime);
-                peer.Events.Game.SendPlayerJoinGame(peer.Actor, new PlayerMovement
+                peer.Events.Game.SendPlayerJoinedGame(peer.Actor, new PlayerMovement
                 {
                     Position = point.Position,
                     HorizontalRotation = point.Rotation
@@ -65,7 +77,7 @@ namespace UberStrok.Realtime.Server.Game
 
             if (!_started)
             {
-                peer.Events.Game.SendPlayerJoinGame(peer.Actor, new PlayerMovement());
+                peer.Events.Game.SendPlayerJoinedGame(peer.Actor, new PlayerMovement());
                 peer.Events.Game.SendWaitingForPlayer();
             }
             else
@@ -74,7 +86,7 @@ namespace UberStrok.Realtime.Server.Game
 
                 foreach (var opeer in Peers)
                 {
-                    opeer.Events.Game.SendPlayerJoinGame(peer.Actor, new PlayerMovement
+                    opeer.Events.Game.SendPlayerJoinedGame(peer.Actor, new PlayerMovement
                     {
                         Position = point.Position,
                         HorizontalRotation = point.Rotation

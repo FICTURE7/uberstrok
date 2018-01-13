@@ -15,6 +15,16 @@ namespace UberStrok.Realtime.Server.Game
 
         private GamePeer _peer;
 
+        public void SendPlayerLeftGame(int cmid)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, cmid);
+
+                SendEvent((byte)IGameRoomEventsType.PlayerLeftGame, bytes);
+            }
+        }
+
         public void SendWaitingForPlayer()
         {
             using (var bytes = new MemoryStream())
@@ -35,7 +45,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public void SendPlayerJoinGame(GameActorInfoView actor, PlayerMovement movement)
+        public void SendPlayerJoinedGame(GameActorInfoView actor, PlayerMovement movement)
         {
             using (var bytes = new MemoryStream())
             {
