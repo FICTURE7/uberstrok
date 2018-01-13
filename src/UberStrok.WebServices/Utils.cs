@@ -6,6 +6,8 @@ namespace UberStrok.WebServices
 {
     public static class Utils
     {
+        public static readonly Random Random = new Random();
+
         public static T DeserializeJsonAt<T>(string path)
         {
             if (path == null)

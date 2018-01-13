@@ -126,7 +126,7 @@ namespace UberStrok.WebServices
             if (member == null)
                 throw new ArgumentNullException(nameof(member));
 
-            // Encore ServiceBase URL into the AuthToken so the realtime servers can figure out
+            // Encode ServiceBase URL into the AuthToken so the realtime servers can figure out
             // where the user came from.
             var data = _ctx.ServiceBase + "#####" + DateTime.UtcNow.ToFileTime();
             var bytes = Encoding.UTF8.GetBytes(data);
@@ -135,7 +135,22 @@ namespace UberStrok.WebServices
             member.PublicProfile.LastLoginDate = DateTime.UtcNow;
 
             lock (_sessions)
+            {
+                foreach (var value in _sessions.Values)
+                {
+                    if (value.PublicProfile.Cmid == member.PublicProfile.Cmid)
+                    {
+#if DEBUG
+                        /* Make the client thinks he's another guy when playing against itself. */
+                        member.PublicProfile.Cmid = Utils.Random.Next();
+#else
+                        throw new Exception("A player with the same CMID is already logged in.");
+#endif
+                    }
+                }
+
                 _sessions.Add(authToken, member);
+            }
 
             // Save only profile since we only modified the profile.
             Db.Profiles.Save(member.PublicProfile);
