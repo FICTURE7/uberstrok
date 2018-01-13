@@ -150,5 +150,10 @@ namespace UberStrok.Realtime.Server.Game
             var member = client.GetMember(authToken);
             return member;
         }
+
+        protected override void OnUpdateKeyState(GamePeer peer, byte state)
+        {
+            // Space
+        }
     }
 }
