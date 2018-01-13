@@ -11,6 +11,7 @@ namespace UberStrok.Realtime.Server.Game
         private readonly static ILog s_log = LogManager.GetLogger(nameof(TeamDeathMatchGameRoom));
 
         private bool _started;
+        private int _endTime;
 
         private readonly Dictionary<TeamID, List<SpawnPoint>> _spawnPoints;
         private readonly Random _rand;
@@ -27,11 +28,12 @@ namespace UberStrok.Realtime.Server.Game
 
         private void StartMatch()
         {
+            _endTime = Environment.TickCount + Data.TimeLimit * 1000;
             foreach (var peer in Peers)
             {
                 var point = GetRandomSpawn(peer);
 
-                peer.Events.Game.SendMatchStart(0, Data.TimeLimit * 1000);
+                peer.Events.Game.SendMatchStart(0, _endTime);
                 peer.Events.Game.SendPlayerJoinGame(peer.Actor, new PlayerMovement());
                 peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
 
@@ -55,7 +57,7 @@ namespace UberStrok.Realtime.Server.Game
             if (!_started)
                 peer.Events.Game.SendWaitingForPlayer();
             else
-                peer.Events.Game.SendMatchStart(0, 0);
+                peer.Events.Game.SendMatchStart(0, _endTime);
 
             peer.Events.Game.SendPlayerRespawned(peer.Member.CmuneMemberView.PublicProfile.Cmid, point.Position, point.Rotation);
 
