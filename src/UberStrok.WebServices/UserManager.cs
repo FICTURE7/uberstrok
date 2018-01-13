@@ -134,6 +134,9 @@ namespace UberStrok.WebServices
 
             member.PublicProfile.LastLoginDate = DateTime.UtcNow;
 
+#if DEBUG
+            var fakeCmid = false;
+#endif
             lock (_sessions)
             {
                 foreach (var value in _sessions.Values)
@@ -141,8 +144,7 @@ namespace UberStrok.WebServices
                     if (value.PublicProfile.Cmid == member.PublicProfile.Cmid)
                     {
 #if DEBUG
-                        /* Make the client thinks he's another guy when playing against itself. */
-                        member.PublicProfile.Cmid = Utils.Random.Next();
+                        fakeCmid = true;
 #else
                         throw new Exception("A player with the same CMID is already logged in.");
 #endif
@@ -154,6 +156,15 @@ namespace UberStrok.WebServices
 
             // Save only profile since we only modified the profile.
             Db.Profiles.Save(member.PublicProfile);
+
+#if DEBUG
+            /* Fake the cmid after we've save, so we don't mess with the save. */
+            if (fakeCmid)
+            {
+                /* Make the client thinks he's another guy when playing against itself. */
+                member.PublicProfile.Cmid = Utils.Random.Next();
+            }
+#endif
             return authToken;
         }
 
