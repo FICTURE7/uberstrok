@@ -87,9 +87,9 @@
                 "PlayersMin": 2,
                 "PlayersMax": 50,
                 "PlayersCurrent": 10,
-                "TimeMin": 1,
-                "TimeMax": 30,
-                "TimeCurrent": 10
+                "TimeMin": 60,
+                "TimeMax": 600,
+                "TimeCurrent": 300
             },
             "3": { }
         }
