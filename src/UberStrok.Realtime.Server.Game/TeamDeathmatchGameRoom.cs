@@ -29,10 +29,10 @@ namespace UberStrok.Realtime.Server.Game
         public override void Leave(GamePeer peer)
         {
             base.Leave(peer);
-            foreach (var opeer in Peers)
+            foreach (var otherPeer in Peers)
             {
-                if (opeer.Actor.Cmid != peer.Actor.Cmid)
-                    opeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
+                if (otherPeer.Actor.Cmid != peer.Actor.Cmid)
+                    otherPeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
             }
 
             peer.Actor = null;
@@ -84,9 +84,9 @@ namespace UberStrok.Realtime.Server.Game
             {
                 var point = GetRandomSpawn(peer);
 
-                foreach (var opeer in Peers)
+                foreach (var otherPeer in Peers)
                 {
-                    opeer.Events.Game.SendPlayerJoinedGame(peer.Actor, new PlayerMovement
+                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor, new PlayerMovement
                     {
                         Position = point.Position,
                         HorizontalRotation = point.Rotation
