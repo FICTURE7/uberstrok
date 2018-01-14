@@ -6,6 +6,9 @@ namespace UberStrok.Realtime.Server.Game
     public class GameActor
     {
         public int Cmid => Data.Cmid;
+        public string PlayerName => Data.PlayerName;
+        public MemberAccessLevel AccessLevel => Data.AccessLevel;
+
         public TeamID Team
         {
             get { return Data.TeamID; }

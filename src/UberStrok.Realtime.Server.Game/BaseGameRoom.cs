@@ -25,9 +25,6 @@ namespace UberStrok.Realtime.Server.Game
         /* Password of the room. */
         private string _password;
 
-        /* Randomizer we're going to use to spawn stuff. */
-        private readonly Random _rand;
-
         /* Data of the game room. */
         private readonly GameRoomDataView _data;
 
@@ -36,7 +33,10 @@ namespace UberStrok.Realtime.Server.Game
         /* List of peers connected & playing. */
         private readonly List<GamePeer> _players;
 
-        private readonly Dictionary<TeamID, List<SpawnPoint>> _spawnPoints;
+        /* Manages the power ups. */
+        private readonly PowerUpManager _powerUpManager;
+        /* Manages the spawn of players. */
+        private readonly SpawnManager _spawnManager;
 
         /* Keep refs to ReadOnlyCollections to be a little bit GC friendly. */
         private readonly IReadOnlyCollection<GamePeer> _peersReadOnly;
@@ -52,10 +52,10 @@ namespace UberStrok.Realtime.Server.Game
             _data = data;
             _data.ConnectedPlayers = 0;
 
-            _rand = new Random();
             _peers = new List<GamePeer>();
             _players = new List<GamePeer>();
-            _spawnPoints = new Dictionary<TeamID, List<SpawnPoint>>();
+            _spawnManager = new SpawnManager();
+            _powerUpManager = new PowerUpManager();
 
             _peersReadOnly = _peers.AsReadOnly();
             _playersReadonly = _players.AsReadOnly();
@@ -65,8 +65,6 @@ namespace UberStrok.Realtime.Server.Game
         public GameRoomDataView Data => _data;
         public IReadOnlyCollection<GamePeer> Peers => _peersReadOnly;
         public IReadOnlyCollection<GamePeer> Players => _playersReadonly;
-        public Dictionary<TeamID, List<SpawnPoint>> SpawnPoints => _spawnPoints;
-        public List<TimeSpan> PickupRespawnTimes { get; set; }
 
         /* Room ID but we call it number since we already defined Id & thats how UberStrike calls it too. */
         public int Number
@@ -127,6 +125,7 @@ namespace UberStrok.Realtime.Server.Game
                 PlayerState = PlayerStates.None,
 
                 Ping = (ushort)(peer.RoundTripTime / 2),
+
                 Cmid = peer.Member.CmuneMemberView.PublicProfile.Cmid,
                 ClanTag = peer.Member.CmuneMemberView.PublicProfile.GroupTag,
                 AccessLevel = peer.Member.CmuneMemberView.PublicProfile.AccessLevel,
@@ -212,7 +211,7 @@ namespace UberStrok.Realtime.Server.Game
 
         private void StartMatch()
         {
-            /* Kill the previous thread. */
+            /* Kill the previous loop thread. */
             if (_loopThread != null)
                 _loopThread.Abort();
 
@@ -228,7 +227,7 @@ namespace UberStrok.Realtime.Server.Game
 
             foreach (var player in Players)
             {
-                var point = GetRandomSpawn(player);
+                var point = _spawnManager.Get(player.Actor.Team);
                 var movement = new PlayerMovement
                 {
                     Number = player.Actor.Data.PlayerId,
@@ -262,12 +261,6 @@ namespace UberStrok.Realtime.Server.Game
             }
 
             _roundNumber++;
-        }
-
-        private SpawnPoint GetRandomSpawn(GamePeer peer)
-        {
-            var point = SpawnPoints[peer.Actor.Team][_rand.Next(SpawnPoints.Count)];
-            return point;
         }
 
         protected override void OnJoinTeam(GamePeer peer, TeamID team)
@@ -312,8 +305,7 @@ namespace UberStrok.Realtime.Server.Game
             }
             else
             {
-                var point = GetRandomSpawn(peer);
-
+                var point = _spawnManager.Get(peer.Actor.Team);
                 movement = new PlayerMovement
                 {
                     Number = peer.Actor.Data.PlayerId,
@@ -334,48 +326,29 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnChatMessage(GamePeer peer, string message, ChatContext context)
         {
-            var cmid = peer.Member.CmuneMemberView.PublicProfile.Cmid;
-            var name = peer.Member.CmuneMemberView.PublicProfile.Name;
-            var accessLevel = peer.Member.CmuneMemberView.PublicProfile.AccessLevel;
+            var cmid = peer.Actor.Cmid;
+            var playerName = peer.Actor.PlayerName;
+            var accessLevel = peer.Actor.AccessLevel;
 
             foreach (var otherPeer in Peers)
             {
-                if (otherPeer.Member.CmuneMemberView.PublicProfile.Cmid != cmid)
-                    otherPeer.Events.Game.SendChatMessage(cmid, name, message, accessLevel, context);
+                if (otherPeer.Actor.Cmid != cmid)
+                    otherPeer.Events.Game.SendChatMessage(cmid, playerName, message, accessLevel, context);
             }
         }
 
         protected override void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes)
         {
             /* We care only about the first operation sent. */
-            if (PickupRespawnTimes != null)
-                return;
-
-            var length = respawnTimes.Count;
-            PickupRespawnTimes = new List<TimeSpan>(length);
-
-            for (int i = 0; i < length; i++)
-            {
-                var time = TimeSpan.FromSeconds(respawnTimes[i]);
-                PickupRespawnTimes.Add(time);
-            }
+            if (!_powerUpManager.IsLoaded())
+                _powerUpManager.Load(respawnTimes);
         }
 
         protected override void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations)
         {
             /* We care only about the first operation sent for that team ID. */
-            if (SpawnPoints.ContainsKey(team))
-                return;
-
-            int length = positions.Count;
-            var spawns = new List<SpawnPoint>(length);
-            for (int i = 0; i < length; i++)
-            {
-                var point = new SpawnPoint(positions[i], rotations[i]);
-                spawns.Add(point);
-            }
-
-            SpawnPoints.Add(team, spawns);
+            if (!_spawnManager.IsLoaded(team))
+                _spawnManager.Load(team, positions, rotations);
         }
 
         protected override void OnIsFiring(GamePeer peer, bool on)
@@ -416,6 +389,7 @@ namespace UberStrok.Realtime.Server.Game
 
         private void GameLoop()
         {
+            /* Time when the next ping update happens. */
             var nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
 
             const int TICK_RATE = 64;
@@ -440,8 +414,7 @@ namespace UberStrok.Realtime.Server.Game
 
                         if (DateTime.UtcNow > nextPingUpdate)
                         {
-                            delta.Changes.Add(GameActorInfoDeltaView.Keys.PlayerState, PlayerStates.Ready);
-                            delta.Changes.Add(GameActorInfoDeltaView.Keys.Ping, (ushort)(peer.RoundTripTime / 2));
+                            delta.Changes.Add(GameActorInfoDeltaView.Keys.Ping, peer.Ping);
                             nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
                         }
 
