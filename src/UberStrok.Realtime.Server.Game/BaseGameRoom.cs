@@ -3,6 +3,7 @@ using PhotonHostRuntimeInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -11,6 +12,9 @@ namespace UberStrok.Realtime.Server.Game
     public abstract class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(BaseGameRoom));
+
+        /* Where the heavy lifting is done. */
+        private Thread _loopThread;
 
         /* Determine wether the game has started. */
         private bool _started;
@@ -106,7 +110,7 @@ namespace UberStrok.Realtime.Server.Game
             for (int i = 0; i < WEAPON_COUNT - weaponCount; i++)
                 weapons.Add(0);
 
-            var view = new GameActorInfoView
+            var data = new GameActorInfoView
             {
                 TeamID = TeamID.NONE,
 
@@ -134,14 +138,16 @@ namespace UberStrok.Realtime.Server.Game
 
             var actor = new GameActor
             {
-                Data = view,
+                Data = data,
                 Movement = new PlayerMovement()
             };
 
             lock (_peers)
             {
                 _peers.Add(peer);
-                view.PlayerId = (byte)_peers.Count;
+
+                data.PlayerId = (byte)_peers.Count;
+                actor.Movement.Number = data.PlayerId;
             }
 
             peer.Actor = actor;
@@ -152,7 +158,8 @@ namespace UberStrok.Realtime.Server.Game
             peer.Events.SendRoomEntered(Data);
 
             /* Let the client know about the other peers in the room. */
-            if (Peers.Count > 0)
+            /*
+            if (Peers.Count > 1)
             {
                 var allPlayers = new List<GameActorInfoView>(Peers.Count);
                 var allPositions = new List<PlayerMovement>(Peers.Count);
@@ -165,6 +172,7 @@ namespace UberStrok.Realtime.Server.Game
                 foreach (var otherPeer in Peers)
                     otherPeer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
             }
+            */
         }
 
         public void Leave(GamePeer peer)
@@ -204,6 +212,15 @@ namespace UberStrok.Realtime.Server.Game
 
         private void StartMatch()
         {
+            /* Kill the previous thread. */
+            if (_loopThread != null)
+                _loopThread.Abort();
+
+            _started = true;
+
+            _loopThread = new Thread(GameLoop);
+            _loopThread.Start();
+
             /* Calculate the time when the games ends (in system ticks). */
             _endTime = Environment.TickCount + Data.TimeLimit * 1000;
 
@@ -214,6 +231,7 @@ namespace UberStrok.Realtime.Server.Game
                 var point = GetRandomSpawn(player);
                 var movement = new PlayerMovement
                 {
+                    Number = player.Actor.Data.PlayerId,
                     Position = point.Position,
                     HorizontalRotation = point.Rotation
                 };
@@ -222,11 +240,14 @@ namespace UberStrok.Realtime.Server.Game
 
                 /* Let all peers know that the peer has joined the game. */
                 foreach (var otherPeer in Peers)
+                {
                     /*
                         PlayerJoinedGame event tells the client to initiate the character and register it
                         in its player list and update the team player number counts.
                      */
                     otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Data, movement);
+                    otherPeer.Events.Game.SendPlayerRespawned(player.Actor.Cmid, movement.Position, movement.HorizontalRotation);
+                }
 
                 /* 
                     MatchStart event changes the match state of the client to match running,
@@ -241,7 +262,6 @@ namespace UberStrok.Realtime.Server.Game
             }
 
             _roundNumber++;
-            _started = true;
         }
 
         private SpawnPoint GetRandomSpawn(GamePeer peer)
@@ -279,7 +299,10 @@ namespace UberStrok.Realtime.Server.Game
             var movement = default(PlayerMovement);
             if (!_started)
             {
-                movement = new PlayerMovement();
+                movement = new PlayerMovement
+                {
+                    Number = peer.Actor.Data.PlayerId
+                };
 
                 /* Let all peers know that the client has joined. */
                 foreach (var otherPeer in Peers)
@@ -293,6 +316,7 @@ namespace UberStrok.Realtime.Server.Game
 
                 movement = new PlayerMovement
                 {
+                    Number = peer.Actor.Data.PlayerId,
                     Position = point.Position,
                     HorizontalRotation = point.Rotation
                 };
@@ -352,6 +376,94 @@ namespace UberStrok.Realtime.Server.Game
             }
 
             SpawnPoints.Add(team, spawns);
+        }
+
+        protected override void OnIsFiring(GamePeer peer, bool on)
+        {
+            // Space
+        }
+
+        protected override void OnJump(GamePeer peer, Vector3 position)
+        {
+            foreach (var otherPeer in Peers)
+            {
+                if (otherPeer.Actor.Cmid != peer.Actor.Cmid)
+                    otherPeer.Events.Game.SendPlayerJumped(peer.Actor.Cmid, peer.Actor.Movement.Position);
+            }
+        }
+
+        protected override void OnUpdatePositionAndRotation(GamePeer peer, Vector3 position, Vector3 velocity, byte horizontalRotation, byte verticalRotation, byte moveState)
+        {
+            peer.Actor.Movement.Position = position;
+            peer.Actor.Movement.Velocity = velocity;
+            peer.Actor.Movement.HorizontalRotation = horizontalRotation;
+            peer.Actor.Movement.VerticalRotation = verticalRotation;
+            peer.Actor.Movement.MovementState = moveState;
+        }
+
+        protected override void OnSwitchWeapon(GamePeer peer, byte slot)
+        {
+            peer.Actor.Data.CurrentWeaponSlot = slot;
+        }
+
+        protected override void OnIsPaued(GamePeer peer, bool on)
+        {
+            if (on)
+                peer.Actor.Data.PlayerState |= PlayerStates.Paused;
+            else
+                peer.Actor.Data.PlayerState &= ~PlayerStates.Paused;
+        }
+
+        private void GameLoop()
+        {
+            var nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
+
+            const int TICK_RATE = 64;
+            const int SLEEP = 1000 / TICK_RATE;
+
+            //TODO: Make the loop fancier using catch-up stuffz & tings.
+            try
+            {
+                while (_started)
+                {
+                    var position = new List<PlayerMovement>(Players.Count);
+                    foreach (var player in Players)
+                        position.Add(player.Actor.Movement);
+
+                    var deltas = new List<GameActorInfoDeltaView>(Peers.Count);
+                    foreach (var peer in Peers)
+                    {
+                        var delta = new GameActorInfoDeltaView
+                        {
+                            Id = peer.Actor.Data.PlayerId
+                        };
+
+                        if (DateTime.UtcNow > nextPingUpdate)
+                        {
+                            delta.Changes.Add(GameActorInfoDeltaView.Keys.PlayerState, PlayerStates.Ready);
+                            delta.Changes.Add(GameActorInfoDeltaView.Keys.Ping, (ushort)(peer.RoundTripTime / 2));
+                            nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
+                        }
+
+                        delta.UpdateMask();
+                        deltas.Add(delta);
+                    }
+
+                    foreach (var otherPeer in Peers)
+                    {
+                        otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
+                        otherPeer.Events.Game.SendAllPlayerPositions(position, 100);
+                    }
+
+                    Thread.Sleep(SLEEP);
+                }
+
+                s_log.Debug("Game has stopped!");
+            }
+            catch (ThreadAbortException)
+            {
+                s_log.Debug("Loop thread was aborted!");
+            }
         }
     }
 }

@@ -42,6 +42,7 @@
     <Compile Include="BundleItemView.cs" />
     <Compile Include="CommActorInfoView.cs" />
     <Compile Include="ConnectionAddressView.cs" />
+    <Compile Include="GameActorInfoDeltaView.cs" />
     <Compile Include="GameActorInfoView.cs" />
     <Compile Include="GameRoomDataView.cs" />
     <Compile Include="GameRoomView.cs" />

@@ -16,6 +16,38 @@ namespace UberStrok.Realtime.Server.Game
 
         private GamePeer _peer;
 
+        public void SendPlayerJumped(int cmid, Vector3 position)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, cmid);
+                Vector3Proxy.Serialize(bytes, position);
+
+                SendEvent((byte)IGameRoomEventsType.PlayerJumped, bytes);
+            }
+        }
+
+        public void SendAllPlayerPositions(List<PlayerMovement> allPositions, ushort gameframe)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                ListProxy<PlayerMovement>.Serialize(bytes, allPositions, PlayerMovementProxy.Serialize);
+                UInt16Proxy.Serialize(bytes, gameframe);
+
+                SendEvent((byte)IGameRoomEventsType.AllPlayerPositions, bytes);
+            }
+        }
+
+        public void SendAllPlayerDeltas(List<GameActorInfoDeltaView> allDeltas)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                ListProxy<GameActorInfoDeltaView>.Serialize(bytes, allDeltas, GameActorInfoDeltaViewProxy.Serialize);
+
+                SendEvent((byte)IGameRoomEventsType.AllPlayerDeltas, bytes);
+            }
+        }
+
         public void SendAllPlayers(List<GameActorInfoView> allPlayers, List<PlayerMovement> allPositions, ushort gameFrame)
         {
             using (var bytes = new MemoryStream())
