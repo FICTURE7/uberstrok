@@ -5,6 +5,8 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeer : BasePeer
     {
+        private readonly GamePeerEvents _events;
+
         public GamePeer(InitRequest initRequest) : base(initRequest)
         {
             _events = new GamePeerEvents(this);
@@ -20,7 +22,5 @@ namespace UberStrok.Realtime.Server.Game
         public UberstrikeUserView Member { get; set; }
 
         public GamePeerEvents Events => _events;
-
-        private readonly GamePeerEvents _events;
     }
 }
