@@ -24,6 +24,16 @@ namespace UberStrok.Realtime.Server.Game
             set { Data.TeamID = value; }
         }
 
+        public int Number
+        {
+            get { return Data.PlayerId; }
+            set
+            {
+                Data.PlayerId = (byte)value;
+                Movement.Number = (byte)value;
+            }
+        }
+
         public int Cmid => Data.Cmid;
         public string PlayerName => Data.PlayerName;
         public MemberAccessLevel AccessLevel => Data.AccessLevel;

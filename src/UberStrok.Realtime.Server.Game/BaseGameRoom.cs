@@ -137,18 +137,18 @@ namespace UberStrok.Realtime.Server.Game
                 Gear = gear
             };
 
+            var number = 0;
             var actor = new GameActor(data);
 
             lock (_peers)
             {
                 _peers.Add(peer);
-
-                data.PlayerId = (byte)_peers.Count;
-                actor.Movement.Number = data.PlayerId;
+                number = _peers.Count;
             }
 
             peer.Room = this;
             peer.Actor = actor;
+            peer.Actor.Number = number;
             peer.AddOperationHandler(this);
 
             /* 
@@ -158,7 +158,7 @@ namespace UberStrok.Realtime.Server.Game
             peer.Events.SendRoomEntered(Data);
 
             /* Let the client know about the other peers in the room, if there is any.*/
-            if (Players.Count > 1)
+            if (Players.Count > 0)
             {
                 var allPlayers = new List<GameActorInfoView>(Peers.Count);
                 var allPositions = new List<PlayerMovement>(Peers.Count);
@@ -232,8 +232,6 @@ namespace UberStrok.Realtime.Server.Game
                 movement.Position = point.Position;
                 movement.HorizontalRotation = point.Rotation;
 
-                //player.Actor.Movement = movement;
-
                 /* Let all peers know that the peer has joined the game. */
                 foreach (var otherPeer in Peers)
                 {
@@ -263,7 +261,7 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnJoinGame(GamePeer peer, TeamID team)
         {
             /* 
-                Update the actor's team and register the peer in the player list.
+                Update the actor's team, health and register the peer in the player list.
                 Update the number of connected players while we're at it.
              */
             peer.Actor.Team = team;
@@ -275,7 +273,7 @@ namespace UberStrok.Realtime.Server.Game
                 _data.ConnectedPlayers = Players.Count;
             }
 
-            s_log.Info($"Joining team -> CMID:{peer.Actor.Cmid}:{team}");
+            s_log.Info($"Joining team -> CMID:{peer.Actor.Cmid}:{team}:{peer.Actor.Number}");
 
             /*
                 If the match has not started yet and there is more
@@ -287,39 +285,35 @@ namespace UberStrok.Realtime.Server.Game
                 return;
             }
 
-            var movement = default(PlayerMovement);
+            /*
+                If we haven't yet started the match we send the peer
+                in 'waiting for players' state.
+             */
             if (!_started)
             {
-                movement = new PlayerMovement
-                {
-                    Number = peer.Actor.Data.PlayerId
-                };
-
                 /* Let all peers know that the client has joined. */
                 foreach (var otherPeer in Peers)
-                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, movement);
+                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, peer.Actor.Movement);
 
                 peer.Events.Game.SendWaitingForPlayer();
             }
+            /*
+                Otherwise we send the client to random spawn for its
+                team.
+             */
             else
             {
                 var point = _spawnManager.Get(peer.Actor.Team);
-                movement = new PlayerMovement
-                {
-                    Number = peer.Actor.Data.PlayerId,
-                    Position = point.Position,
-                    HorizontalRotation = point.Rotation
-                };
+                peer.Actor.Movement.Position = point.Position;
+                peer.Actor.Movement.HorizontalRotation = point.Rotation;
 
                 /* Let all peers know that the client has joined. */
                 foreach (var otherPeer in Peers)
-                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, movement);
+                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, peer.Actor.Movement);
 
-                peer.Events.Game.SendMatchStart(0, _endTime);
+                peer.Events.Game.SendMatchStart(_roundNumber, _endTime);
                 peer.Events.Game.SendPlayerRespawned(peer.Actor.Cmid, point.Position, point.Rotation);
             }
-
-            //peer.Actor.Movement = movement;
         }
 
         protected override void OnChatMessage(GamePeer peer, string message, ChatContext context)
@@ -426,7 +420,7 @@ namespace UberStrok.Realtime.Server.Game
                         foreach (var otherPeer in Peers)
                         {
                             otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
-                            otherPeer.Events.Game.SendAllPlayerPositions(position, 100);
+                            otherPeer.Events.Game.SendAllPlayerPositions(position, 1);
                         }
                     }
                     catch (Exception ex)
