@@ -1,13 +1,22 @@
-﻿using UberStrok.Core.Common;
+﻿using System;
+using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
     public class GameActor
     {
-        public int Cmid => Data.Cmid;
-        public string PlayerName => Data.PlayerName;
-        public MemberAccessLevel AccessLevel => Data.AccessLevel;
+        private readonly GameActorInfoView _data;
+        private readonly PlayerMovement _movement;
+
+        public GameActor(GameActorInfoView data)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            _data = data;
+            _movement = new PlayerMovement();
+        }
 
         public TeamID Team
         {
@@ -15,7 +24,10 @@ namespace UberStrok.Realtime.Server.Game
             set { Data.TeamID = value; }
         }
 
-        public PlayerMovement Movement { get; set; }
-        public GameActorInfoView Data { get; set; }
+        public int Cmid => Data.Cmid;
+        public string PlayerName => Data.PlayerName;
+        public MemberAccessLevel AccessLevel => Data.AccessLevel;
+        public PlayerMovement Movement => _movement;
+        public GameActorInfoView Data => _data;
     }
 }

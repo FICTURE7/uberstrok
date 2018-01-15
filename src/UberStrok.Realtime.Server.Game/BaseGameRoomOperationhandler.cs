@@ -16,7 +16,7 @@ namespace UberStrok.Realtime.Server.Game
         protected abstract void OnChatMessage(GamePeer peer, string message, ChatContext context);
         protected abstract void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes);
         protected abstract void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations);
-        protected abstract void OnJoinTeam(GamePeer peer, TeamID team);
+        protected abstract void OnJoinGame(GamePeer peer, TeamID team);
 
         public override void OnOperationRequest(GamePeer peer, byte opCode, MemoryStream bytes)
         {
@@ -131,7 +131,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             var team = EnumProxy<TeamID>.Deserialize(bytes);
 
-            OnJoinTeam(peer, team);
+            OnJoinGame(peer, team);
         }
     }
 }

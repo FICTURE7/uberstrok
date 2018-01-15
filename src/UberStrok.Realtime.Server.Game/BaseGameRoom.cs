@@ -96,7 +96,7 @@ namespace UberStrok.Realtime.Server.Game
 
             /*
                 Create the the gear list and weapons list.
-                The client does not like it when its not of the proper size. 
+                The client does not like it when its not of the proper size.
              */
             var gear = new List<int>(GEAR_COUNT);
             var weapons = new List<int>(peer.Member.CmuneMemberView.MemberItems);
@@ -112,7 +112,9 @@ namespace UberStrok.Realtime.Server.Game
             {
                 TeamID = TeamID.NONE,
 
-                Health = 0,
+                Health = 100,
+
+                //TODO: Calculate armor points & armor capacity (but who cares about those).
                 ArmorPoints = 0,
                 ArmorPointCapacity = 0,
 
@@ -135,11 +137,7 @@ namespace UberStrok.Realtime.Server.Game
                 Gear = gear
             };
 
-            var actor = new GameActor
-            {
-                Data = data,
-                Movement = new PlayerMovement()
-            };
+            var actor = new GameActor(data);
 
             lock (_peers)
             {
@@ -149,29 +147,29 @@ namespace UberStrok.Realtime.Server.Game
                 actor.Movement.Number = data.PlayerId;
             }
 
-            peer.Actor = actor;
             peer.Room = this;
+            peer.Actor = actor;
             peer.AddOperationHandler(this);
 
-            /* This prepares the client for the game room. */
+            /* 
+                This prepares the client for the game room and
+                sets the client state to pre-game.
+             */
             peer.Events.SendRoomEntered(Data);
 
-            /* Let the client know about the other peers in the room. */
-            /*
-            if (Peers.Count > 1)
+            /* Let the client know about the other peers in the room, if there is any.*/
+            if (Players.Count > 1)
             {
                 var allPlayers = new List<GameActorInfoView>(Peers.Count);
                 var allPositions = new List<PlayerMovement>(Peers.Count);
-                foreach (var otherPeer in Peers)
+                foreach (var player in Players)
                 {
-                    allPlayers.Add(otherPeer.Actor.Data);
-                    allPositions.Add(otherPeer.Actor.Movement);
+                    allPlayers.Add(player.Actor.Data);
+                    allPositions.Add(player.Actor.Movement);
                 }
 
-                foreach (var otherPeer in Peers)
-                    otherPeer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
+                peer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
             }
-            */
         }
 
         public void Leave(GamePeer peer)
@@ -196,12 +194,13 @@ namespace UberStrok.Realtime.Server.Game
                     otherPeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
             }
 
-            if (Players.Count < 1)
+            /* If we have 0 players, we stop the game so we can start a new one later on. */
+            if (Players.Count == 0)
                 _started = false;
 
+            peer.RemoveOperationHandler(Id);
             peer.Actor = null;
             peer.Room = null;
-            peer.RemoveOperationHandler(Id);
         }
 
         public override void OnDisconnect(GamePeer peer, DisconnectReason reasonCode, string reasonDetail)
@@ -228,14 +227,12 @@ namespace UberStrok.Realtime.Server.Game
             foreach (var player in Players)
             {
                 var point = _spawnManager.Get(player.Actor.Team);
-                var movement = new PlayerMovement
-                {
-                    Number = player.Actor.Data.PlayerId,
-                    Position = point.Position,
-                    HorizontalRotation = point.Rotation
-                };
+                var movement = player.Actor.Movement;
+                movement.Number = player.Actor.Data.PlayerId;
+                movement.Position = point.Position;
+                movement.HorizontalRotation = point.Rotation;
 
-                player.Actor.Movement = movement;
+                //player.Actor.Movement = movement;
 
                 /* Let all peers know that the peer has joined the game. */
                 foreach (var otherPeer in Peers)
@@ -263,13 +260,14 @@ namespace UberStrok.Realtime.Server.Game
             _roundNumber++;
         }
 
-        protected override void OnJoinTeam(GamePeer peer, TeamID team)
+        protected override void OnJoinGame(GamePeer peer, TeamID team)
         {
             /* 
                 Update the actor's team and register the peer in the player list.
                 Update the number of connected players while we're at it.
              */
             peer.Actor.Team = team;
+            peer.Actor.Data.Health = 100;
 
             lock (_peers)
             {
@@ -321,7 +319,7 @@ namespace UberStrok.Realtime.Server.Game
                 peer.Events.Game.SendPlayerRespawned(peer.Actor.Cmid, point.Position, point.Rotation);
             }
 
-            peer.Actor.Movement = movement;
+            //peer.Actor.Movement = movement;
         }
 
         protected override void OnChatMessage(GamePeer peer, string message, ChatContext context)
@@ -396,36 +394,44 @@ namespace UberStrok.Realtime.Server.Game
             const int SLEEP = 1000 / TICK_RATE;
 
             //TODO: Make the loop fancier using catch-up stuffz & tings.
+            //TODO: Fix potential threading issues.
             try
             {
                 while (_started)
                 {
-                    var position = new List<PlayerMovement>(Players.Count);
-                    foreach (var player in Players)
-                        position.Add(player.Actor.Movement);
-
-                    var deltas = new List<GameActorInfoDeltaView>(Peers.Count);
-                    foreach (var peer in Peers)
+                    try
                     {
-                        var delta = new GameActorInfoDeltaView
-                        {
-                            Id = peer.Actor.Data.PlayerId
-                        };
+                        var position = new List<PlayerMovement>(Players.Count);
+                        foreach (var player in Players)
+                            position.Add(player.Actor.Movement);
 
-                        if (DateTime.UtcNow > nextPingUpdate)
+                        var deltas = new List<GameActorInfoDeltaView>(Peers.Count);
+                        foreach (var peer in Peers)
                         {
-                            delta.Changes.Add(GameActorInfoDeltaView.Keys.Ping, peer.Ping);
-                            nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
+                            var delta = new GameActorInfoDeltaView
+                            {
+                                Id = peer.Actor.Data.PlayerId
+                            };
+
+                            if (DateTime.UtcNow > nextPingUpdate)
+                            {
+                                delta.Changes.Add(GameActorInfoDeltaView.Keys.Ping, peer.Ping);
+                                nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
+                            }
+
+                            delta.UpdateMask();
+                            deltas.Add(delta);
                         }
 
-                        delta.UpdateMask();
-                        deltas.Add(delta);
+                        foreach (var otherPeer in Peers)
+                        {
+                            otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
+                            otherPeer.Events.Game.SendAllPlayerPositions(position, 100);
+                        }
                     }
-
-                    foreach (var otherPeer in Peers)
+                    catch (Exception ex)
                     {
-                        otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
-                        otherPeer.Events.Game.SendAllPlayerPositions(position, 100);
+                        s_log.Error("Failed to tick game loop", ex);
                     }
 
                     Thread.Sleep(SLEEP);
