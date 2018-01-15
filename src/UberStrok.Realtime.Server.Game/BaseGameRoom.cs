@@ -228,11 +228,10 @@ namespace UberStrok.Realtime.Server.Game
             {
                 var point = _spawnManager.Get(player.Actor.Team);
                 var movement = player.Actor.Movement;
-                movement.Number = player.Actor.Data.PlayerId;
                 movement.Position = point.Position;
                 movement.HorizontalRotation = point.Rotation;
 
-                /* Let all peers know that the peer has joined the game. */
+                /* Let all peers know that the player has joined the game. */
                 foreach (var otherPeer in Peers)
                 {
                     /*
@@ -250,7 +249,7 @@ namespace UberStrok.Realtime.Server.Game
                     The client does not care about the roundNumber apparently (in TeamDeatchMatch atleast).
                  */
                 player.Events.Game.SendMatchStart(_roundNumber, _endTime);
-                player.Events.Game.SendPlayerRespawned(player.Actor.Cmid, point.Position, point.Rotation);
+                player.Events.Game.SendPlayerRespawned(player.Actor.Cmid, movement.Position, movement.HorizontalRotation);
 
                 s_log.Debug($"Spawned: {player.Actor.Cmid} at: {point}");
             }
@@ -307,11 +306,16 @@ namespace UberStrok.Realtime.Server.Game
                 peer.Actor.Movement.Position = point.Position;
                 peer.Actor.Movement.HorizontalRotation = point.Rotation;
 
+                peer.Events.Game.SendMatchStart(_roundNumber, _endTime);
+
                 /* Let all peers know that the client has joined. */
                 foreach (var otherPeer in Peers)
-                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, peer.Actor.Movement);
+                {
+                    if (otherPeer.Actor.Cmid != peer.Actor.Cmid)
+                        otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, peer.Actor.Movement);
+                }
 
-                peer.Events.Game.SendMatchStart(_roundNumber, _endTime);
+                peer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, peer.Actor.Movement);
                 peer.Events.Game.SendPlayerRespawned(peer.Actor.Cmid, point.Position, point.Rotation);
             }
         }
