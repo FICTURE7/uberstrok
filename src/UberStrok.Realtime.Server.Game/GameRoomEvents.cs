@@ -16,6 +16,12 @@ namespace UberStrok.Realtime.Server.Game
 
         private GamePeer _peer;
 
+        public void SendPrepareNextRound()
+        {
+            using (var bytes = new MemoryStream())
+                SendEvent((byte)IGameRoomEventsType.PrepareNextRound, bytes);
+        }
+
         public void SendPlayerJumped(int cmid, Vector3 position)
         {
             using (var bytes = new MemoryStream())

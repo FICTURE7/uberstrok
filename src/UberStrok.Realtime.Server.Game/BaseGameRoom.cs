@@ -15,13 +15,21 @@ namespace UberStrok.Realtime.Server.Game
 
         /* Where the heavy lifting is done. */
         private Thread _loopThread;
+        /* Figure out if the loop has started.*/
+        private bool _loopStarted;
 
         /* Determine wether the game has started. */
         private bool _started;
+        /* Determine wether to send countdown and stuff. */
+        private bool _countDown;
+        /* When the count down ends. */
+        private TimeSpan _countDownDuration;
+
         /* Time in system ticks when the round ends.*/
         private int _endTime;
         /* Round number. */
         private int _roundNumber;
+
         /* Password of the room. */
         private string _password;
 
@@ -189,14 +197,14 @@ namespace UberStrok.Realtime.Server.Game
 
             /* Let other peers know that the peer has left the room. */
             foreach (var otherPeer in Peers)
-            {
-                if (otherPeer.Actor.Cmid != peer.Actor.Cmid)
-                    otherPeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
-            }
+                otherPeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
 
             /* If we have 0 players, we stop the game so we can start a new one later on. */
             if (Players.Count == 0)
+            {
+                _loopStarted = false;
                 _started = false;
+            }
 
             peer.RemoveOperationHandler(Id);
             peer.Actor = null;
@@ -210,14 +218,20 @@ namespace UberStrok.Realtime.Server.Game
 
         private void StartMatch()
         {
-            /* Kill the previous loop thread. */
+            /*
+                Kill the previous loop thread if it exists and
+                start a new loop thread.
+             */
             if (_loopThread != null)
                 _loopThread.Abort();
 
-            _started = true;
+            _loopStarted = true;
 
             _loopThread = new Thread(GameLoop);
             _loopThread.Start();
+
+            _countDown = true;
+            _countDownDuration = TimeSpan.FromSeconds(5);
 
             /* Calculate the time when the games ends (in system ticks). */
             _endTime = Environment.TickCount + Data.TimeLimit * 1000;
@@ -231,6 +245,20 @@ namespace UberStrok.Realtime.Server.Game
                 movement.Position = point.Position;
                 movement.HorizontalRotation = point.Rotation;
 
+                /*
+                    This prepares the client for the next round and enables match start
+                    countdown thingy.
+                 */
+                player.Events.Game.SendPrepareNextRound();
+
+                /* 
+                    MatchStart event changes the match state of the client to match running,
+                    which in turn changes the player state to playing.
+
+                    The client does not care about the roundNumber apparently (in TeamDeatchMatch atleast).
+                 */
+                //player.Events.Game.SendMatchStart(_roundNumber, _endTime);
+
                 /* Let all peers know that the player has joined the game. */
                 foreach (var otherPeer in Peers)
                 {
@@ -242,29 +270,27 @@ namespace UberStrok.Realtime.Server.Game
                     otherPeer.Events.Game.SendPlayerRespawned(player.Actor.Cmid, movement.Position, movement.HorizontalRotation);
                 }
 
-                /* 
-                    MatchStart event changes the match state of the client to match running,
-                    which in turn changes the player state to playing.
-
-                    The client does not care about the roundNumber apparently (in TeamDeatchMatch atleast).
-                 */
-                player.Events.Game.SendMatchStart(_roundNumber, _endTime);
-                player.Events.Game.SendPlayerRespawned(player.Actor.Cmid, movement.Position, movement.HorizontalRotation);
+                //player.Events.Game.SendPlayerRespawned(player.Actor.Cmid, movement.Position, movement.HorizontalRotation);
 
                 s_log.Debug($"Spawned: {player.Actor.Cmid} at: {point}");
             }
 
+            _started = true;
             _roundNumber++;
         }
 
         protected override void OnJoinGame(GamePeer peer, TeamID team)
         {
             /* 
-                Update the actor's team, health and register the peer in the player list.
+                When the client joins a game it resets its game state to 'none'.               
+
+                Update the actor's team + other data and register the peer in the player list.
                 Update the number of connected players while we're at it.
              */
             peer.Actor.Team = team;
             peer.Actor.Data.Health = 100;
+            peer.Actor.Data.Ping = (ushort)(peer.RoundTripTime / 2);
+            peer.Actor.Data.PlayerState = PlayerStates.Ready;
 
             lock (_peers)
             {
@@ -387,6 +413,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             /* Time when the next ping update happens. */
             var nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
+            var oldCountDownDuration = _countDownDuration;
 
             const int TICK_RATE = 64;
             const int SLEEP = 1000 / TICK_RATE;
@@ -395,10 +422,42 @@ namespace UberStrok.Realtime.Server.Game
             //TODO: Fix potential threading issues.
             try
             {
-                while (_started)
+                while (_loopStarted)
                 {
+                    /* Wait until everything is set up. */
+                    if (!_started)
+                        continue;
+
                     try
                     {
+                        if (_countDown)
+                        {
+                            oldCountDownDuration = _countDownDuration;
+                            _countDownDuration = _countDownDuration.Subtract(TimeSpan.FromMilliseconds(SLEEP));
+
+                            var oldCount = (int)Math.Round(oldCountDownDuration.TotalSeconds, 0);
+                            var newCount = Math.Round(_countDownDuration.TotalSeconds, 0);
+                            if (oldCount > newCount)
+                            {
+                                foreach (var player in Players)
+                                    player.Events.Game.SendMatchStartCountdown(oldCount);
+                            }
+
+                            if (oldCount <= 0)
+                            {
+                                foreach (var player in Players)
+                                    /* 
+                                        MatchStart event changes the match state of the client to match running,
+                                        which in turn changes the player state to playing.
+
+                                        The client does not care about the roundNumber apparently (in TeamDeatchMatch atleast).
+                                     */
+                                    player.Events.Game.SendMatchStart(_roundNumber, _endTime);
+
+                                _countDown = false;
+                            }
+                        }
+
                         var position = new List<PlayerMovement>(Players.Count);
                         foreach (var player in Players)
                             position.Add(player.Actor.Movement);
