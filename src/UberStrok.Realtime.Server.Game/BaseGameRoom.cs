@@ -39,8 +39,8 @@ namespace UberStrok.Realtime.Server.Game
         private readonly SpawnManager _spawnManager;
 
         /* Keep refs to ReadOnlyCollections to be a little bit GC friendly. */
-        private readonly IReadOnlyCollection<GamePeer> _peersReadOnly;
-        private readonly IReadOnlyCollection<GamePeer> _playersReadonly;
+        private readonly IReadOnlyList<GamePeer> _peersReadOnly;
+        private readonly IReadOnlyList<GamePeer> _playersReadonly;
 
         public BaseGameRoom(GameRoomDataView data)
         {
@@ -63,8 +63,8 @@ namespace UberStrok.Realtime.Server.Game
 
         public override int Id => 0;
         public GameRoomDataView Data => _data;
-        public IReadOnlyCollection<GamePeer> Peers => _peersReadOnly;
-        public IReadOnlyCollection<GamePeer> Players => _playersReadonly;
+        public IReadOnlyList<GamePeer> Peers => _peersReadOnly;
+        public IReadOnlyList<GamePeer> Players => _playersReadonly;
 
         /* Room ID but we call it number since we already defined Id & thats how UberStrike calls it too. */
         public int Number
