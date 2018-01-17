@@ -1,5 +1,7 @@
 ﻿using Photon.SocketServer;
+using System.Collections.Generic;
 using UberStrok.Core.Views;
+using UberStrok.Realtime.Server.Game.Logic;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -9,6 +11,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public GamePeer(InitRequest initRequest) : base(initRequest)
         {
+            KnownActors = new List<int>(16);
             _events = new GamePeerEvents(this);
 
             /* Could make GamePeerOperationHandler a singleton but what ever. */
@@ -18,6 +21,7 @@ namespace UberStrok.Realtime.Server.Game
         public string AuthToken { get; set; }
         public ushort Ping { get; set; }
         public GameActor Actor { get; set; }
+        public List<int> KnownActors { get; set; }
         public BaseGameRoom Room { get; set; }
         public UberstrikeUserView Member { get; set; }
 

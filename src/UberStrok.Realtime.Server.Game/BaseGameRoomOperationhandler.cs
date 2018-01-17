@@ -8,8 +8,10 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract class BaseGameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {
+        protected abstract void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets);
+        protected abstract void OnDirectDamage(GamePeer peer, ushort damage);
         protected abstract void OnSwitchWeapon(GamePeer peer, byte slot);
-        protected abstract void OnIsPaued(GamePeer peer, bool on);
+        protected abstract void OnIsPaused(GamePeer peer, bool on);
         protected abstract void OnIsFiring(GamePeer peer, bool on);
         protected abstract void OnJump(GamePeer peer, Vector3 position);
         protected abstract void OnUpdatePositionAndRotation(GamePeer peer, Vector3 position, Vector3 velocity, byte horizontalRotation, byte verticalRotation, byte moveState);
@@ -23,6 +25,14 @@ namespace UberStrok.Realtime.Server.Game
             var operation = (IGameRoomOperationsType)opCode;
             switch (operation)
             {
+                case IGameRoomOperationsType.DirectHitDamage:
+                    DirectHitDamage(peer, bytes);
+                    break;
+
+                case IGameRoomOperationsType.DirectDamage:
+                    DirectDamage(peer, bytes);
+                    break;
+
                 case IGameRoomOperationsType.SwitchWeapon:
                     SwitchWeapon(peer, bytes);
                     break;
@@ -62,6 +72,22 @@ namespace UberStrok.Realtime.Server.Game
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private void DirectHitDamage(GamePeer peer, MemoryStream bytes)
+        {
+            var target = Int32Proxy.Deserialize(bytes);
+            var bodyPart = ByteProxy.Deserialize(bytes);
+            var bullets = ByteProxy.Deserialize(bytes);
+
+            OnDirectHitDamage(peer, target, bodyPart, bullets);
+        }
+
+        private void DirectDamage(GamePeer peer, MemoryStream bytes)
+        {
+            var damage = UInt16Proxy.Deserialize(bytes);
+
+            OnDirectDamage(peer, damage);
         }
 
         private void SwitchWeapon(GamePeer peer, MemoryStream bytes)

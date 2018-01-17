@@ -6,6 +6,7 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameActor
     {
+        private readonly GameActorInfoDeltaView _delta;
         private readonly GameActorInfoView _data;
         private readonly PlayerMovement _movement;
 
@@ -15,6 +16,8 @@ namespace UberStrok.Realtime.Server.Game
                 throw new ArgumentNullException(nameof(data));
 
             _data = data;
+            _delta = new GameActorInfoDeltaView();
+
             _movement = new PlayerMovement();
         }
 
@@ -31,6 +34,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 Data.PlayerId = (byte)value;
                 Movement.Number = (byte)value;
+                Delta.Id = (byte)value;
             }
         }
 
@@ -39,5 +43,6 @@ namespace UberStrok.Realtime.Server.Game
         public MemberAccessLevel AccessLevel => Data.AccessLevel;
         public PlayerMovement Movement => _movement;
         public GameActorInfoView Data => _data;
+        public GameActorInfoDeltaView Delta => _delta;
     }
 }

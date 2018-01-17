@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Realtime.Server.Game.Logic
 {
     public class SpawnManager
     {

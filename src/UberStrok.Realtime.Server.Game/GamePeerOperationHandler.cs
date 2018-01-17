@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UberStrok.Core.Views;
+using UberStrok.Realtime.Server.Game.Logic;
 using UberStrok.WebServices.Client;
 
 namespace UberStrok.Realtime.Server.Game

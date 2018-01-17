@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using UberStrok.Realtime.Server.Game.Logic;
 
 namespace UberStrok.Realtime.Server.Game
 {
