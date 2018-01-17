@@ -446,6 +446,10 @@ namespace UberStrok.Realtime.Server.Game
                             if (oldCount <= 0)
                             {
                                 foreach (var player in Players)
+                                {
+                                    /* This disables the countdown timer of the client. */
+                                    player.Events.Game.SendMatchStartCountdown(0);
+
                                     /* 
                                         MatchStart event changes the match state of the client to match running,
                                         which in turn changes the player state to playing.
@@ -453,6 +457,7 @@ namespace UberStrok.Realtime.Server.Game
                                         The client does not care about the roundNumber apparently (in TeamDeatchMatch atleast).
                                      */
                                     player.Events.Game.SendMatchStart(_roundNumber, _endTime);
+                                }
 
                                 _countDown = false;
                             }
