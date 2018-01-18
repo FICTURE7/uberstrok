@@ -70,8 +70,8 @@ namespace UberStrok.WebServices
             var memberLoadout = new LoadoutView
             {
                 Cmid = cmid,
-                Weapon1 = 1,
-                Weapon2 = 12
+                MeleeWeapon = 1,
+                Weapon1 = 12
             };
 
             var member = new MemberView(
