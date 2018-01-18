@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
-using System;
 
 namespace UberStrok.Realtime.Server.Game.Logic
 {
