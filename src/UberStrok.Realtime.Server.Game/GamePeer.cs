@@ -22,6 +22,7 @@ namespace UberStrok.Realtime.Server.Game
         public GameActor Actor { get; set; }
         public List<int> KnownActors { get; set; }
         public BaseGameRoom Room { get; set; }
+        public LoadoutView Loadout { get; set; }
         public UberstrikeUserView Member { get; set; }
 
         public GamePeerEvents Events => _events;

@@ -54,6 +54,7 @@
     <Compile Include="Views\BundleItemViewProxy.cs" />
     <Compile Include="Views\CommActorInfoViewProxy.cs" />
     <Compile Include="Views\ConnectionAddressViewProxy.cs" />
+    <Compile Include="Views\DamageEventViewProxy.cs" />
     <Compile Include="Views\GameActorInfoDeltaViewProxy.cs" />
     <Compile Include="Views\GameActorInfoViewProxy.cs" />
     <Compile Include="Views\GameRoomDataViewProxy.cs" />

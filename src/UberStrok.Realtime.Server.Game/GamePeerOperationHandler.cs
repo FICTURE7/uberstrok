@@ -61,11 +61,15 @@ namespace UberStrok.Realtime.Server.Game
 
             peer.AuthToken = authToken;
             peer.Member = GetMemberFromAuthToken(authToken);
+            peer.Loadout = GetLoadoutFromAuthToken(authToken);
 
             var room = default(BaseGameRoom);
             try
             {
                 room = GameApplication.Instance.Rooms.Create(roomData, password);
+                room.ShopManager.Load(authToken);
+
+                /* Enable QUICK-SWATCH boiiiii */
                 room.Data.GameFlags |= 4;
             }
             catch (NotSupportedException)
@@ -99,6 +103,7 @@ namespace UberStrok.Realtime.Server.Game
 
             peer.AuthToken = authToken;
             peer.Member = GetMemberFromAuthToken(authToken);
+            peer.Loadout = GetLoadoutFromAuthToken(authToken);
 
             var room = GameApplication.Instance.Rooms.Get(roomId);
             if (room != null)
@@ -135,6 +140,11 @@ namespace UberStrok.Realtime.Server.Game
             peer.Ping = ping;
         }
 
+        protected override void OnUpdateKeyState(GamePeer peer, byte state)
+        {
+            // Space
+        }
+
         private UberstrikeUserView GetMemberFromAuthToken(string authToken)
         {
             //TODO: Provide some base class for this kind of server-server communications.
@@ -152,9 +162,21 @@ namespace UberStrok.Realtime.Server.Game
             return member;
         }
 
-        protected override void OnUpdateKeyState(GamePeer peer, byte state)
+        private LoadoutView GetLoadoutFromAuthToken(string authToken)
         {
-            // Space
+            //TODO: Provide some base class for this kind of server-server communications.
+
+            var bytes = Convert.FromBase64String(authToken);
+            var data = Encoding.UTF8.GetString(bytes);
+
+            var webServer = data.Substring(0, data.IndexOf("#####"));
+
+            s_log.Debug($"Retrieving loadout data {authToken} from the web server {webServer}");
+
+            // Retrieve loadout data from the web server.
+            var client = new UserWebServiceClient(webServer);
+            var loadout = client.GetLoadout(authToken);
+            return loadout;
         }
     }
 }

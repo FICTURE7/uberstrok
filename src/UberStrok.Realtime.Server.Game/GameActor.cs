@@ -8,6 +8,7 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly GameActorInfo _info;
         private readonly PlayerMovement _movement;
+        private readonly DamageEventView _damages;
 
         public GameActor(GameActorInfoView data)
         {
@@ -16,6 +17,7 @@ namespace UberStrok.Realtime.Server.Game
 
             _info = new GameActorInfo(data);
             _movement = new PlayerMovement();
+            _damages = new DamageEventView();
         }
 
         public TeamID Team
@@ -38,6 +40,7 @@ namespace UberStrok.Realtime.Server.Game
         public string PlayerName => Info.PlayerName;
         public MemberAccessLevel AccessLevel => Info.AccessLevel;
 
+        public DamageEventView Damages => _damages;
         public PlayerMovement Movement => _movement;
         public GameActorInfo Info => _info;
     }

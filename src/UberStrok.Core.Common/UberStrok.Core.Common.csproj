@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AvatarType.cs" />
+    <Compile Include="BodyPart.cs" />
     <Compile Include="BundleCategoryType.cs" />
     <Compile Include="BuyingDurationType.cs" />
     <Compile Include="BuyingLocationType.cs" />
@@ -44,6 +45,8 @@
     <Compile Include="ChannelType.cs" />
     <Compile Include="ChatContext.cs" />
     <Compile Include="Color.cs" />
+    <Compile Include="Conversions.cs" />
+    <Compile Include="DamageEffectType.cs" />
     <Compile Include="DefinitionType.cs" />
     <Compile Include="EmailAddressStatus.cs" />
     <Compile Include="FireMode.cs" />

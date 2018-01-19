@@ -1,6 +1,8 @@
 ﻿using PhotonHostRuntimeInterfaces;
+using System;
 using System.Collections.Generic;
 using UberStrok.Core.Common;
+using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -78,13 +80,53 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets)
         {
+            var weaponId = peer.Actor.Info.CurrentWeaponID;
+
             foreach (var player in Players)
             {
-                if (player.Actor.Cmid == target)
+                if (player.Actor.Cmid != target)
+                    continue;
+
+                var weapon = default(UberStrikeItemWeaponView);
+                if (ShopManager.WeaponItems.TryGetValue(weaponId, out weapon))
                 {
-                    player.Actor.Info.Health -= 1;
-                    break;
+                    /* TODO: Clamp value. */
+                    var damage = (weapon.DamagePerProjectile * bullets);
+
+                    /* Calculate the critical hit damage. */
+                    var part = (BodyPart)bodyPart;
+                    var bonus = weapon.CriticalStrikeBonus;
+                    if (bonus > 0)
+                    {
+                        if (part == BodyPart.Head || part == BodyPart.Nuts)
+                            damage = (int)Math.Round(damage + (damage * (bonus / 100f)));
+                    }
+
+                    /* Calculate the direction of the hit. */
+                    var shortDamage = (short)damage;
+
+                    var victimPos = player.Actor.Movement.Position;
+                    var attackerPos = peer.Actor.Movement.Position;
+
+                    var direction = attackerPos - victimPos;
+                    var back = new Vector3(0, 0, -1);
+
+                    var angle = Vector3.Angle(direction, back);
+                    if (direction.x < 0)
+                        angle = 360 - angle;
+
+                    var byteAngle = Conversions.Angle2Byte(angle);
+
+                    /* TODO: Find out the damage effect type & stuffs. */
+                    player.Actor.Damages.Add(byteAngle, shortDamage, part, 0, 0);
+                    player.Actor.Info.Health -= shortDamage;
                 }
+                else
+                {
+                    s_log.Debug($"Unable to find weapon with ID {weaponId}");
+                }
+
+                return;
             }
         }
 

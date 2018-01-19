@@ -42,7 +42,9 @@ namespace UberStrok.Realtime.Server.Game
         private readonly List<GamePeer> _peers;
         /* List of peers connected & playing. */
         private readonly List<GamePeer> _players;
-
+        
+        /* Manages items, mostly to get weapon damage. */
+        private readonly ShopManager _shopManager;
         /* Manages the power ups. */
         private readonly PowerUpManager _powerUpManager;
         /* Manages the spawn of players. */
@@ -64,6 +66,8 @@ namespace UberStrok.Realtime.Server.Game
 
             _peers = new List<GamePeer>();
             _players = new List<GamePeer>();
+
+            _shopManager = new ShopManager();
             _spawnManager = new SpawnManager();
             _powerUpManager = new PowerUpManager();
 
@@ -111,6 +115,7 @@ namespace UberStrok.Realtime.Server.Game
         /* Time in system ticks when the round ends.*/
         public int EndTime { get; set; }
 
+        public ShopManager ShopManager => _shopManager;
         public SpawnManager SpawnManager => _spawnManager;
 
         public bool IsStarted => State.Current == MatchState.Id.Running;
@@ -122,23 +127,6 @@ namespace UberStrok.Realtime.Server.Game
                 throw new ArgumentNullException(nameof(peer));
 
             Debug.Assert(peer.Room == null, "GamePeer is joining room, but its already in another room.");
-
-            const int GEAR_COUNT = 7;
-            const int WEAPON_COUNT = 4;
-
-            /*
-                Create the the gear list and weapons list.
-                The client does not like it when its not of the proper size.
-             */
-            var gear = new List<int>(GEAR_COUNT);
-            var weapons = new List<int>(peer.Member.CmuneMemberView.MemberItems);
-
-            for (int i = 0; i < GEAR_COUNT; i++)
-                gear.Add(0);
-
-            var weaponCount = peer.Member.CmuneMemberView.MemberItems.Count;
-            for (int i = 0; i < WEAPON_COUNT - weaponCount; i++)
-                weapons.Add(0);
 
             var data = new GameActorInfoView
             {
@@ -164,10 +152,23 @@ namespace UberStrok.Realtime.Server.Game
                 ClanTag = peer.Member.CmuneMemberView.PublicProfile.GroupTag,
                 AccessLevel = peer.Member.CmuneMemberView.PublicProfile.AccessLevel,
                 PlayerName = peer.Member.CmuneMemberView.PublicProfile.Name,
-
-                Weapons = weapons,
-                Gear = gear
             };
+
+            /* Set the gears of the character. */
+            /* Holo */
+            data.Gear[0] = (int)peer.Loadout.Type;
+            data.Gear[1] = peer.Loadout.Head;
+            data.Gear[2] = peer.Loadout.Face;
+            data.Gear[3] = peer.Loadout.Gloves;
+            data.Gear[4] = peer.Loadout.UpperBody;
+            data.Gear[5] = peer.Loadout.LowerBody;
+            data.Gear[6] = peer.Loadout.Boots;
+
+            /* Sets the gears of the character. */
+            data.Weapons[0] = peer.Loadout.MeleeWeapon;
+            data.Weapons[1] = peer.Loadout.Weapon1;
+            data.Weapons[2] = peer.Loadout.Weapon2;
+            data.Weapons[3] = peer.Loadout.Weapon3;
 
             var number = 0;
             var actor = new GameActor(data);

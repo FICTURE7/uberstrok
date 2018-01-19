@@ -48,7 +48,15 @@ namespace UberStrok.Realtime.Server.Game
         {
             var position = new List<PlayerMovement>(Room.Players.Count);
             foreach (var player in Room.Players)
+            {
                 position.Add(player.Actor.Movement);
+
+                if (player.Actor.Damages.Count > 0)
+                {
+                    player.Events.Game.SendDamageEvent(player.Actor.Damages);
+                    player.Actor.Damages.Clear();
+                }
+            }
 
             var deltas = new List<GameActorInfoDeltaView>(Room.Peers.Count);
             var updatePing = DateTime.UtcNow > _nextPingUpdate;
@@ -57,14 +65,6 @@ namespace UberStrok.Realtime.Server.Game
                 var delta = player.Actor.Info.ViewDelta;
                 if (delta.Changes.Count > 0)
                 {
-#if DEBUG
-                    var changes = delta.Id + ": \r\n";
-                    foreach (var change in delta.Changes)
-                        changes += change.Key + ": " + change.Value + "\r\n";
-
-                    s_log.Debug(changes);
-#endif
-
                     delta.UpdateMask();
                     deltas.Add(delta);
                 }

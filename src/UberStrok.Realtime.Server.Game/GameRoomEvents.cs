@@ -16,6 +16,16 @@ namespace UberStrok.Realtime.Server.Game
 
         private GamePeer _peer;
 
+        public void SendDamageEvent(DamageEventView damageEvent)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                DamageEventViewProxy.Serialize(bytes, damageEvent);
+
+                SendEvent((byte)IGameRoomEventsType.DamageEvent, bytes);
+            }
+        }
+
         public void SendPrepareNextRound()
         {
             using (var bytes = new MemoryStream())
