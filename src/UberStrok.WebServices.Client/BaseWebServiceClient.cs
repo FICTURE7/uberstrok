@@ -6,6 +6,8 @@ namespace UberStrok.WebServices.Client
 {
     public abstract class BaseWebServiceClient<TChannel>
     {
+        private readonly TChannel _channel;
+
         private static readonly BasicHttpBinding s_binding = new BasicHttpBinding();
         private static readonly ChannelFactory<TChannel> s_factory = new ChannelFactory<TChannel>(s_binding);
 
@@ -22,6 +24,5 @@ namespace UberStrok.WebServices.Client
         }
 
         protected TChannel Channel => _channel;
-        private readonly TChannel _channel;
     }
 }

@@ -67,6 +67,7 @@ namespace UberStrok.Realtime.Server.Game
             try
             {
                 room = GameApplication.Instance.Rooms.Create(roomData, password);
+                room.Data.GameFlags |= 4;
             }
             catch (NotSupportedException)
             {

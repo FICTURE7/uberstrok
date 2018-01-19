@@ -30,9 +30,12 @@ namespace UberStrok.Realtime
             if (!_states.TryGetValue(stateId, out state))
                 throw new Exception("No state handler registered for the specified state ID.");
 
-            _current.OnExit();
+            _current?.OnExit();
+
             _current = state;
-            _current.OnEnter();
+            _currentId = stateId;
+
+            _current?.OnEnter();
         }
 
         public void Update()

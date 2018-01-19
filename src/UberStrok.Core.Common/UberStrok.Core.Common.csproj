@@ -47,6 +47,7 @@
     <Compile Include="DefinitionType.cs" />
     <Compile Include="EmailAddressStatus.cs" />
     <Compile Include="FireMode.cs" />
+    <Compile Include="GameFlags.cs" />
     <Compile Include="GameModeType.cs" />
     <Compile Include="ItemPropertyType.cs" />
     <Compile Include="ItemShopHighlightType.cs" />

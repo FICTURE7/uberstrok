@@ -56,9 +56,10 @@
     <Compile Include="GamePeerOperationHandler.cs" />
     <Compile Include="Logic\BaseGameRoom.cs" />
     <Compile Include="GameRoomEvents.cs" />
-    <Compile Include="Logic\BaseGameRoom.OperationHandling.cs" />
-    <Compile Include="Logic\MatchStateId.cs" />
+    <Compile Include="Logic\BaseGameRoom.OperationHandler.cs" />
+    <Compile Include="Logic\CountdownMatchState.cs" />
     <Compile Include="Logic\PowerUpManager.cs" />
+    <Compile Include="Logic\RunningMatchState.cs" />
     <Compile Include="Logic\WaitingForPlayersMatchState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logic\SpawnManager.cs" />
@@ -94,6 +95,9 @@
     <None Include="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Logic\MatchState.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

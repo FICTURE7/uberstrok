@@ -31,55 +31,13 @@ namespace UberStrok.Realtime.Server.Game.Logic
                 _data.ConnectedPlayers = Players.Count;
             }
 
+            OnPlayerJoined(new PlayerJoinedEventArgs
+            {
+                Player = peer,
+                Team = team
+            });
+
             s_log.Info($"Joining team -> CMID:{peer.Actor.Cmid}:{team}:{peer.Actor.Number}");
-
-            /*
-                If the match has not started yet and there is more
-                than 1 players, we start the match.
-             */
-            if (!_started && Players.Count > 1)
-            {
-                StartMatch();
-                return;
-            }
-
-            /*
-                If we haven't yet started the match we send the peer
-                in 'waiting for players' state.
-             */
-            if (!_started)
-            {
-                /* Let all peers know that the client has joined. */
-                foreach (var otherPeer in Peers)
-                {
-                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, peer.Actor.Movement);
-                    otherPeer.KnownActors.Add(peer.Actor.Cmid);
-                }
-
-                peer.Events.Game.SendWaitingForPlayer();
-            }
-            /*
-                Otherwise we send the client to random spawn for its
-                team.
-             */
-            else
-            {
-                var point = _spawnManager.Get(peer.Actor.Team);
-                peer.Actor.Movement.Position = point.Position;
-                peer.Actor.Movement.HorizontalRotation = point.Rotation;
-
-                peer.Events.Game.SendMatchStart(_roundNumber, _endTime);
-
-                /* Let all peers know that the client has joined. */
-                foreach (var otherPeer in Peers)
-                {
-                    otherPeer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, peer.Actor.Movement);
-                    otherPeer.KnownActors.Add(otherPeer.Actor.Cmid);
-                }
-
-                //peer.Events.Game.SendPlayerJoinedGame(peer.Actor.Data, peer.Actor.Movement);
-                peer.Events.Game.SendPlayerRespawned(peer.Actor.Cmid, point.Position, point.Rotation);
-            }
         }
 
         protected override void OnChatMessage(GamePeer peer, string message, ChatContext context)
