@@ -36,7 +36,6 @@
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationWebServiceClient.cs" />
     <Compile Include="AuthenticationWebServiceClient.cs" />
     <Compile Include="BaseWebServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

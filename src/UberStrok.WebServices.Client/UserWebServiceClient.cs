@@ -13,7 +13,7 @@ namespace UberStrok.WebServices.Client
             // Space
         }
 
-        public  UberstrikeUserView GetMember(string authToken)
+        public UberstrikeUserView GetMember(string authToken)
         {
             using (var bytes = new MemoryStream())
             {
@@ -22,6 +22,18 @@ namespace UberStrok.WebServices.Client
                 var data = Channel.GetMember(bytes.ToArray());
                 using (var inBytes = new MemoryStream(data))
                     return UberstrikeUserViewProxy.Deserialize(inBytes);
+            }
+        }
+
+        public LoadoutView GetLoadout(string authToken)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                StringProxy.Serialize(bytes, authToken);
+
+                var data = Channel.GetLoadout(bytes.ToArray());
+                using (var inBytes = new MemoryStream(data))
+                    return LoadoutViewProxy.Deserialize(inBytes);
             }
         }
     }
