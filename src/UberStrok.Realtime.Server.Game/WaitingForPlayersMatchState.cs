@@ -33,7 +33,7 @@
                 /* Let all peers know that the client has joined. */
                 foreach (var otherPeer in Room.Peers)
                 {
-                    otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Data, player.Actor.Movement);
+                    otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Info.View, player.Actor.Movement);
                     otherPeer.KnownActors.Add(player.Actor.Cmid);
                 }
 

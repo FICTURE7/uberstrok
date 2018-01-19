@@ -54,12 +54,17 @@ namespace UberStrok.Realtime.Server.Game
             var updatePing = DateTime.UtcNow > _nextPingUpdate;
             foreach (var player in Room.Players)
             {
-                var delta = player.Actor.Delta;
-                if (updatePing)
-                    delta.Changes.Add(GameActorInfoDeltaView.Keys.Ping, player.Ping);
-
+                var delta = player.Actor.Info.ViewDelta;
                 if (delta.Changes.Count > 0)
                 {
+#if DEBUG
+                    var changes = delta.Id + ": \r\n";
+                    foreach (var change in delta.Changes)
+                        changes += change.Key + ": " + change.Value + "\r\n";
+
+                    s_log.Debug(changes);
+#endif
+
                     delta.UpdateMask();
                     deltas.Add(delta);
                 }
@@ -92,7 +97,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 Debug.Assert(!otherPeer.KnownActors.Contains(player.Actor.Cmid));
 
-                otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Data, player.Actor.Movement);
+                otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Info.View, player.Actor.Movement);
                 otherPeer.KnownActors.Add(player.Actor.Cmid);
             }
 

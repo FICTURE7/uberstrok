@@ -1,7 +1,6 @@
 ﻿using PhotonHostRuntimeInterfaces;
 using System.Collections.Generic;
 using UberStrok.Core.Common;
-using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -21,9 +20,9 @@ namespace UberStrok.Realtime.Server.Game
                 Update the number of connected players while we're at it.
              */
             peer.Actor.Team = team;
-            peer.Actor.Data.Health = 100;
-            peer.Actor.Data.Ping = (ushort)(peer.RoundTripTime / 2);
-            peer.Actor.Data.PlayerState |= PlayerStates.Ready;
+            peer.Actor.Info.Health = 100;
+            peer.Actor.Info.Ping = (ushort)(peer.RoundTripTime / 2);
+            peer.Actor.Info.PlayerState |= PlayerStates.Ready;
 
             lock (_peers)
             {
@@ -74,8 +73,7 @@ namespace UberStrok.Realtime.Server.Game
             if (damage < 0)
                 return;
 
-            peer.Actor.Data.Health -= actualDamage;
-            peer.Actor.Delta.Changes[GameActorInfoDeltaView.Keys.Health] = actualDamage;
+            peer.Actor.Info.Health -= actualDamage;
         }
 
         protected override void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets)
@@ -84,8 +82,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 if (player.Actor.Cmid == target)
                 {
-                    player.Actor.Data.Health -= 1;
-                    player.Actor.Delta.Changes[GameActorInfoDeltaView.Keys.Health] = peer.Actor.Data.Health;
+                    player.Actor.Info.Health -= 1;
                     break;
                 }
             }
@@ -111,30 +108,29 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnSwitchWeapon(GamePeer peer, byte slot)
         {
-            peer.Actor.Data.CurrentWeaponSlot = slot;
-            peer.Actor.Delta.Changes[GameActorInfoDeltaView.Keys.CurrentWeaponSlot] = slot;
+            peer.Actor.Info.CurrentWeaponSlot = slot;
         }
 
         protected override void OnIsFiring(GamePeer peer, bool on)
         {
-            /*
+            var state = peer.Actor.Info.PlayerState;
             if (on)
-                peer.Actor.Data.PlayerState |= PlayerStates.Shooting;
+                state |= PlayerStates.Shooting;
             else
-                peer.Actor.Data.PlayerState &= ~PlayerStates.Shooting;
+                state &= ~PlayerStates.Shooting;
 
-            peer.Actor.Delta.Changes[GameActorInfoDeltaView.Keys.PlayerState] = peer.Actor.Data.PlayerState;
-            */
+            peer.Actor.Info.PlayerState = state;
         }
 
         protected override void OnIsPaused(GamePeer peer, bool on)
         {
+            var state = peer.Actor.Info.PlayerState;
             if (on)
-                peer.Actor.Data.PlayerState |= PlayerStates.Paused;
+                state |= PlayerStates.Paused;
             else
-                peer.Actor.Data.PlayerState &= ~PlayerStates.Paused;
+                state &= ~PlayerStates.Paused;
 
-            peer.Actor.Delta.Changes[GameActorInfoDeltaView.Keys.PlayerState] = peer.Actor.Data.PlayerState;
+            peer.Actor.Info.PlayerState = state;
         }
     }
 }

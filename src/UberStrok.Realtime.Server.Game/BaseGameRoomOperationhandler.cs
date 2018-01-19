@@ -101,7 +101,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             var on = BooleanProxy.Deserialize(bytes);
 
-            OnIsFiring(peer, on);
+            OnIsPaused(peer, on);
         }
 
         private void IsFiring(GamePeer peer, MemoryStream bytes)

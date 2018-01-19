@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Patcher", "src\Ub
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnlib", "lib\dnlib\src\dnlib.csproj", "{FDFC1237-143F-4919-8318-4926901F4639}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server.Game.Tests", "src\UberStrok.Realtime.Server.Game.Tests\UberStrok.Realtime.Server.Game.Tests.csproj", "{550D6A90-016A-4283-A102-CBF46B043D37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +126,10 @@ Global
 		{FDFC1237-143F-4919-8318-4926901F4639}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDFC1237-143F-4919-8318-4926901F4639}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDFC1237-143F-4919-8318-4926901F4639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{550D6A90-016A-4283-A102-CBF46B043D37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{550D6A90-016A-4283-A102-CBF46B043D37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{550D6A90-016A-4283-A102-CBF46B043D37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{550D6A90-016A-4283-A102-CBF46B043D37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,5 +155,6 @@ Global
 		{FD8539F5-C109-4264-8228-3A0235899E5A} = {A83B68F8-7A05-462E-AFA4-77D5BE488A23}
 		{30B545E0-60F3-4BAC-A53A-5CAD8D2D7FF0} = {2AC22AED-CEB7-415D-A591-5137D9CB9BCF}
 		{FDFC1237-143F-4919-8318-4926901F4639} = {2AC22AED-CEB7-415D-A591-5137D9CB9BCF}
+		{550D6A90-016A-4283-A102-CBF46B043D37} = {CEACCD26-CB32-46CF-8AEA-E3020185AA47}
 	EndGlobalSection
 EndGlobal

@@ -6,8 +6,7 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameActor
     {
-        private readonly GameActorInfoDeltaView _delta;
-        private readonly GameActorInfoView _data;
+        private readonly GameActorInfo _info;
         private readonly PlayerMovement _movement;
 
         public GameActor(GameActorInfoView data)
@@ -15,34 +14,31 @@ namespace UberStrok.Realtime.Server.Game
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
 
-            _data = data;
-            _delta = new GameActorInfoDeltaView();
-
+            _info = new GameActorInfo(data);
             _movement = new PlayerMovement();
         }
 
         public TeamID Team
         {
-            get { return Data.TeamID; }
-            set { Data.TeamID = value; }
+            get { return Info.TeamID; }
+            set { Info.TeamID = value; }
         }
 
         public int Number
         {
-            get { return Data.PlayerId; }
+            get { return Info.PlayerId; }
             set
             {
-                Data.PlayerId = (byte)value;
+                Info.PlayerId = (byte)value;
                 Movement.Number = (byte)value;
-                Delta.Id = (byte)value;
             }
         }
 
-        public int Cmid => Data.Cmid;
-        public string PlayerName => Data.PlayerName;
-        public MemberAccessLevel AccessLevel => Data.AccessLevel;
+        public int Cmid => Info.Cmid;
+        public string PlayerName => Info.PlayerName;
+        public MemberAccessLevel AccessLevel => Info.AccessLevel;
+
         public PlayerMovement Movement => _movement;
-        public GameActorInfoView Data => _data;
-        public GameActorInfoDeltaView Delta => _delta;
+        public GameActorInfo Info => _info;
     }
 }

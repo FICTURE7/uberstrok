@@ -90,7 +90,7 @@ namespace UberStrok.Realtime.Server.Game
             movement.Position = point.Position;
             movement.HorizontalRotation = point.Rotation;
 
-            Debug.Assert(player.Actor.Data.PlayerId == player.Actor.Movement.Number);
+            Debug.Assert(player.Actor.Info.PlayerId == player.Actor.Movement.Number);
 
             /*
                 This prepares the client for the next round and enables match start
@@ -106,7 +106,7 @@ namespace UberStrok.Realtime.Server.Game
                         PlayerJoinedGame event tells the client to initiate the character and register it
                         in its player list and update the team player number counts.
                      */
-                    otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Data, movement);
+                    otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Info.View, movement);
 
                 otherPeer.Events.Game.SendPlayerRespawned(player.Actor.Cmid, movement.Position, movement.HorizontalRotation);
             }

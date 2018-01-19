@@ -196,10 +196,10 @@ namespace UberStrok.Realtime.Server.Game
                 var allPositions = new List<PlayerMovement>(Players.Count);
                 foreach (var player in Players)
                 {
-                    allPlayers.Add(player.Actor.Data);
+                    allPlayers.Add(player.Actor.Info.View);
                     allPositions.Add(player.Actor.Movement);
 
-                    Debug.Assert(player.Actor.Data.PlayerId == player.Actor.Movement.Number);
+                    Debug.Assert(player.Actor.Info.PlayerId == player.Actor.Movement.Number);
 
                     peer.KnownActors.Add(player.Actor.Cmid);
                 }

@@ -49,6 +49,7 @@
     <Compile Include="BaseGamePeerOperationHandler.cs" />
     <Compile Include="BaseGameRoomOperationHandler.cs" />
     <Compile Include="GameActor.cs" />
+    <Compile Include="GameActorInfo.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="GameRoomManager.cs" />
     <Compile Include="GamePeer.cs" />
@@ -56,7 +57,7 @@
     <Compile Include="GamePeerOperationHandler.cs" />
     <Compile Include="BaseGameRoom.cs" />
     <Compile Include="GameRoomEvents.cs" />
-    <Compile Include="BaseGameRoom.OperationHandler.cs" />
+    <Compile Include="BaseGameRoom.Handler.cs" />
     <Compile Include="CountdownMatchState.cs" />
     <Compile Include="PowerUpManager.cs" />
     <Compile Include="RunningMatchState.cs" />
