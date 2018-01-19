@@ -99,9 +99,7 @@
   <ItemGroup>
     <Compile Include="MatchState.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Logic\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>python $(SolutionDir)/scripts/postbuild.py $(TargetName) $(OutDir)</PostBuildEvent>
