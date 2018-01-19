@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 
-namespace UberStrok.Realtime.Server.Game.Logic
+namespace UberStrok.Realtime.Server.Game
 {
     public class CountdownMatchState : MatchState
     {
@@ -61,7 +61,13 @@ namespace UberStrok.Realtime.Server.Game.Logic
             var countdownRound = (int)Math.Round(_countdown / 1000);
 
             if (countdownOldRound < 0)
+            {
+                /* Make sure the countdown thingy is gone. */
+                foreach (var player in Room.Players)
+                    player.Events.Game.SendMatchStartCountdown(0);
+
                 Room.State.Set(Id.Running);
+            }
             else if (countdownOldRound > countdownRound)
             {
                 foreach (var player in Room.Players)

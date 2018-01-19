@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
-namespace UberStrok.Realtime.Server.Game.Logic
+namespace UberStrok.Realtime.Server.Game
 {
     public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
     {
@@ -117,14 +117,14 @@ namespace UberStrok.Realtime.Server.Game.Logic
 
         protected override void OnIsFiring(GamePeer peer, bool on)
         {
+            /*
             if (on)
                 peer.Actor.Data.PlayerState |= PlayerStates.Shooting;
             else
                 peer.Actor.Data.PlayerState &= ~PlayerStates.Shooting;
 
             peer.Actor.Delta.Changes[GameActorInfoDeltaView.Keys.PlayerState] = peer.Actor.Data.PlayerState;
-
-            s_log.Debug(peer.Actor.Delta.Changes[GameActorInfoDeltaView.Keys.PlayerState]);
+            */
         }
 
         protected override void OnIsPaused(GamePeer peer, bool on)

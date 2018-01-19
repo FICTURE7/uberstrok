@@ -1,7 +1,6 @@
 ﻿using Photon.SocketServer;
 using System.Collections.Generic;
 using UberStrok.Core.Views;
-using UberStrok.Realtime.Server.Game.Logic;
 
 namespace UberStrok.Realtime.Server.Game
 {

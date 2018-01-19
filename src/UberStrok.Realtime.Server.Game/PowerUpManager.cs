@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UberStrok.Realtime.Server.Game.Logic
+namespace UberStrok.Realtime.Server.Game
 {
     public class PowerUpManager
     {

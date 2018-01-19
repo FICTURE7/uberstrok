@@ -1,7 +1,7 @@
 ﻿using log4net;
 using UberStrok.Core.Views;
 
-namespace UberStrok.Realtime.Server.Game.Logic
+namespace UberStrok.Realtime.Server.Game
 {
     public class TeamDeathMatchGameRoom : BaseGameRoom
     {

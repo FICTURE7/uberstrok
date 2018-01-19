@@ -1,13 +1,16 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
-namespace UberStrok.Realtime.Server.Game.Logic
+namespace UberStrok.Realtime.Server.Game
 {
     public class RunningMatchState : MatchState
     {
+        private readonly static ILog s_log = LogManager.GetLogger(nameof(RunningMatchState));
+
         /* Time when the next ping update happens. */
         private DateTime _nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
 

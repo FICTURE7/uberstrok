@@ -54,16 +54,16 @@
     <Compile Include="GamePeer.cs" />
     <Compile Include="GamePeerEvents.cs" />
     <Compile Include="GamePeerOperationHandler.cs" />
-    <Compile Include="Logic\BaseGameRoom.cs" />
+    <Compile Include="BaseGameRoom.cs" />
     <Compile Include="GameRoomEvents.cs" />
-    <Compile Include="Logic\BaseGameRoom.OperationHandler.cs" />
-    <Compile Include="Logic\CountdownMatchState.cs" />
-    <Compile Include="Logic\PowerUpManager.cs" />
-    <Compile Include="Logic\RunningMatchState.cs" />
-    <Compile Include="Logic\WaitingForPlayersMatchState.cs" />
+    <Compile Include="BaseGameRoom.OperationHandler.cs" />
+    <Compile Include="CountdownMatchState.cs" />
+    <Compile Include="PowerUpManager.cs" />
+    <Compile Include="RunningMatchState.cs" />
+    <Compile Include="WaitingForPlayersMatchState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Logic\SpawnManager.cs" />
-    <Compile Include="Logic\TeamDeathMatchGameRoom.cs" />
+    <Compile Include="SpawnManager.cs" />
+    <Compile Include="TeamDeathMatchGameRoom.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UberStrok.Core.Common\UberStrok.Core.Common.csproj">
@@ -97,7 +97,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logic\MatchState.cs" />
+    <Compile Include="MatchState.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Logic\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

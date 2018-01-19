@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UberStrok.Realtime.Server.Game.Logic
+namespace UberStrok.Realtime.Server.Game
 {
     public abstract class MatchState : State
     {

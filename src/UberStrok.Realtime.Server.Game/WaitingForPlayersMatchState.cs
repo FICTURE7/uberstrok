@@ -1,4 +1,4 @@
-﻿namespace UberStrok.Realtime.Server.Game.Logic
+﻿namespace UberStrok.Realtime.Server.Game
 {
     public class WaitingForPlayersMatchState : MatchState
     {
