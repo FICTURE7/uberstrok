@@ -4883,7 +4883,7 @@
             "DamageKnockback": 0,
             "DamagePerProjectile": 80,
             "AccuracySpread": 0,
-            "RecoilKickback": 0,
+            "RecoilKickback": 10,
             "StartAmmo": 20,
             "MaxAmmo": 30,
             "MissileTimeToDetonate": 0,
