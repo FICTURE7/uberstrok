@@ -136,8 +136,8 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnUpdatePing(GamePeer peer, ushort ping)
         {
-            //TODO: Client should not have the ability to change its ping but it can cause uberstrike.
-            peer.Ping = ping;
+            /* Ignore ping value sent by client, cause we use the server side only. */
+            peer.Actor.Info.Ping = (ushort)(peer.RoundTripTime / 2);
         }
 
         protected override void OnUpdateKeyState(GamePeer peer, byte state)

@@ -36,6 +36,7 @@ namespace UberStrok.Realtime.Server.Game
                     The client does not care about the roundNumber apparently (in TeamDeathMatch atleast).
                  */
                 player.Events.Game.SendMatchStart(Room.RoundNumber, Room.EndTime);
+                player.Events.Game.SendUpdateRoundScore(Room.RoundNumber, 0, 0);
                 player.State.Set(PeerState.Id.Playing);
             }
 

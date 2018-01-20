@@ -142,6 +142,18 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        public void SendUpdateRoundScore(int round, short blue, short red)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, round);
+                Int16Proxy.Serialize(bytes, blue);
+                Int16Proxy.Serialize(bytes, red);
+
+                SendEvent((byte)IGameRoomEventsType.UpdateRoundScore, bytes);
+            }
+        }
+
         public void SendMatchStart(int roundNumber, int endTime)
         {
             using (var bytes = new MemoryStream())
