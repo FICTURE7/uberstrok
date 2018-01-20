@@ -24,7 +24,7 @@ namespace UberStrok.Realtime.Server.Game
             peer.Actor.Team = team;
             peer.Actor.Info.Health = 100;
             peer.Actor.Info.Ping = (ushort)(peer.RoundTripTime / 2);
-            peer.Actor.Info.PlayerState |= PlayerStates.Ready;
+            peer.Actor.Info.PlayerState = PlayerStates.Ready;
 
             lock (_peers)
             {
@@ -145,7 +145,7 @@ namespace UberStrok.Realtime.Server.Game
                             ItemClass = weapon.ItemClass,
                             Damage = (ushort)shortDamage,
                             Part = part,
-                            Direction = direction
+                            Direction = -direction
                         });
                     }
                 }
