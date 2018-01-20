@@ -96,17 +96,20 @@ namespace UberStrok.Realtime.Server.Game
                 This prepares the client for the next round and enables match start
                 countdown thingy.
              */
-            player.Events.Game.SendPrepareNextRound();
+            player.State.Set(PeerState.Id.Countdown);
 
             /* Let all peers know that the player has joined the game. */
             foreach (var otherPeer in Room.Peers)
             {
                 if (!otherPeer.KnownActors.Contains(player.Actor.Cmid))
+                {
                     /*
                         PlayerJoinedGame event tells the client to initiate the character and register it
                         in its player list and update the team player number counts.
                      */
                     otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Info.View, movement);
+                    otherPeer.KnownActors.Add(player.Actor.Cmid);
+                }
 
                 otherPeer.Events.Game.SendPlayerRespawned(player.Actor.Cmid, movement.Position, movement.HorizontalRotation);
             }

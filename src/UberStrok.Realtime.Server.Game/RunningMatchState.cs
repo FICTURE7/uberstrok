@@ -33,7 +33,7 @@ namespace UberStrok.Realtime.Server.Game
 
                     The client does not care about the roundNumber apparently (in TeamDeathMatch atleast).
                  */
-                player.Events.Game.SendMatchStart(Room.RoundNumber, Room.EndTime);
+                player.State.Set(PeerState.Id.Playing);
 
             /* TODO: Increment round number only when the round is over. */
             Room.RoundNumber++;
@@ -51,6 +51,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 position.Add(player.Actor.Movement);
 
+                /* If the player has any damage events, we sent them. */
                 if (player.Actor.Damages.Count > 0)
                 {
                     player.Events.Game.SendDamageEvent(player.Actor.Damages);
@@ -85,6 +86,7 @@ namespace UberStrok.Realtime.Server.Game
 
         private void OnPlayerJoined(object sender, PlayerJoinedEventArgs e)
         {
+            /* Spawn the player in the room. */
             var player = e.Player;
             var point = Room.SpawnManager.Get(player.Actor.Team);
             player.Actor.Movement.Position = point.Position;

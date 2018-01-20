@@ -26,6 +26,7 @@
         {
             var player = e.Player;
 
+            /* If we got more than 1 player we start the countdown. */
             if (Room.Players.Count > 1)
                 Room.State.Set(Id.Countdown);
             else
@@ -37,7 +38,8 @@
                     otherPeer.KnownActors.Add(player.Actor.Cmid);
                 }
 
-                player.Events.Game.SendWaitingForPlayer();
+                /* Set the player in a 'waiting for players' state. */
+                player.State.Set(PeerState.Id.WaitingForPlayers);
             }
         }
     }

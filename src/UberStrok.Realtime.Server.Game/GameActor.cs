@@ -18,6 +18,8 @@ namespace UberStrok.Realtime.Server.Game
             _info = new GameActorInfo(data);
             _movement = new PlayerMovement();
             _damages = new DamageEventView();
+
+            
         }
 
         public TeamID Team

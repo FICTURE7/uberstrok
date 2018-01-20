@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="BaseGamePeerOperationHandler.cs" />
     <Compile Include="BaseGameRoomOperationHandler.cs" />
+    <Compile Include="CountdownPeerState.cs" />
     <Compile Include="GameActor.cs" />
     <Compile Include="GameActorInfo.cs" />
     <Compile Include="GameApplication.cs" />
@@ -59,6 +60,9 @@
     <Compile Include="GameRoomEvents.cs" />
     <Compile Include="BaseGameRoom.Handler.cs" />
     <Compile Include="CountdownMatchState.cs" />
+    <Compile Include="OverviewPeerState.cs" />
+    <Compile Include="PeerState.cs" />
+    <Compile Include="PlayingPeerState.cs" />
     <Compile Include="PowerUpManager.cs" />
     <Compile Include="RunningMatchState.cs" />
     <Compile Include="ShopManager.cs" />
@@ -66,6 +70,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpawnManager.cs" />
     <Compile Include="TeamDeathMatchGameRoom.cs" />
+    <Compile Include="WaitingForPlayersPeerState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UberStrok.Core.Common\UberStrok.Core.Common.csproj">

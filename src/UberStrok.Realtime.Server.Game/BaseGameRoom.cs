@@ -164,7 +164,7 @@ namespace UberStrok.Realtime.Server.Game
             data.Gear[5] = peer.Loadout.LowerBody;
             data.Gear[6] = peer.Loadout.Boots;
 
-            /* Sets the gears of the character. */
+            /* Sets the weapons of the character. */
             data.Weapons[0] = peer.Loadout.MeleeWeapon;
             data.Weapons[1] = peer.Loadout.Weapon1;
             data.Weapons[2] = peer.Loadout.Weapon2;
@@ -190,23 +190,11 @@ namespace UberStrok.Realtime.Server.Game
              */
             peer.Events.SendRoomEntered(Data);
 
-            /* Let the client know about the other players in the room, if there is any.*/
-            if (Players.Count > 0)
-            {
-                var allPlayers = new List<GameActorInfoView>(Players.Count);
-                var allPositions = new List<PlayerMovement>(Players.Count);
-                foreach (var player in Players)
-                {
-                    allPlayers.Add(player.Actor.Info.View);
-                    allPositions.Add(player.Actor.Movement);
-
-                    Debug.Assert(player.Actor.Info.PlayerId == player.Actor.Movement.Number);
-
-                    peer.KnownActors.Add(player.Actor.Cmid);
-                }
-
-                peer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
-            }
+            /* 
+                Set the player in the overview state. Which
+                also sends all player data in the room.
+             */
+            peer.State.Set(PeerState.Id.Overview); 
         }
 
         public void Leave(GamePeer peer)
@@ -232,9 +220,10 @@ namespace UberStrok.Realtime.Server.Game
                 _data.ConnectedPlayers = Players.Count;
             }
 
-            peer.KnownActors.Clear();
-
+            /* Set peer state to none, and clean up. */
+            peer.State.Set(PeerState.Id.None);
             peer.RemoveOperationHandler(Id);
+            peer.KnownActors.Clear();
             peer.Actor = null;
             peer.Room = null;
         }

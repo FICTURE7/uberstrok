@@ -16,7 +16,7 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnJoinGame(GamePeer peer, TeamID team)
         {
             /* 
-                When the client joins a game it resets its game state to 'none'.               
+                When the client joins a game it resets its match state to 'none'.               
 
                 Update the actor's team + other data and register the peer in the player list.
                 Update the number of connected players while we're at it.
