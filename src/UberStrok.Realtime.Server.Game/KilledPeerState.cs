@@ -20,12 +20,17 @@ namespace UberStrok.Realtime.Server.Game
 
         public override void OnEnter()
         {
-            Peer.Killed += OnKilled;
+            var now = DateTime.UtcNow;
+
+            /* TODO: Allow user to set the countdown timer duration in a config or something. */
+            _countdown = 3 * 1000;
+            _countdownEndTime = now.AddSeconds(_countdown);
+            _lastUpdate = now;
         }
 
         public override void OnExit()
         {
-            Peer.Killed -= OnKilled;
+            // Space
         }
 
         public override void OnUpdate()
@@ -47,19 +52,6 @@ namespace UberStrok.Realtime.Server.Game
                 Peer.Events.Game.SendPlayerRespawnCountdown(countdownOldRound);
 
             _lastUpdate = DateTime.UtcNow;
-        }
-
-        private void OnKilled(object sender, PlayerKilledEventArgs e)
-        {
-            var now = DateTime.UtcNow;
-
-            /* TODO: Allow user to set the countdown timer duration in a config or something. */
-            _countdown = 3 * 1000;
-            _countdownEndTime = now.AddSeconds(_countdown);
-            _lastUpdate = now;
-
-            foreach (var otherPeer in Room.Peers)
-                otherPeer.Events.Game.SendPlayerKilled(e.AttackerCmid, e.VictimCmid, e.ItemClass, e.Damage, e.Part, e.Direction);
         }
     }
 }

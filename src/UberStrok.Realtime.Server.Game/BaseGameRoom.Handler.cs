@@ -138,7 +138,7 @@ namespace UberStrok.Realtime.Server.Game
                         peer.Actor.Info.Kills++;
 
                         player.State.Set(PeerState.Id.Killed);
-                        player.OnKilled(new PlayerKilledEventArgs
+                        OnPlayerKilled(new PlayerKilledEventArgs
                         {
                             AttackerCmid = peer.Actor.Cmid,
                             VictimCmid = player.Actor.Cmid,

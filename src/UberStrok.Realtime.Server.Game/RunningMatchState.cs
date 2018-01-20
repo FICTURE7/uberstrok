@@ -23,6 +23,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             Room.PlayerJoined += OnPlayerJoined;
             Room.PlayerRespawned += OnPlayerRespawned;
+            Room.PlayerKilled += OnPlayerKilled;
 
             /* Calculate the time when the games ends (in system ticks). */
             Room.EndTime = Environment.TickCount + Room.Data.TimeLimit * 1000;
@@ -44,22 +45,11 @@ namespace UberStrok.Realtime.Server.Game
             Room.RoundNumber++;
         }
 
-        private void OnPlayerRespawned(object sender, PlayerRespawnedEventArgs e)
-        {
-            e.Player.Actor.Info.Health = 100;
-            e.Player.Actor.Info.PlayerState &= ~PlayerStates.Dead;
-
-            var spawn = Room.SpawnManager.Get(e.Player.Actor.Team);
-            foreach (var otherPeer in Room.Peers)
-                otherPeer.Events.Game.SendPlayerRespawned(e.Player.Actor.Cmid, spawn.Position, spawn.Rotation);
-
-            e.Player.State.Set(PeerState.Id.Playing);
-        }
-
         public override void OnExit()
         {
             Room.PlayerJoined -= OnPlayerJoined;
             Room.PlayerRespawned -= OnPlayerRespawned;
+            Room.PlayerKilled -= OnPlayerKilled;
         }
 
         public override void OnUpdate()
@@ -97,6 +87,24 @@ namespace UberStrok.Realtime.Server.Game
 
             foreach (var delta in deltas)
                 delta.Changes.Clear();
+        }
+
+        private void OnPlayerKilled(object sender, PlayerKilledEventArgs e)
+        { 
+            foreach (var otherPeer in Room.Peers)
+                otherPeer.Events.Game.SendPlayerKilled(e.AttackerCmid, e.VictimCmid, e.ItemClass, e.Damage, e.Part, e.Direction);
+        }
+
+        private void OnPlayerRespawned(object sender, PlayerRespawnedEventArgs e)
+        {
+            e.Player.Actor.Info.Health = 100;
+            e.Player.Actor.Info.PlayerState &= ~PlayerStates.Dead;
+
+            var spawn = Room.SpawnManager.Get(e.Player.Actor.Team);
+            foreach (var otherPeer in Room.Peers)
+                otherPeer.Events.Game.SendPlayerRespawned(e.Player.Actor.Cmid, spawn.Position, spawn.Rotation);
+
+            e.Player.State.Set(PeerState.Id.Playing);
         }
 
         private void OnPlayerJoined(object sender, PlayerJoinedEventArgs e)

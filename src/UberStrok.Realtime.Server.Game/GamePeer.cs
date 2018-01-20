@@ -39,13 +39,6 @@ namespace UberStrok.Realtime.Server.Game
 
         public GamePeerEvents Events => _events;
         public StateMachine<PeerState.Id> State => _state;
-
-        public event EventHandler<PlayerKilledEventArgs> Killed;
-
-        public void OnKilled(PlayerKilledEventArgs args)
-        {
-            Killed?.Invoke(this, args);
-        }
     }
 
     public class PlayerKilledEventArgs

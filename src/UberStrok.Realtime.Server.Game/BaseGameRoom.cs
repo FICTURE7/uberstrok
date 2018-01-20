@@ -94,6 +94,7 @@ namespace UberStrok.Realtime.Server.Game
         public IReadOnlyList<GamePeer> Players => _playersReadonly;
         public StateMachine<MatchState.Id> State => _state;
 
+        public event EventHandler<PlayerKilledEventArgs> PlayerKilled;
         public event EventHandler<PlayerRespawnedEventArgs> PlayerRespawned;
         public event EventHandler<PlayerJoinedEventArgs> PlayerJoined;
         public event EventHandler<PlayerLeftEventArgs> PlayerLeft;
@@ -282,6 +283,11 @@ namespace UberStrok.Realtime.Server.Game
         protected virtual void OnPlayerJoined(PlayerJoinedEventArgs args)
         {
             PlayerJoined?.Invoke(this, args);
+        }
+
+        protected virtual void OnPlayerKilled(PlayerKilledEventArgs args)
+        {
+            PlayerKilled?.Invoke(this, args);
         }
     }
 }
