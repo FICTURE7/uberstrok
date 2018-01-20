@@ -1,6 +1,6 @@
 ﻿namespace UberStrok.Core.Common
 {
-	public enum UberstrikeItemType
+	public enum UberStrikeItemType
 	{
 		Weapon = 1,
 		WeaponMod,

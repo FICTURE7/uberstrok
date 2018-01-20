@@ -27,7 +27,7 @@ namespace UberStrok.Core.Serialization.Views
 			view.HasAutomaticFire = BooleanProxy.Deserialize(bytes);
 			view.ID = Int32Proxy.Deserialize(bytes);
 			view.IsConsumable = BooleanProxy.Deserialize(bytes);
-			view.ItemClass = EnumProxy<UberstrikeItemClass>.Deserialize(bytes);
+			view.ItemClass = EnumProxy<UberStrikeItemClass>.Deserialize(bytes);
 
 			if ((mask & 4) != 0)
 				view.ItemProperties = DictionaryProxy<ItemPropertyType, int>.Deserialize(bytes, EnumProxy<ItemPropertyType>.Deserialize, Int32Proxy.Deserialize);
@@ -89,7 +89,7 @@ namespace UberStrok.Core.Serialization.Views
 				BooleanProxy.Serialize(bytes, instance.HasAutomaticFire);
 				Int32Proxy.Serialize(bytes, instance.ID);
 				BooleanProxy.Serialize(bytes, instance.IsConsumable);
-				EnumProxy<UberstrikeItemClass>.Serialize(bytes, instance.ItemClass);
+				EnumProxy<UberStrikeItemClass>.Serialize(bytes, instance.ItemClass);
 
 				if (instance.ItemProperties != null)
 					DictionaryProxy<ItemPropertyType, int>.Serialize(bytes, instance.ItemProperties, EnumProxy<ItemPropertyType>.Serialize, Int32Proxy.Serialize);

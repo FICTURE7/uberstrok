@@ -8,6 +8,7 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract class BaseGameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {
+        protected abstract void OnRespawnRequest(GamePeer peer);
         protected abstract void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets);
         protected abstract void OnDirectDamage(GamePeer peer, ushort damage);
         protected abstract void OnSwitchWeapon(GamePeer peer, byte slot);
@@ -25,6 +26,10 @@ namespace UberStrok.Realtime.Server.Game
             var operation = (IGameRoomOperationsType)opCode;
             switch (operation)
             {
+                case IGameRoomOperationsType.RespawnRequest:
+                    RespawnRequest(peer, bytes);
+                    break;
+
                 case IGameRoomOperationsType.DirectHitDamage:
                     DirectHitDamage(peer, bytes);
                     break;
@@ -72,6 +77,11 @@ namespace UberStrok.Realtime.Server.Game
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private void RespawnRequest(GamePeer peer, MemoryStream bytes)
+        {
+            OnRespawnRequest(peer);
         }
 
         private void DirectHitDamage(GamePeer peer, MemoryStream bytes)

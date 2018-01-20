@@ -8,6 +8,11 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
+    public class PlayerRespawnedEventArgs : EventArgs
+    {
+        public GamePeer Player { get; set; }
+    }
+
     public class PlayerJoinedEventArgs : EventArgs
     {
         public GamePeer Player { get; set; }
@@ -89,6 +94,7 @@ namespace UberStrok.Realtime.Server.Game
         public IReadOnlyList<GamePeer> Players => _playersReadonly;
         public StateMachine<MatchState.Id> State => _state;
 
+        public event EventHandler<PlayerRespawnedEventArgs> PlayerRespawned;
         public event EventHandler<PlayerJoinedEventArgs> PlayerJoined;
         public event EventHandler<PlayerLeftEventArgs> PlayerLeft;
 
@@ -266,6 +272,11 @@ namespace UberStrok.Realtime.Server.Game
             {
                 s_log.Debug("Loop thread was aborted!");
             }
+        }
+
+        protected virtual void OnPlayerRespawned(PlayerRespawnedEventArgs args)
+        {
+            PlayerRespawned?.Invoke(this, args);
         }
 
         protected virtual void OnPlayerJoined(PlayerJoinedEventArgs args)

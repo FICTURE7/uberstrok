@@ -22,30 +22,48 @@ namespace UberStrok.Realtime.Server.Game
         public override void OnEnter()
         {
             Room.PlayerJoined += OnPlayerJoined;
+            Room.PlayerRespawned += OnPlayerRespawned;
 
             /* Calculate the time when the games ends (in system ticks). */
             Room.EndTime = Environment.TickCount + Room.Data.TimeLimit * 1000;
 
             foreach (var player in Room.Players)
+            {
                 /* 
                     MatchStart event changes the match state of the client to match running,
                     which in turn changes the player state to playing.
 
                     The client does not care about the roundNumber apparently (in TeamDeathMatch atleast).
                  */
+                player.Events.Game.SendMatchStart(Room.RoundNumber, Room.EndTime);
                 player.State.Set(PeerState.Id.Playing);
+            }
 
             /* TODO: Increment round number only when the round is over. */
             Room.RoundNumber++;
         }
 
+        private void OnPlayerRespawned(object sender, PlayerRespawnedEventArgs e)
+        {
+            e.Player.Actor.Info.Health = 100;
+            e.Player.Actor.Info.PlayerState &= ~PlayerStates.Dead;
+
+            var spawn = Room.SpawnManager.Get(e.Player.Actor.Team);
+            foreach (var otherPeer in Room.Peers)
+                otherPeer.Events.Game.SendPlayerRespawned(e.Player.Actor.Cmid, spawn.Position, spawn.Rotation);
+
+            e.Player.State.Set(PeerState.Id.Playing);
+        }
+
         public override void OnExit()
         {
             Room.PlayerJoined -= OnPlayerJoined;
+            Room.PlayerRespawned -= OnPlayerRespawned;
         }
 
         public override void OnUpdate()
         {
+            var deltas = new List<GameActorInfoDeltaView>(Room.Peers.Count);
             var position = new List<PlayerMovement>(Room.Players.Count);
             foreach (var player in Room.Players)
             {
@@ -57,27 +75,23 @@ namespace UberStrok.Realtime.Server.Game
                     player.Events.Game.SendDamageEvent(player.Actor.Damages);
                     player.Actor.Damages.Clear();
                 }
-            }
 
-            var deltas = new List<GameActorInfoDeltaView>(Room.Peers.Count);
-            var updatePing = DateTime.UtcNow > _nextPingUpdate;
-            foreach (var player in Room.Players)
-            {
+                /* If the player has changed something since the last tick. */
                 var delta = player.Actor.Info.ViewDelta;
                 if (delta.Changes.Count > 0)
                 {
                     delta.UpdateMask();
                     deltas.Add(delta);
                 }
-            }
 
-            if (updatePing)
-                _nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
+                /* Tick the player state. */
+                player.State.Update();
+            }
 
             foreach (var otherPeer in Room.Peers)
             {
                 otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
-                otherPeer.Events.Game.SendAllPlayerPositions(position, 1);
+                otherPeer.Events.Game.SendAllPlayerPositions(position, 0);
             }
 
             foreach (var delta in deltas)

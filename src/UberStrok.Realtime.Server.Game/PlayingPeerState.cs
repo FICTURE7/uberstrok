@@ -9,7 +9,7 @@
 
         public override void OnEnter()
         {
-            Peer.Events.Game.SendMatchStart(Room.RoundNumber, Room.EndTime);
+            // Space
         }
 
         public override void OnExit()

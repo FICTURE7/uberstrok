@@ -1,6 +1,6 @@
 ﻿namespace UberStrok.Core.Common
 {
-    public enum UberstrikeItemClass
+    public enum UberStrikeItemClass
 	{
 		WeaponMelee = 1,
 		WeaponMachinegun = 3,

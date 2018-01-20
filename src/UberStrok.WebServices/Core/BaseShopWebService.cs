@@ -18,7 +18,7 @@ namespace UberStrok.WebServices.Core
             // Space
         }
 
-        public abstract BuyItemResult OnBuyItem(int itemId, string authToken, UberStrikeCurrencyType currencyType, BuyingDurationType durationType, UberstrikeItemType itemType, BuyingLocationType marketLocation, BuyingRecommendationType recommendationType);
+        public abstract BuyItemResult OnBuyItem(int itemId, string authToken, UberStrikeCurrencyType currencyType, BuyingDurationType durationType, UberStrikeItemType itemType, BuyingLocationType marketLocation, BuyingRecommendationType recommendationType);
         public abstract UberStrikeItemShopClientView OnGetShop();
 
         byte[] IShopWebServiceContract.BuyBundle(byte[] data)
@@ -59,7 +59,7 @@ namespace UberStrok.WebServices.Core
                     var authToken = StringProxy.Deserialize(bytes);
                     var currencyType = EnumProxy<UberStrikeCurrencyType>.Deserialize(bytes);
                     var durationType = EnumProxy<BuyingDurationType>.Deserialize(bytes);
-                    var itemType = EnumProxy<UberstrikeItemType>.Deserialize(bytes);
+                    var itemType = EnumProxy<UberStrikeItemType>.Deserialize(bytes);
                     var marketLocation = EnumProxy<BuyingLocationType>.Deserialize(bytes);
                     var recommendationType = EnumProxy<BuyingRecommendationType>.Deserialize(bytes);
 

@@ -9,6 +9,6 @@ namespace UberStrok.Core.Views
 		public int ArmorPoints { get; set; }
 		public int ArmorWeight { get; set; }
 
-        public override UberstrikeItemType ItemType => UberstrikeItemType.Gear;
+        public override UberStrikeItemType ItemType => UberStrikeItemType.Gear;
 	}
 }

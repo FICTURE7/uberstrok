@@ -69,8 +69,8 @@
     <Compile Include="SurfaceType.cs" />
     <Compile Include="TeamID.cs" />
     <Compile Include="UberStrikeCurrencyType.cs" />
-    <Compile Include="UberstrikeItemClass.cs" />
-    <Compile Include="UberstrikeItemType.cs" />
+    <Compile Include="UberStrikeItemClass.cs" />
+    <Compile Include="UberStrikeItemType.cs" />
     <Compile Include="Vector3.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -31,7 +31,7 @@ namespace UberStrok.Core.Views
         public int Tier { get; set; }
         public int WeaponSecondaryAction { get; set; }
 
-        public override UberstrikeItemType ItemType => UberstrikeItemType.Weapon;
+        public override UberStrikeItemType ItemType => UberStrikeItemType.Weapon;
 
 #if false
         public int AccuracySpread

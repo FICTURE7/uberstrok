@@ -8,6 +8,6 @@ namespace UberStrok.Core.Views
     [Serializable]
 	public class UberStrikeItemFunctionalView : BaseUberStrikeItemView
 	{
-        public override UberstrikeItemType ItemType => UberstrikeItemType.Functional;
+        public override UberStrikeItemType ItemType => UberStrikeItemType.Functional;
 	}
 }

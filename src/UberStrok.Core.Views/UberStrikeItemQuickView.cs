@@ -14,6 +14,6 @@ namespace UberStrok.Core.Views
         public int UsesPerRound { get; set; }
         public int WarmUpTime { get; set; }
 
-        public override UberstrikeItemType ItemType => UberstrikeItemType.QuickUse;
+        public override UberStrikeItemType ItemType => UberStrikeItemType.QuickUse;
     }
 }

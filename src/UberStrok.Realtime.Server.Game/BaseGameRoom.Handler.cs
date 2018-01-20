@@ -78,6 +78,14 @@ namespace UberStrok.Realtime.Server.Game
             peer.Actor.Info.Health -= actualDamage;
         }
 
+        protected override void OnRespawnRequest(GamePeer peer)
+        {
+            OnPlayerRespawned(new PlayerRespawnedEventArgs
+            {
+                Player = peer
+            });
+        }
+
         protected override void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets)
         {
             var weaponId = peer.Actor.Info.CurrentWeaponID;
@@ -129,8 +137,16 @@ namespace UberStrok.Realtime.Server.Game
                         player.Actor.Info.Deaths++;
                         peer.Actor.Info.Kills++;
 
-                        foreach (var otherPeer in Peers)
-                            otherPeer.Events.Game.SendPlayerKilled(peer.Actor.Cmid, player.Actor.Cmid, weapon.ItemClass, (ushort)shortDamage, part, direction);
+                        player.State.Set(PeerState.Id.Killed);
+                        player.OnKilled(new PlayerKilledEventArgs
+                        {
+                            AttackerCmid = peer.Actor.Cmid,
+                            VictimCmid = player.Actor.Cmid,
+                            ItemClass = weapon.ItemClass,
+                            Damage = (ushort)shortDamage,
+                            Part = part,
+                            Direction = direction
+                        });
                     }
                 }
                 else

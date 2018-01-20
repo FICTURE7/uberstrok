@@ -15,7 +15,7 @@ namespace UberStrok.WebServices.Core
             // Space
         }
 
-        public override BuyItemResult OnBuyItem(int itemId, string authToken, UberStrikeCurrencyType currencyType, BuyingDurationType durationType, UberstrikeItemType itemType, BuyingLocationType marketLocation, BuyingRecommendationType recommendationType)
+        public override BuyItemResult OnBuyItem(int itemId, string authToken, UberStrikeCurrencyType currencyType, BuyingDurationType durationType, UberStrikeItemType itemType, BuyingLocationType marketLocation, BuyingRecommendationType recommendationType)
         {
             var member = Context.Users.GetMember(authToken);
             if (member == null)

@@ -60,6 +60,7 @@
     <Compile Include="GameRoomEvents.cs" />
     <Compile Include="BaseGameRoom.Handler.cs" />
     <Compile Include="CountdownMatchState.cs" />
+    <Compile Include="KilledPeerState.cs" />
     <Compile Include="OverviewPeerState.cs" />
     <Compile Include="PeerState.cs" />
     <Compile Include="PlayingPeerState.cs" />

@@ -16,7 +16,17 @@ namespace UberStrok.Realtime.Server.Game
 
         private GamePeer _peer;
 
-        public void SendPlayerKilled(int shooter, int target, UberstrikeItemClass weaponClass, ushort damage, BodyPart bodyPart, Vector3 direction)
+        public void SendPlayerRespawnCountdown(int countdown)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, countdown);
+
+                SendEvent((byte)IGameRoomEventsType.PlayerRespawnCountdown, bytes);
+            }
+        }
+
+        public void SendPlayerKilled(int shooter, int target, UberStrikeItemClass weaponClass, ushort damage, BodyPart bodyPart, Vector3 direction)
         {
             using (var bytes = new MemoryStream())
             {
