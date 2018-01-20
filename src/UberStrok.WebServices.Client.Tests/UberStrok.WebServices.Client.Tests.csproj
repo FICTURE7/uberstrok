@@ -48,9 +48,9 @@
       <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
       <Name>Uberstrok.Core.Views</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UberStrok.WebServices.Client\UberStok.WebServices.Client.csproj">
+    <ProjectReference Include="..\UberStrok.WebServices.Client\UberStrok.WebServices.Client.csproj">
       <Project>{F9FA508B-417F-4863-B19D-B7CF3D771B0F}</Project>
-      <Name>UberStok.WebServices.Client</Name>
+      <Name>UberStrok.WebServices.Client</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

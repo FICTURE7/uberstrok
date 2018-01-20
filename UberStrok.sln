@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime", "src\UberStrok.Realtime\UberStrok.Realtime.csproj", "{8582768E-780F-4E5A-AD26-07A14893A1B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStok.WebServices.Client", "src\UberStrok.WebServices.Client\UberStok.WebServices.Client.csproj", "{F9FA508B-417F-4863-B19D-B7CF3D771B0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.WebServices.Client", "src\UberStrok.WebServices.Client\UberStrok.WebServices.Client.csproj", "{F9FA508B-417F-4863-B19D-B7CF3D771B0F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Core.Serialization", "src\UberStrok.Core.Serialization\UberStrok.Core.Serialization.csproj", "{31695DBE-D01C-4EA8-92CC-28541E9E0BC0}"
 EndProject

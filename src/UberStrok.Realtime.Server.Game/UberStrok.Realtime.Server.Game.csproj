@@ -93,9 +93,9 @@
       <Project>{8582768E-780F-4E5A-AD26-07A14893A1B3}</Project>
       <Name>UberStrok.Realtime</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UberStrok.WebServices.Client\UberStok.WebServices.Client.csproj">
+    <ProjectReference Include="..\UberStrok.WebServices.Client\UberStrok.WebServices.Client.csproj">
       <Project>{F9FA508B-417F-4863-B19D-B7CF3D771B0F}</Project>
-      <Name>UberStok.WebServices.Client</Name>
+      <Name>UberStrok.WebServices.Client</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
