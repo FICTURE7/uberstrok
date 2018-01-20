@@ -11,9 +11,6 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(RunningMatchState));
 
-        /* Time when the next ping update happens. */
-        private DateTime _nextPingUpdate = DateTime.UtcNow.AddSeconds(1);
-
         public RunningMatchState(BaseGameRoom room) : base(room)
         {
             // Space
