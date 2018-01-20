@@ -52,7 +52,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{2AC22AED-C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Patcher", "src\UberStrok.Patcher\UberStrok.Patcher.csproj", "{30B545E0-60F3-4BAC-A53A-5CAD8D2D7FF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnlib", "lib\dnlib\src\dnlib.csproj", "{FDFC1237-143F-4919-8318-4926901F4639}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnlib", "libs\dnlib\src\dnlib.csproj", "{FDFC1237-143F-4919-8318-4926901F4639}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server.Game.Tests", "src\UberStrok.Realtime.Server.Game.Tests\UberStrok.Realtime.Server.Game.Tests.csproj", "{550D6A90-016A-4283-A102-CBF46B043D37}"
 EndProject

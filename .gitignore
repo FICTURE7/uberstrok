@@ -18,7 +18,7 @@ bin/
 obj/
 
 # Libraries
-lib/uberstrike/*.dll
+libs/uberstrike/*.dll
 
 # Photon SDK
 photon/

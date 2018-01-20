@@ -1,3 +1,3 @@
-[submodule "lib/dnlib"]
-	path = lib/dnlib
+[submodule "libs/dnlib"]
+	path = libs/dnlib
 	url = https://github.com/0xd4d/dnlib.git
