@@ -117,9 +117,21 @@ namespace UberStrok.Realtime.Server.Game
 
                     var byteAngle = Conversions.Angle2Byte(angle);
 
-                    /* TODO: Find out the damage effect type & stuffs. */
+                    /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
+                    /* TODO: Calculate armor absorption. */
                     player.Actor.Damages.Add(byteAngle, shortDamage, part, 0, 0);
                     player.Actor.Info.Health -= shortDamage;
+
+                    /* Check if the player is dead. */
+                    if (player.Actor.Info.Health < 0)
+                    {
+                        player.Actor.Info.PlayerState |= PlayerStates.Dead;
+                        player.Actor.Info.Deaths++;
+                        peer.Actor.Info.Kills++;
+
+                        foreach (var otherPeer in Peers)
+                            otherPeer.Events.Game.SendPlayerKilled(peer.Actor.Cmid, player.Actor.Cmid, weapon.ItemClass, (ushort)shortDamage, part, direction);
+                    }
                 }
                 else
                 {
