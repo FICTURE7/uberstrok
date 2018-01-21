@@ -160,8 +160,6 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
         {
-            s_log.Debug($"Emitting projectile origin: {origin} direction: {direction} slot: {slot} projectileId: {projectileId} explode {explode}");
-
             var shooterCmid = peer.Actor.Cmid;
             foreach (var otherPeer in Peers)
             {
@@ -172,7 +170,6 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnRemoveProjectile(int projectileId, bool explode)
         {
-            s_log.Debug($"Removing projectile projectileId: {projectileId} explode {explode}");
             foreach (var otherPeer in Peers)
                 otherPeer.Events.Game.SendRemoveProjectile(projectileId, explode);
         }
