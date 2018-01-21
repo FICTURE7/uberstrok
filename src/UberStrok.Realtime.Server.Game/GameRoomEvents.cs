@@ -16,6 +16,32 @@ namespace UberStrok.Realtime.Server.Game
 
         private GamePeer _peer;
 
+        public void SendEmitProjectile(int cmid, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, cmid);
+                Vector3Proxy.Serialize(bytes, origin);
+                Vector3Proxy.Serialize(bytes, direction);
+                ByteProxy.Serialize(bytes, slot);
+                Int32Proxy.Serialize(bytes, projectileId);
+                BooleanProxy.Serialize(bytes, explode);
+
+                SendEvent((byte)IGameRoomEventsType.EmitProjectile, bytes);
+            }
+        }
+
+        public void SendRemoveProjectile(int projectileId, bool explode)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, projectileId);
+                BooleanProxy.Serialize(bytes, explode);
+
+                SendEvent((byte)IGameRoomEventsType.RemoveProjectile, bytes);
+            }
+        }
+
         public void SendPlayerRespawnCountdown(int countdown)
         {
             using (var bytes = new MemoryStream())

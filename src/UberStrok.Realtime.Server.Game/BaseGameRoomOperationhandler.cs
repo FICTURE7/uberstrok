@@ -8,6 +8,8 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract class BaseGameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {
+        protected abstract void OnRemoveProjectile(int projectileId, bool explode);
+        protected abstract void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode);
         protected abstract void OnRespawnRequest(GamePeer peer);
         protected abstract void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets);
         protected abstract void OnDirectDamage(GamePeer peer, ushort damage);
@@ -26,6 +28,14 @@ namespace UberStrok.Realtime.Server.Game
             var operation = (IGameRoomOperationsType)opCode;
             switch (operation)
             {
+                case IGameRoomOperationsType.RemoveProjectile:
+                    RemoveProjectile(peer, bytes);
+                    break;
+
+                case IGameRoomOperationsType.EmitProjectile:
+                    EmitProjectile(peer, bytes);
+                    break;
+
                 case IGameRoomOperationsType.RespawnRequest:
                     RespawnRequest(peer, bytes);
                     break;
@@ -77,6 +87,25 @@ namespace UberStrok.Realtime.Server.Game
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private void RemoveProjectile(GamePeer peer, MemoryStream bytes)
+        {
+            var projectileId = Int32Proxy.Deserialize(bytes);
+            var explode = BooleanProxy.Deserialize(bytes);
+
+            OnRemoveProjectile(projectileId, explode);
+        }
+
+        private void EmitProjectile(GamePeer peer, MemoryStream bytes)
+        {
+            var origin = Vector3Proxy.Deserialize(bytes);
+            var direction = Vector3Proxy.Deserialize(bytes);
+            var slot = ByteProxy.Deserialize(bytes);
+            var projectileId = Int32Proxy.Deserialize(bytes);
+            var explode = BooleanProxy.Deserialize(bytes);
+
+            OnEmitProjectile(peer, origin, direction, slot, projectileId, explode);
         }
 
         private void RespawnRequest(GamePeer peer, MemoryStream bytes)
