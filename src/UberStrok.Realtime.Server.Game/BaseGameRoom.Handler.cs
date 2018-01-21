@@ -68,6 +68,83 @@ namespace UberStrok.Realtime.Server.Game
                 _spawnManager.Load(team, positions, rotations);
         }
 
+        protected override void OnRespawnRequest(GamePeer peer)
+        {
+            OnPlayerRespawned(new PlayerRespawnedEventArgs
+            {
+                Player = peer
+            });
+        }
+
+        protected override void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3 force)
+        {
+            var weaponId = peer.Actor.Info.Weapons[slot];
+
+            foreach (var player in Players)
+            {
+                if (player.Actor.Cmid != target)
+                    continue;
+
+                var weapon = default(UberStrikeItemWeaponView);
+                if (ShopManager.WeaponItems.TryGetValue(weaponId, out weapon))
+                {
+                    float damage = weapon.DamagePerProjectile;
+                    float radius = weapon.SplashRadius / 100f;
+                    float damageExplosion = damage * (radius - distance) / radius;
+
+                    s_log.Debug($"Calculated: {damageExplosion} damage explosive {damage}, {radius}, {distance}, {force}");
+
+                    /* Calculate the direction of the hit. */
+                    var shortDamage = (short)damageExplosion;
+
+                    var victimPos = player.Actor.Movement.Position;
+                    var attackerPos = peer.Actor.Movement.Position;
+
+                    var direction = attackerPos - victimPos;
+                    var back = new Vector3(0, 0, -1);
+
+                    var angle = Vector3.Angle(direction, back);
+                    if (direction.x < 0)
+                        angle = 360 - angle;
+
+                    var byteAngle = Conversions.Angle2Byte(angle);
+
+                    /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
+                    /* TODO: Calculate armor absorption. */
+                    player.Actor.Damages.Add(byteAngle, shortDamage, BodyPart.Body, 0, 0);
+                    player.Actor.Info.Health -= shortDamage;
+
+                    /* Don't mess with rocket jumps. */
+                    if (player.Actor.Cmid != peer.Actor.Cmid)
+                        player.Events.Game.SendPlayerHit(force);
+
+                    /* Check if the player is dead. */
+                    if (player.Actor.Info.Health < 0)
+                    {
+                        player.Actor.Info.PlayerState |= PlayerStates.Dead;
+                        player.Actor.Info.Deaths++;
+                        peer.Actor.Info.Kills++;
+
+                        player.State.Set(PeerState.Id.Killed);
+                        OnPlayerKilled(new PlayerKilledEventArgs
+                        {
+                            AttackerCmid = peer.Actor.Cmid,
+                            VictimCmid = player.Actor.Cmid,
+                            ItemClass = weapon.ItemClass,
+                            Damage = (ushort)shortDamage,
+                            Part = BodyPart.Body,
+                            Direction = -direction
+                        });
+                    }
+                }
+                else
+                {
+                    s_log.Debug($"Unable to find weapon with ID {weaponId}");
+                }
+                return;
+            }
+        }
+
         protected override void OnDirectDamage(GamePeer peer, ushort damage)
         {
             var actualDamage = (short)damage;
@@ -76,14 +153,6 @@ namespace UberStrok.Realtime.Server.Game
                 return;
 
             peer.Actor.Info.Health -= actualDamage;
-        }
-
-        protected override void OnRespawnRequest(GamePeer peer)
-        {
-            OnPlayerRespawned(new PlayerRespawnedEventArgs
-            {
-                Player = peer
-            });
         }
 
         protected override void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets)

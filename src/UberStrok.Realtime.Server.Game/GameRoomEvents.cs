@@ -9,12 +9,23 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameRoomEvents : BaseEventSender
     {
+        private GamePeer _peer;
+
         public GameRoomEvents(GamePeer peer) : base(peer)
         {
             _peer = peer;
         }
 
-        private GamePeer _peer;
+
+        public void SendPlayerHit(Vector3 force)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Vector3Proxy.Serialize(bytes, force);
+
+                SendEvent((byte)IGameRoomEventsType.PlayerHit, bytes);
+            }
+        }
 
         public void SendEmitProjectile(int cmid, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
         {
