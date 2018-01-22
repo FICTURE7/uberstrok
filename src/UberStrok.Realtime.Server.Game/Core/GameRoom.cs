@@ -12,6 +12,9 @@ namespace UberStrok.Realtime.Server.Game.Core
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(GameRoom));
 
+        /* Loop thats going to do the heavy lifting. */
+        private Loop _loop;
+        /* Current state of the room. */
         private StateMachine<MatchState.Id> _state;
 
         /* Where the heavy lifting is done. */

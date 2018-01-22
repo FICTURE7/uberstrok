@@ -7,15 +7,12 @@ namespace UberStrok.Realtime.Server.Game.Core
 {
     public class GameApplication : ApplicationBase
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(GameApplication));
+        private static readonly ILog s_log = LogManager.GetLogger(nameof(GameApplication));
 
         public static new GameApplication Instance => (GameApplication)ApplicationBase.Instance;
 
         private GameRoomManager _rooms;
-        private JobManager _jobs;
-
         public GameRoomManager Rooms => _rooms;
-        public JobManager Jobs => _jobs;
 
         public int PlayerCount
         {
@@ -24,7 +21,7 @@ namespace UberStrok.Realtime.Server.Game.Core
                 /* Total players in all game rooms. */
                 var sum = 0;
                 foreach(var room in Rooms)
-                    sum += room.Peers.Count;
+                    sum += room.Players.Count;
 
                 return sum;
             }
@@ -32,7 +29,7 @@ namespace UberStrok.Realtime.Server.Game.Core
 
         protected override PeerBase CreatePeer(InitRequest initRequest)
         {
-            Log.Info($"Accepted new connection at {initRequest.RemoteIP}:{initRequest.RemotePort}");
+            s_log.Info($"Accepted new connection at {initRequest.RemoteIP}:{initRequest.RemotePort}");
 
             return new GamePeer(initRequest);
         }
@@ -46,15 +43,14 @@ namespace UberStrok.Realtime.Server.Game.Core
             if (configFile.Exists)
                 XmlConfigurator.ConfigureAndWatch(configFile);
 
-            Log.Info("Started GameServer...");
+            s_log.Info("Started GameServer...");
 
             _rooms = new GameRoomManager();
-            _jobs = new JobManager();
         }
 
         protected override void TearDown()
         {
-            Log.Info("Stopped CommServer...");
+            s_log.Info("Stopped CommServer...");
         }
     }
 }
