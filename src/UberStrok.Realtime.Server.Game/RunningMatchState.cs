@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -11,7 +12,7 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(RunningMatchState));
 
-        public RunningMatchState(BaseGameRoom room) : base(room)
+        public RunningMatchState(GameRoom room) : base(room)
         {
             // Space
         }
@@ -26,20 +27,15 @@ namespace UberStrok.Realtime.Server.Game
             Room.EndTime = Environment.TickCount + Room.Data.TimeLimit * 1000;
 
             foreach (var player in Room.Players)
-            {
-                /* 
-                    MatchStart event changes the match state of the client to match running,
-                    which in turn changes the player state to playing.
-
-                    The client does not care about the roundNumber apparently (in TeamDeathMatch atleast).
-                 */
-                player.Events.Game.SendMatchStart(Room.RoundNumber, Room.EndTime);
-                player.Events.Game.SendUpdateRoundScore(Room.RoundNumber, 0, 0);
                 player.State.Set(PeerState.Id.Playing);
-            }
 
             /* TODO: Increment round number only when the round is over. */
             Room.RoundNumber++;
+        }
+
+        public override void OnResume()
+        {
+            // Space
         }
 
         public override void OnExit()
@@ -87,7 +83,7 @@ namespace UberStrok.Realtime.Server.Game
         }
 
         private void OnPlayerKilled(object sender, PlayerKilledEventArgs e)
-        { 
+        {
             foreach (var otherPeer in Room.Peers)
                 otherPeer.Events.Game.SendPlayerKilled(e.AttackerCmid, e.VictimCmid, e.ItemClass, e.Damage, e.Part, e.Direction);
         }
@@ -101,7 +97,10 @@ namespace UberStrok.Realtime.Server.Game
             foreach (var otherPeer in Room.Peers)
                 otherPeer.Events.Game.SendPlayerRespawned(e.Player.Actor.Cmid, spawn.Position, spawn.Rotation);
 
-            e.Player.State.Set(PeerState.Id.Playing);
+            /* Switch to previous state which should be 'playing state'. */
+            e.Player.State.Previous();
+
+            Debug.Assert(e.Player.State.Current == PeerState.Id.Playing);
         }
 
         private void OnPlayerJoined(object sender, PlayerJoinedEventArgs e)

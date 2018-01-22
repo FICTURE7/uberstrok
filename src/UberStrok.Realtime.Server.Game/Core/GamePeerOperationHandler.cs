@@ -5,7 +5,7 @@ using System.Text;
 using UberStrok.Core.Views;
 using UberStrok.WebServices.Client;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Realtime.Server.Game.Core
 {
     public class GamePeerOperationHandler : BaseGamePeerOperationHandler
     {
@@ -63,7 +63,7 @@ namespace UberStrok.Realtime.Server.Game
             peer.Member = GetMemberFromAuthToken(authToken);
             peer.Loadout = GetLoadoutFromAuthToken(authToken);
 
-            var room = default(BaseGameRoom);
+            var room = default(GameRoom);
             try
             {
                 room = GameApplication.Instance.Rooms.Create(roomData, password);

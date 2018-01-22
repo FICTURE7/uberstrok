@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -33,6 +34,11 @@ namespace UberStrok.Realtime.Server.Game
 
                 Peer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
             }
+        }
+
+        public override void OnResume()
+        {
+            // Space
         }
 
         public override void OnExit()

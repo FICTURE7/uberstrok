@@ -1,4 +1,5 @@
 ﻿using System;
+using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -15,7 +16,7 @@ namespace UberStrok.Realtime.Server.Game
         }
 
         protected GamePeer Peer => _peer;
-        protected BaseGameRoom Room => _peer.Room;
+        protected GameRoom Room => _peer.Room;
 
         public enum Id
         {

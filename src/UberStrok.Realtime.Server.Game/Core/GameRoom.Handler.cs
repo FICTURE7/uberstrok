@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Realtime.Server.Game.Core
 {
-    public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
+    public abstract partial class GameRoom : GameRoomOperationHandler, IRoom<GamePeer>
     {
         public override void OnDisconnect(GamePeer peer, DisconnectReason reasonCode, string reasonDetail)
         {

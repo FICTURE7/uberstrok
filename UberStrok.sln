@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Core.Common", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server.Game", "src\UberStrok.Realtime.Server.Game\UberStrok.Realtime.Server.Game.csproj", "{030FFB86-1B74-47E5-A5D4-DCBDE195F533}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server.Comm.Tests", "src\UberStrok.Realtime.Server.Comm.Tests\UberStrok.Realtime.Server.Comm.Tests.csproj", "{116D2F7F-9F5E-4287-B152-BDD31DFF34C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server.Comm.Tests", "tests\UberStrok.Realtime.Server.Comm.Tests\UberStrok.Realtime.Server.Comm.Tests.csproj", "{116D2F7F-9F5E-4287-B152-BDD31DFF34C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server", "src\UberStrok.Realtime.Server\UberStrok.Realtime.Server.csproj", "{D1F31A89-C971-4FBA-8795-95D79CB420C9}"
 EndProject
@@ -42,7 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{854F4D7F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Client", "src\UberStrok.Realtime.Client\UberStrok.Realtime.Client.csproj", "{07AC73AC-E7F0-463C-A9CD-1538546FD44A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.WebServices.Client.Tests", "src\UberStrok.WebServices.Client.Tests\UberStrok.WebServices.Client.Tests.csproj", "{3005F905-E2BE-46C3-A249-41CEF098708D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.WebServices.Client.Tests", "tests\UberStrok.WebServices.Client.Tests\UberStrok.WebServices.Client.Tests.csproj", "{3005F905-E2BE-46C3-A249-41CEF098708D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gen", "gen", "{A83B68F8-7A05-462E-AFA4-77D5BE488A23}"
 EndProject
@@ -54,7 +54,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Patcher", "src\Ub
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dnlib", "libs\dnlib\src\dnlib.csproj", "{FDFC1237-143F-4919-8318-4926901F4639}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server.Game.Tests", "src\UberStrok.Realtime.Server.Game.Tests\UberStrok.Realtime.Server.Game.Tests.csproj", "{550D6A90-016A-4283-A102-CBF46B043D37}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server.Game.Tests", "tests\UberStrok.Realtime.Server.Game.Tests\UberStrok.Realtime.Server.Game.Tests.csproj", "{550D6A90-016A-4283-A102-CBF46B043D37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,9 +4,9 @@ using System.IO;
 using UberStrok.Core.Common;
 using UberStrok.Core.Serialization;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Realtime.Server.Game.Core
 {
-    public abstract class BaseGameRoomOperationHandler : BaseOperationHandler<GamePeer>
+    public abstract class GameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {
         protected abstract void OnRemoveProjectile(int projectileId, bool explode);
         protected abstract void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode);

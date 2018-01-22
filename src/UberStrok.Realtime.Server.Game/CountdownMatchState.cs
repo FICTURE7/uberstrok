@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.Diagnostics;
+using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -17,7 +18,7 @@ namespace UberStrok.Realtime.Server.Game
 
         private DateTime _lastUpdate;
 
-        public CountdownMatchState(BaseGameRoom room) : base(room)
+        public CountdownMatchState(GameRoom room) : base(room)
         {
             // Space
         }
@@ -41,6 +42,11 @@ namespace UberStrok.Realtime.Server.Game
                 PrepareAndSpawnPlayer(player);
 
             Room.StartLoop();
+        }
+
+        public override void OnResume()
+        {
+            // Space
         }
 
         public override void OnExit()

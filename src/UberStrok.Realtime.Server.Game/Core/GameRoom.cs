@@ -6,27 +6,11 @@ using System.Threading;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Realtime.Server.Game.Core
 {
-    public class PlayerRespawnedEventArgs : EventArgs
+    public abstract partial class GameRoom : GameRoomOperationHandler, IRoom<GamePeer>
     {
-        public GamePeer Player { get; set; }
-    }
-
-    public class PlayerJoinedEventArgs : EventArgs
-    {
-        public GamePeer Player { get; set; }
-        public TeamID Team { get; set; }
-    }
-
-    public class PlayerLeftEventArgs : EventArgs
-    {
-        public GamePeer Player { get; set; }
-    }
-
-    public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
-    {
-        private readonly static ILog s_log = LogManager.GetLogger(nameof(BaseGameRoom));
+        private readonly static ILog s_log = LogManager.GetLogger(nameof(GameRoom));
 
         private StateMachine<MatchState.Id> _state;
 
@@ -59,7 +43,7 @@ namespace UberStrok.Realtime.Server.Game
         private readonly IReadOnlyList<GamePeer> _peersReadOnly;
         private readonly IReadOnlyList<GamePeer> _playersReadonly;
 
-        public BaseGameRoom(GameRoomDataView data)
+        public GameRoom(GameRoomDataView data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));

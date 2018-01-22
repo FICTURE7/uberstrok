@@ -4,7 +4,7 @@ using UberStrok.Core.Serialization;
 using UberStrok.Core.Serialization.Views;
 using UberStrok.Core.Views;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Realtime.Server.Game.Core
 {
     public class GamePeerEvents : BaseEventSender
     {

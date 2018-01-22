@@ -1,4 +1,5 @@
 ﻿using System;
+using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -26,6 +27,11 @@ namespace UberStrok.Realtime.Server.Game
             _countdown = 3 * 1000;
             _countdownEndTime = now.AddSeconds(_countdown);
             _lastUpdate = now;
+        }
+
+        public override void OnResume()
+        {
+            // Space
         }
 
         public override void OnExit()

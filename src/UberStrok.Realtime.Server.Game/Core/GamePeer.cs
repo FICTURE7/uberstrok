@@ -1,10 +1,8 @@
 ﻿using Photon.SocketServer;
-using System;
 using System.Collections.Generic;
-using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Realtime.Server.Game.Core
 {
     public class GamePeer : BasePeer
     {
@@ -33,21 +31,11 @@ namespace UberStrok.Realtime.Server.Game
         public GameActor Actor { get; set; }
         /* TODO: Not really sure if we need this. But might want to turn it into a HashSet. */
         public List<int> KnownActors { get; set; }
-        public BaseGameRoom Room { get; set; }
+        public GameRoom Room { get; set; }
         public LoadoutView Loadout { get; set; }
         public UberstrikeUserView Member { get; set; }
 
         public GamePeerEvents Events => _events;
         public StateMachine<PeerState.Id> State => _state;
-    }
-
-    public class PlayerKilledEventArgs
-    {
-        public int VictimCmid { get; set; }
-        public int AttackerCmid { get; set; }
-        public UberStrikeItemClass ItemClass { get; set; }
-        public ushort Damage { get; set; }
-        public BodyPart Part { get; set; }
-        public Vector3 Direction { get; set; }
     }
 }

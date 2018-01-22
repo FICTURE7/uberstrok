@@ -1,4 +1,6 @@
-﻿namespace UberStrok.Realtime.Server.Game
+﻿using UberStrok.Realtime.Server.Game.Core;
+
+namespace UberStrok.Realtime.Server.Game
 {
     public class CountdownPeerState : PeerState
     {
@@ -10,6 +12,11 @@
         public override void OnEnter()
         {
             Peer.Events.Game.SendPrepareNextRound();
+        }
+
+        public override void OnResume()
+        {
+            // Space
         }
 
         public override void OnExit()

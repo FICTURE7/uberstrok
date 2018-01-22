@@ -3,7 +3,7 @@ using log4net.Config;
 using Photon.SocketServer;
 using System.IO;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Realtime.Server.Game.Core
 {
     public class GameApplication : ApplicationBase
     {

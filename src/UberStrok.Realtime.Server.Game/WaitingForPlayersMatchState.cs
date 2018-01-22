@@ -1,8 +1,10 @@
-﻿namespace UberStrok.Realtime.Server.Game
+﻿using UberStrok.Realtime.Server.Game.Core;
+
+namespace UberStrok.Realtime.Server.Game
 {
     public class WaitingForPlayersMatchState : MatchState
     {
-        public WaitingForPlayersMatchState(BaseGameRoom room) : base(room)
+        public WaitingForPlayersMatchState(GameRoom room) : base(room)
         {
             // Space
         }
@@ -10,6 +12,11 @@
         public override void OnEnter()
         {
             Room.PlayerJoined += OnPlayerJoined;
+        }
+
+        public override void OnResume()
+        {
+            // Space
         }
 
         public override void OnExit()

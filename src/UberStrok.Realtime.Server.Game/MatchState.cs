@@ -1,12 +1,13 @@
 ﻿using System;
+using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
     public abstract class MatchState : State
     {
-        private readonly BaseGameRoom _room;
+        private readonly GameRoom _room;
 
-        public MatchState(BaseGameRoom room)
+        public MatchState(GameRoom room)
         {
             if (room == null)
                 throw new ArgumentNullException(nameof(room));
@@ -14,7 +15,7 @@ namespace UberStrok.Realtime.Server.Game
             _room = room;
         }
 
-        protected BaseGameRoom Room => _room;
+        protected GameRoom Room => _room;
 
         public enum Id
         {

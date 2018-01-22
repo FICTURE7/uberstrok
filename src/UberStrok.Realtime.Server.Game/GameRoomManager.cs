@@ -5,35 +5,36 @@ using System.Collections.Generic;
 using System.Threading;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GameRoomManager : IEnumerable<BaseGameRoom>
+    public class GameRoomManager : IEnumerable<GameRoom>
     {
         private int _roomId;
-        private readonly ConcurrentDictionary<int, BaseGameRoom> _rooms;
+        private readonly ConcurrentDictionary<int, GameRoom> _rooms;
 
         public GameRoomManager()
         {
-            _rooms = new ConcurrentDictionary<int, BaseGameRoom>();
+            _rooms = new ConcurrentDictionary<int, GameRoom>();
         }
 
         public int Count => _rooms.Count;
 
-        public BaseGameRoom Get(int roomId)
+        public GameRoom Get(int roomId)
         {
-            var room = default(BaseGameRoom);
+            var room = default(GameRoom);
             _rooms.TryGetValue(roomId, out room);
             return room;
         }
 
         public void Remove(int roomId)
         {
-            var room = default(BaseGameRoom);
+            var room = default(GameRoom);
             _rooms.TryRemove(roomId, out room);
         }
 
-        public BaseGameRoom Create(GameRoomDataView data, string password)
+        public GameRoom Create(GameRoomDataView data, string password)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
@@ -45,7 +46,7 @@ namespace UberStrok.Realtime.Server.Game
                 data.LevelMax = 0;
             }
 
-            var room = default(BaseGameRoom);
+            var room = default(GameRoom);
             switch (data.GameMode)
             {
                 case GameModeType.TeamDeathMatch:
@@ -66,7 +67,7 @@ namespace UberStrok.Realtime.Server.Game
             return room;
         }
 
-        public IEnumerator<BaseGameRoom> GetEnumerator()
+        public IEnumerator<GameRoom> GetEnumerator()
         {
             return _rooms.Values.GetEnumerator();
         }
