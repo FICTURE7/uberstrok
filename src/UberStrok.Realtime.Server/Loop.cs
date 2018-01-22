@@ -46,6 +46,11 @@ namespace UberStrok.Realtime.Server
 
         public void Start(LoopHandler handler, LoopExceptionHandler exceptionHandler)
         {
+            if (_started)
+                throw new InvalidOperationException("Loop already started.");
+            if (_handler != null || _exceptionHandler != null)
+                throw new InvalidOperationException("Loop can be started only once.");
+
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
             if (exceptionHandler == null)
@@ -61,6 +66,9 @@ namespace UberStrok.Realtime.Server
 
         public void Stop()
         {
+            if (!_started)
+                throw new InvalidOperationException("Loop not started.");
+
             _started = false;
 
             /* 
@@ -73,11 +81,17 @@ namespace UberStrok.Realtime.Server
 
         public void Pause()
         {
+            if (!_started)
+                throw new InvalidOperationException("Loop not started");
+
             _pauseWaitHandle.Reset();
         }
 
         public void Resume()
         {
+            if (!_started)
+                throw new InvalidOperationException("Loop not started");
+
             _pauseWaitHandle.Set();
         }
 

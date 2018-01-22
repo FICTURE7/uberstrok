@@ -7,7 +7,7 @@ namespace UberStrok.Realtime.Server.Game.Tests
     {
         public static void Main()
         {
-            var loop = new Loop(128);
+            var loop = new Loop(64);
             Console.WriteLine(loop.Interval);
 
             loop.Start(HandleLoop, HandleLoopException);
@@ -44,7 +44,7 @@ namespace UberStrok.Realtime.Server.Game.Tests
 
             tps = totalTime / totalTick;
 
-            Console.WriteLine(1000 / (now - lastTick).TotalMilliseconds);
+            Console.WriteLine(1 / (now - lastTick).TotalSeconds);
             lastTick = now;
 
         }
