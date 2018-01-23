@@ -13,11 +13,6 @@ namespace UberStrok.Realtime.Server.Game
         private double _countdownOld;
         private DateTime _countdownEndTime;
 
-        /* TODO: Calculate delta time in the game loop. */
-        private double _deltaTime;
-
-        private DateTime _lastUpdate;
-
         public CountdownMatchState(GameRoom room) : base(room)
         {
             // Space
@@ -27,12 +22,9 @@ namespace UberStrok.Realtime.Server.Game
         {
             Room.PlayerJoined += OnPlayerJoined;
 
-            var now = DateTime.UtcNow;
-
             /* TODO: Allow user to set the countdown timer duration in a config or something. */
             _countdown = 5 * 1000;
-            _countdownEndTime = now.AddSeconds(_countdown);
-            _lastUpdate = now;
+            _countdownEndTime = DateTime.UtcNow.AddSeconds(_countdown);
 
             /* 
                 Prepare all players by placing them in a 'prepare for next round state',
@@ -41,6 +33,7 @@ namespace UberStrok.Realtime.Server.Game
             foreach (var player in Room.Players)
                 PrepareAndSpawnPlayer(player);
 
+            /* Start the game loop. */
             Room.StartLoop();
         }
 
@@ -56,12 +49,8 @@ namespace UberStrok.Realtime.Server.Game
 
         public override void OnUpdate()
         {
-            var now = DateTime.UtcNow;
-
             _countdownOld = _countdown;
-
-            _deltaTime = (now - _lastUpdate).TotalMilliseconds;
-            _countdown -= _deltaTime;
+            _countdown -= Room.Loop.DeltaTime.TotalMilliseconds;
 
             var countdownOldRound = (int)Math.Round(_countdownOld / 1000);
             var countdownRound = (int)Math.Round(_countdown / 1000);
@@ -79,8 +68,6 @@ namespace UberStrok.Realtime.Server.Game
                 foreach (var player in Room.Players)
                     player.Events.Game.SendMatchStartCountdown(countdownOldRound);
             }
-
-            _lastUpdate = DateTime.UtcNow;
         }
 
         private void OnPlayerJoined(object sender, PlayerJoinedEventArgs e)

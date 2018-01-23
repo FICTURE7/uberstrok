@@ -14,6 +14,8 @@ namespace UberStrok.Realtime.Server
         /* Figure out if the loop has started. */
         private bool _started;
 
+        /* Amount of milliseconds we've lagged in between ticks. */
+        private double _lag;
         /* Time at the start of the tick. */
         private DateTime _time;
         /* Time difference between the last tick. */
@@ -26,21 +28,21 @@ namespace UberStrok.Realtime.Server
 
         private readonly EventWaitHandle _pauseWaitHandle;
         /* Amount of time the thread needs to sleep in ms. */
-        private readonly int _interval;
+        private readonly double _interval;
         /* Thread that is going to do the work. */
         private readonly Thread _thread;
 
-        public Loop(int tickRate)
+        public Loop(int tickRateSeconds)
         {
-            if (tickRate < 0)
-                throw new ArgumentOutOfRangeException(nameof(tickRate), "Tick rate cannot be less than 0.");
+            if (tickRateSeconds < 0)
+                throw new ArgumentOutOfRangeException(nameof(tickRateSeconds), "Tick rate cannot be less than 0.");
 
             _pauseWaitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
             _thread = new Thread(Work) { Name = "GameLoop-thread" };
-            _interval = 1000 / tickRate;
+            _interval = 1000d / tickRateSeconds;
         }
 
-        public int Interval => _interval;
+        public double Interval => _interval;
         public DateTime Time => _time;
         public TimeSpan DeltaTime => _deltaTime;
 
@@ -75,7 +77,7 @@ namespace UberStrok.Realtime.Server
                 Give the thread a chance to spin a couple of times to shutting down
                 gracefully then kill if it does not.
              */
-            if (!_thread.Join(Interval * 3))
+            if (!_thread.Join((int)Math.Ceiling(Interval * 3)))
                 _thread.Abort();
         }
 
@@ -92,6 +94,10 @@ namespace UberStrok.Realtime.Server
             if (!_started)
                 throw new InvalidOperationException("Loop not started");
 
+            _lag = 0;
+            _time = DateTime.UtcNow;
+            _deltaTime = new TimeSpan();
+
             _pauseWaitHandle.Set();
         }
 
@@ -99,9 +105,10 @@ namespace UberStrok.Realtime.Server
         {
             /* Interval between each sleep call. */
             var interval = _interval;
-            /* Lag caused by sleep calls. */
-            var lag = 0d;
+            /* Interval between each sleep call but ceiled. */
+            var ceiledInterval = (int)Math.Ceiling(interval);
 
+            _lag = 0;
             _time = DateTime.UtcNow;
             _deltaTime = new TimeSpan();
 
@@ -109,40 +116,40 @@ namespace UberStrok.Realtime.Server
             {
                 while (_started)
                 {
-                    /* If we're paused. */
-                    if (_pauseWaitHandle.WaitOne())
-                    {
-                        _time = DateTime.UtcNow;
-                        _deltaTime = new TimeSpan();
+                    /* Wait to get the signal first. */
+                    _pauseWaitHandle.WaitOne();
 
-                        lag = 0;
-                    }
-
-                    var now = DateTime.UtcNow;
-
-                    /* Calculate the delta time & the lag. */
-                    _deltaTime = now - _time;
-                    _time = now;
-
-                    lag += _deltaTime.TotalMilliseconds;
-
+                    /* Do time calculatations such as delta time. */
+                    DoTime();
                     /* Do an update calling the user code. */
                     DoUpdate();
 
                     /* Catch up if we've lagged more than the a tick interval. */
-                    while (lag >= interval)
+                    while (_lag >= interval)
                     {
+                        DoTime();
                         DoUpdate();
-                        lag -= interval;
+
+                        _lag -= interval;
                     }
 
-                    Thread.Sleep(interval);
+                    Thread.Sleep(ceiledInterval);
                 }
             }
             catch (ThreadAbortException)
             {
                 // Space
             }
+        }
+
+        private void DoTime()
+        {
+            var now = DateTime.UtcNow;
+
+            /* Calculate the delta time & the lag. */
+            _deltaTime = now - _time;
+            _time = now;
+            _lag += _deltaTime.TotalMilliseconds;
         }
 
         private void DoUpdate()

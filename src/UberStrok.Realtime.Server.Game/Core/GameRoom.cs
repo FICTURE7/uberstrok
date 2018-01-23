@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -18,9 +17,9 @@ namespace UberStrok.Realtime.Server.Game.Core
         private StateMachine<MatchState.Id> _state;
 
         /* Where the heavy lifting is done. */
-        private Thread _loopThread;
+        //private Thread _loopThread;
         /* Figure out if the loop has started.*/
-        private bool _loopStarted;
+        //private bool _loopStarted;
 
         private byte _nextPlayer;
 
@@ -34,7 +33,7 @@ namespace UberStrok.Realtime.Server.Game.Core
         private readonly List<GamePeer> _peers;
         /* List of peers connected & playing. */
         private readonly List<GamePeer> _players;
-        
+
         /* Manages items, mostly to get weapon damage. */
         private readonly ShopManager _shopManager;
         /* Manages the power ups. */
@@ -55,6 +54,8 @@ namespace UberStrok.Realtime.Server.Game.Core
 
             _data = data;
             _data.ConnectedPlayers = 0;
+
+            _loop = new Loop(64);
 
             _peers = new List<GamePeer>();
             _players = new List<GamePeer>();
@@ -109,10 +110,11 @@ namespace UberStrok.Realtime.Server.Game.Core
         /* Time in system ticks when the round ends.*/
         public int EndTime { get; set; }
 
+        public Loop Loop => _loop;
         public ShopManager ShopManager => _shopManager;
         public SpawnManager SpawnManager => _spawnManager;
 
-        public bool IsStarted => State.Current == MatchState.Id.Running;
+        public bool IsRunning => State.Current == MatchState.Id.Running;
         public bool IsWaitingForPlayers => State.Current == MatchState.Id.WaitingForPlayers;
 
         public void Join(GamePeer peer)
@@ -188,7 +190,7 @@ namespace UberStrok.Realtime.Server.Game.Core
                 Set the player in the overview state. Which
                 also sends all player data in the room.
              */
-            peer.State.Set(PeerState.Id.Overview); 
+            peer.State.Set(PeerState.Id.Overview);
         }
 
         public void Leave(GamePeer peer)
@@ -224,42 +226,14 @@ namespace UberStrok.Realtime.Server.Game.Core
 
         public void StartLoop()
         {
-            /*
-                Kill the previous loop thread if it exists and
-                start a new loop thread.
-             */
-            if (_loopThread != null)
-                _loopThread.Abort();
-
-            _loopStarted = true;
-
-            _loopThread = new Thread(GameLoop);
-            _loopThread.Start();
-        }
-
-        private void GameLoop()
-        {
-            const int TICK_RATE = 64;
-            const int SLEEP = 1000 / TICK_RATE;
-
-            //TODO: Make the loop fancier using catch-up stuffz & tings.
-            //TODO: Fix potential threading issues.
-            try
-            {
-                while (_loopStarted)
-                {
-                    try { State.Update(); }
-                    catch (Exception ex) { s_log.Error("Failed to tick game loop", ex); }
-
-                    Thread.Sleep(SLEEP);
+            _loop.Start(
+                () => {
+                    State.Update();
+                },
+                (Exception ex) => {
+                    s_log.Error("Failed to tick game loop.", ex);
                 }
-
-                s_log.Debug("Game has stopped!");
-            }
-            catch (ThreadAbortException)
-            {
-                s_log.Debug("Loop thread was aborted!");
-            }
+            );
         }
 
         protected virtual void OnPlayerRespawned(PlayerRespawnedEventArgs args)

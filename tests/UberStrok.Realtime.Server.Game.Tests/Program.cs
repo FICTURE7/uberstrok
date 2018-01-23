@@ -7,26 +7,10 @@ namespace UberStrok.Realtime.Server.Game.Tests
     {
         public static void Main()
         {
-            var loop = new Loop(64);
+            var loop = new Loop(128);
             Console.WriteLine(loop.Interval);
 
             loop.Start(HandleLoop, HandleLoopException);
-            loop.Pause();
-
-            Thread.Sleep(1000);
-
-            loop.Resume();
-
-            Thread.Sleep(1000);
-
-            loop.Pause();
-
-            Thread.Sleep(1000);
-
-            loop.Resume();
-
-            loop.Stop();
-
             Console.ReadLine();
         }
 
@@ -42,11 +26,10 @@ namespace UberStrok.Realtime.Server.Game.Tests
             totalTick++;
             totalTime += (now - lastTick).TotalSeconds;
 
-            tps = totalTime / totalTick;
+            tps = totalTick / totalTime;
 
-            Console.WriteLine(1 / (now - lastTick).TotalSeconds);
+            Console.WriteLine(tps);
             lastTick = now;
-
         }
 
         public static void HandleLoopException(Exception e)
