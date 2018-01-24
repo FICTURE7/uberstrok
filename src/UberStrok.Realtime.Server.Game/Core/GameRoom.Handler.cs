@@ -266,6 +266,18 @@ namespace UberStrok.Realtime.Server.Game.Core
             peer.Actor.Info.CurrentWeaponSlot = slot;
         }
 
+        protected override void OnSingleBulletFire(GamePeer peer)
+        {
+            /* 
+                Set player in shooting state for 200ms.
+                To allow client to repond to change and play animation.
+             */
+            var duration = Loop.ToTicks(TimeSpan.FromMilliseconds(200));
+
+            peer.Actor.Info.ShootingTick += duration;
+            peer.Actor.Info.PlayerState |= PlayerStates.Shooting;
+        }
+
         protected override void OnIsFiring(GamePeer peer, bool on)
         {
             var state = peer.Actor.Info.PlayerState;

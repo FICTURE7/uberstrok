@@ -80,6 +80,20 @@ namespace UberStrok.Realtime.Server.Game
 
             foreach (var delta in deltas)
                 delta.Changes.Clear();
+
+            foreach (var player in Room.Players)
+            {
+                if (player.Actor.Info.ShootingTick > 0)
+                {
+                    player.Actor.Info.ShootingTick -= 1;
+
+                    if (player.Actor.Info.ShootingTick <= 0)
+                    {
+                        player.Actor.Info.ShootingTick = 0;
+                        player.Actor.Info.PlayerState &= ~PlayerStates.Shooting;
+                    }
+                }
+            }
         }
 
         private void OnPlayerKilled(object sender, PlayerKilledEventArgs e)

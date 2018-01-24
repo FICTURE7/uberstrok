@@ -101,6 +101,11 @@ namespace UberStrok.Realtime.Server
             _pauseWaitHandle.Set();
         }
 
+        public int ToTicks(TimeSpan span)
+        {
+            return (int)(span.TotalMilliseconds / Interval);
+        }
+
         private void Work()
         {
             /* Interval between each sleep call. */

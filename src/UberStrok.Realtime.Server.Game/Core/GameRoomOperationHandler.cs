@@ -15,6 +15,7 @@ namespace UberStrok.Realtime.Server.Game.Core
         protected abstract void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets);
         protected abstract void OnDirectDamage(GamePeer peer, ushort damage);
         protected abstract void OnSwitchWeapon(GamePeer peer, byte slot);
+        protected abstract void OnSingleBulletFire(GamePeer peer);
         protected abstract void OnIsPaused(GamePeer peer, bool on);
         protected abstract void OnIsFiring(GamePeer peer, bool on);
         protected abstract void OnJump(GamePeer peer, Vector3 position);
@@ -29,6 +30,10 @@ namespace UberStrok.Realtime.Server.Game.Core
             var operation = (IGameRoomOperationsType)opCode;
             switch (operation)
             {
+                case IGameRoomOperationsType.SingleBulletFire:
+                    SingleBulletFire(peer);
+                    break;
+
                 case IGameRoomOperationsType.RemoveProjectile:
                     RemoveProjectile(peer, bytes);
                     break;
@@ -92,6 +97,11 @@ namespace UberStrok.Realtime.Server.Game.Core
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private void SingleBulletFire(GamePeer peer)
+        {
+            OnSingleBulletFire(peer);
         }
 
         private void RemoveProjectile(GamePeer peer, MemoryStream bytes)

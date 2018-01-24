@@ -19,6 +19,9 @@ namespace UberStrok.Realtime.Server.Game.Core
             _viewDelta = new GameActorInfoDeltaView();
         }
 
+        /* Amount of tick the actor is in PlayerState.Shooting state. Used for SingleBulletFired.*/
+        public int ShootingTick { get; set; }
+
         public int Cmid
         {
             get { return _view.Cmid; }
