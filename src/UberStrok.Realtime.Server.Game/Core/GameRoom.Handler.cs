@@ -112,11 +112,13 @@ namespace UberStrok.Realtime.Server.Game.Core
                     /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
                     /* TODO: Calculate armor absorption. */
                     player.Actor.Damages.Add(byteAngle, shortDamage, BodyPart.Body, 0, 0);
-                    player.Actor.Info.Health -= shortDamage;
 
                     /* Don't mess with rocket jumps. */
                     if (player.Actor.Cmid != peer.Actor.Cmid)
+                    {
+                        player.Actor.Info.Health -= shortDamage;
                         player.Events.Game.SendPlayerHit(force);
+                    }
 
                     /* Check if the player is dead. */
                     if (player.Actor.Info.Health < 0)
