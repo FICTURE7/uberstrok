@@ -12,6 +12,8 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(RunningMatchState));
 
+        private ushort _frame = 6;
+
         public RunningMatchState(GameRoom room) : base(room)
         {
             // Space
@@ -72,10 +74,11 @@ namespace UberStrok.Realtime.Server.Game
                 player.State.Update();
             }
 
+            _frame++;
             foreach (var otherPeer in Room.Peers)
             {
                 otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
-                otherPeer.Events.Game.SendAllPlayerPositions(position, 0);
+                otherPeer.Events.Game.SendAllPlayerPositions(position, _frame);
             }
 
             foreach (var delta in deltas)

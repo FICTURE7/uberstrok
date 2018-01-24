@@ -56,7 +56,7 @@ namespace UberStrok.Realtime.Server.Game.Core
             _data.ConnectedPlayers = 0;
 
             /* TODO: Allow user to set the tick rate. */
-            _loop = new Loop(64);
+            _loop = new Loop(30);
 
             _peers = new List<GamePeer>();
             _players = new List<GamePeer>();

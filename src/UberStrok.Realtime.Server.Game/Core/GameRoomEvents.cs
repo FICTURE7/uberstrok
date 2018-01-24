@@ -112,7 +112,7 @@ namespace UberStrok.Realtime.Server.Game.Core
                 ListProxy<PlayerMovement>.Serialize(bytes, allPositions, PlayerMovementProxy.Serialize);
                 UInt16Proxy.Serialize(bytes, gameframe);
 
-                SendEvent((byte)IGameRoomEventsType.AllPlayerPositions, bytes);
+                SendEvent((byte)IGameRoomEventsType.AllPlayerPositions, bytes, true);
             }
         }
 
