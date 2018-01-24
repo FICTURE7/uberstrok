@@ -12,6 +12,7 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(RunningMatchState));
 
+        /* Force client to update the base time. */
         private ushort _frame = 6;
 
         public RunningMatchState(GameRoom room) : base(room)
@@ -74,7 +75,6 @@ namespace UberStrok.Realtime.Server.Game
                 player.State.Update();
             }
 
-            _frame++;
             foreach (var otherPeer in Room.Peers)
             {
                 otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
@@ -97,6 +97,8 @@ namespace UberStrok.Realtime.Server.Game
                     }
                 }
             }
+
+            _frame++;
         }
 
         private void OnPlayerKilled(object sender, PlayerKilledEventArgs e)

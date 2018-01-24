@@ -278,6 +278,17 @@ namespace UberStrok.Realtime.Server.Game.Core
             peer.Actor.Info.PlayerState |= PlayerStates.Shooting;
         }
 
+        protected override void OnIsInSniperMode(GamePeer peer, bool on)
+        {
+            var state = peer.Actor.Info.PlayerState;
+            if (on)
+                state |= PlayerStates.Sniping;
+            else
+                state &= ~PlayerStates.Sniping;
+
+            peer.Actor.Info.PlayerState = state;
+        }
+
         protected override void OnIsFiring(GamePeer peer, bool on)
         {
             var state = peer.Actor.Info.PlayerState;

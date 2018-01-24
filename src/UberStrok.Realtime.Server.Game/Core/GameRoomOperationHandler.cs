@@ -17,6 +17,7 @@ namespace UberStrok.Realtime.Server.Game.Core
         protected abstract void OnSwitchWeapon(GamePeer peer, byte slot);
         protected abstract void OnSingleBulletFire(GamePeer peer);
         protected abstract void OnIsPaused(GamePeer peer, bool on);
+        protected abstract void OnIsInSniperMode(GamePeer peer, bool on);
         protected abstract void OnIsFiring(GamePeer peer, bool on);
         protected abstract void OnJump(GamePeer peer, Vector3 position);
         protected abstract void OnUpdatePositionAndRotation(GamePeer peer, Vector3 position, Vector3 velocity, byte horizontalRotation, byte verticalRotation, byte moveState);
@@ -66,6 +67,10 @@ namespace UberStrok.Realtime.Server.Game.Core
                     IsPaused(peer, bytes);
                     break;
 
+                case IGameRoomOperationsType.IsInSniperMode:
+                    IsInSniperMode(peer, bytes);
+                    break;
+
                 case IGameRoomOperationsType.IsFiring:
                     IsFiring(peer, bytes);
                     break;
@@ -97,6 +102,13 @@ namespace UberStrok.Realtime.Server.Game.Core
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private void IsInSniperMode(GamePeer peer, MemoryStream bytes)
+        {
+            var on = BooleanProxy.Deserialize(bytes);
+
+            OnIsInSniperMode(peer, on);
         }
 
         private void SingleBulletFire(GamePeer peer)
