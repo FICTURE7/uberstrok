@@ -50,6 +50,9 @@ namespace UberStrok.Realtime.Server.Game
 
         public override void OnUpdate()
         {
+            /* Expected interval between ticks by the client (10tick/s). */
+            const int UBZ_INTERVAL = 100;
+
             var deltas = new List<GameActorInfoDeltaView>(Room.Peers.Count);
             var position = new List<PlayerMovement>(Room.Players.Count);
             foreach (var player in Room.Players)
@@ -98,7 +101,7 @@ namespace UberStrok.Realtime.Server.Game
                 }
             }
 
-            _frame++;
+            _frame += (ushort)(UBZ_INTERVAL / Room.Loop.Interval);
         }
 
         private void OnPlayerKilled(object sender, PlayerKilledEventArgs e)
