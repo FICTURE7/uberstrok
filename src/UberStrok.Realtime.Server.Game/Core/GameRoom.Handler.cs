@@ -216,7 +216,7 @@ namespace UberStrok.Realtime.Server.Game.Core
                             ItemClass = weapon.ItemClass,
                             Damage = (ushort)shortDamage,
                             Part = part,
-                            Direction = -direction
+                            Direction = -(direction.Normalized * weapon.DamageKnockback)
                         });
                     }
                 }

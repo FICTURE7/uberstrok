@@ -43,6 +43,11 @@ namespace UberStrok.Core.Common
             return new Vector3(a.x / d, a.y / d, a.z / d);
         }
 
+        public static Vector3 operator *(Vector3 a, int d)
+        {
+            return new Vector3(a.x * d, a.y * d, a.z * d);
+        }
+
         public static Vector3 operator -(Vector3 a)
         {
             return new Vector3(-a.x, -a.y, -a.z);
