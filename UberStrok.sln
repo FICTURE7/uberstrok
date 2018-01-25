@@ -46,7 +46,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.WebServices.Clien
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gen", "gen", "{A83B68F8-7A05-462E-AFA4-77D5BE488A23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.CodeGen.Realtime", "src\UberStrok.CodeGen.Realtime\UberStrok.CodeGen.Realtime.csproj", "{FD8539F5-C109-4264-8228-3A0235899E5A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Realtime.Server.CodeGen", "src\UberStrok.CodeGen.Realtime\UberStrok.Realtime.Server.CodeGen.csproj", "{FD8539F5-C109-4264-8228-3A0235899E5A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{2AC22AED-CEB7-415D-A591-5137D9CB9BCF}"
 EndProject
