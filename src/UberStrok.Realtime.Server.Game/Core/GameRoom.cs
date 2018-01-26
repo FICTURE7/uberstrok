@@ -64,7 +64,7 @@ namespace UberStrok.Realtime.Server.Game.Core
 
             _shopManager = new ShopManager();
             _spawnManager = new SpawnManager();
-            _powerUpManager = new PowerUpManager();
+            _powerUpManager = new PowerUpManager(this);
 
             _peersReadOnly = _peers.AsReadOnly();
             _playersReadonly = _players.AsReadOnly();
@@ -83,6 +83,7 @@ namespace UberStrok.Realtime.Server.Game.Core
         public IReadOnlyList<GamePeer> Peers => _peersReadOnly;
         public IReadOnlyList<GamePeer> Players => _playersReadonly;
         public StateMachine<MatchState.Id> State => _state;
+        public PowerUpManager PowerUps => _powerUpManager;
 
         public event EventHandler<PlayerKilledEventArgs> PlayerKilled;
         public event EventHandler<PlayerRespawnedEventArgs> PlayerRespawned;

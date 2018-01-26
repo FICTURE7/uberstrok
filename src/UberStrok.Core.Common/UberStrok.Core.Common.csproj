@@ -60,6 +60,7 @@
     <Compile Include="MemberOperationResult.cs" />
     <Compile Include="PackType.cs" />
     <Compile Include="PhotonUsageType.cs" />
+    <Compile Include="PickupItemType.cs" />
     <Compile Include="PlayerMovement.cs" />
     <Compile Include="PlayerStates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

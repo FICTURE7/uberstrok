@@ -54,10 +54,15 @@ namespace UberStrok.Realtime.Server.Game.Core
             }
         }
 
+        protected override void OnPowerUpPicked(GamePeer peer, int pickupId, byte type, byte value)
+        {
+            PowerUps.PickUp(peer, pickupId, (PickupItemType)type, value);
+        }
+
         protected override void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes)
         {
             /* We care only about the first operation sent. */
-            if (!_powerUpManager.IsLoaded())
+            if (!_powerUpManager.IsLoaded)
                 _powerUpManager.Load(respawnTimes);
         }
 
@@ -266,7 +271,7 @@ namespace UberStrok.Realtime.Server.Game.Core
             }
         }
 
-        protected override void OnRemoveProjectile(int projectileId, bool explode)
+        protected override void OnRemoveProjectile(GamePeer peer, int projectileId, bool explode)
         {
             foreach (var otherPeer in Peers)
                 otherPeer.Events.Game.SendRemoveProjectile(projectileId, explode);

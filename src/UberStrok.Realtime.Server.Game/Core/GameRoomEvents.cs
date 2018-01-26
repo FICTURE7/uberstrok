@@ -16,6 +16,32 @@ namespace UberStrok.Realtime.Server.Game.Core
             _peer = peer;
         }
 
+        public void SendPowerUpPicked(int pickupId, byte flag)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, pickupId);
+                ByteProxy.Serialize(bytes, flag);
+
+                SendEvent((byte)IGameRoomEventsType.PowerUpPicked, bytes);
+            }
+        }
+
+        public void SendSetPowerUpState(List<int> states)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                ListProxy<int>.Serialize(bytes, states, Int32Proxy.Serialize);
+
+                SendEvent((byte)IGameRoomEventsType.SetPowerupState, bytes);
+            }
+        }
+
+        public void SendResetAllPowerUps()
+        {
+            using (var bytes = new MemoryStream())
+                SendEvent((byte)IGameRoomEventsType.ResetAllPowerups, bytes);
+        }
 
         public void SendPlayerHit(Vector3 force)
         {

@@ -53,6 +53,8 @@ namespace UberStrok.Realtime.Server.Game
             /* Expected interval between ticks by the client (10tick/s). */
             const int UBZ_INTERVAL = 100;
 
+            Room.PowerUps.Update();
+
             var deltas = new List<GameActorInfoDeltaView>(Room.Peers.Count);
             var position = new List<PlayerMovement>(Room.Players.Count);
             foreach (var player in Room.Players)

@@ -8,7 +8,8 @@ namespace UberStrok.Realtime.Server.Game.Core
 {
     public abstract class GameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {
-        protected abstract void OnRemoveProjectile(int projectileId, bool explode);
+        protected abstract void OnPowerUpPicked(GamePeer peer, int pickupId, byte type, byte value);
+        protected abstract void OnRemoveProjectile(GamePeer peer, int projectileId, bool explode);
         protected abstract void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode);
         protected abstract void OnRespawnRequest(GamePeer peer);
         protected abstract void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3 force);
@@ -31,8 +32,12 @@ namespace UberStrok.Realtime.Server.Game.Core
             var operation = (IGameRoomOperationsType)opCode;
             switch (operation)
             {
+                case IGameRoomOperationsType.PowerUpPicked:
+                    PowerUpPicked(peer, bytes);
+                    break;
+
                 case IGameRoomOperationsType.SingleBulletFire:
-                    SingleBulletFire(peer);
+                    SingleBulletFire(peer, bytes);
                     break;
 
                 case IGameRoomOperationsType.RemoveProjectile:
@@ -104,6 +109,15 @@ namespace UberStrok.Realtime.Server.Game.Core
             }
         }
 
+        private void PowerUpPicked(GamePeer peer, MemoryStream bytes)
+        {
+            var pickupId = Int32Proxy.Deserialize(bytes);
+            var type = ByteProxy.Deserialize(bytes);
+            var value = ByteProxy.Deserialize(bytes);
+
+            OnPowerUpPicked(peer, pickupId, type, value);
+        }
+
         private void IsInSniperMode(GamePeer peer, MemoryStream bytes)
         {
             var on = BooleanProxy.Deserialize(bytes);
@@ -111,7 +125,7 @@ namespace UberStrok.Realtime.Server.Game.Core
             OnIsInSniperMode(peer, on);
         }
 
-        private void SingleBulletFire(GamePeer peer)
+        private void SingleBulletFire(GamePeer peer, MemoryStream bytes)
         {
             OnSingleBulletFire(peer);
         }
@@ -121,7 +135,7 @@ namespace UberStrok.Realtime.Server.Game.Core
             var projectileId = Int32Proxy.Deserialize(bytes);
             var explode = BooleanProxy.Deserialize(bytes);
 
-            OnRemoveProjectile(projectileId, explode);
+            OnRemoveProjectile(peer, projectileId, explode);
         }
 
         private void EmitProjectile(GamePeer peer, MemoryStream bytes)

@@ -22,6 +22,9 @@ namespace UberStrok.Realtime.Server.Game
                 This is to reset the top scoreboard to not display "STARTS IN".
              */
             Peer.Events.Game.SendUpdateRoundScore(Room.RoundNumber, 0, 0);
+
+            /* Sync the power ups to the server side. */
+            Peer.Events.Game.SendSetPowerUpState(Room.PowerUps.Respawning);
         }
 
         public override void OnResume()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using log4net;
+using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
@@ -8,6 +9,8 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class OverviewPeerState : PeerState
     {
+        private readonly static ILog s_log = LogManager.GetLogger(nameof(OverviewPeerState));
+
         public OverviewPeerState(GamePeer peer) : base(peer)
         {
             // Space
@@ -33,6 +36,13 @@ namespace UberStrok.Realtime.Server.Game
                 }
 
                 Peer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
+            }
+
+            if (Room.PowerUps.IsLoaded)
+            {
+                /* Sync the power ups to the server side. */
+                Peer.Events.Game.SendSetPowerUpState(Room.PowerUps.Respawning);
+                s_log.Debug($"Respawning pick-ups: {string.Join(", ", Room.PowerUps.Respawning)}");
             }
         }
 
