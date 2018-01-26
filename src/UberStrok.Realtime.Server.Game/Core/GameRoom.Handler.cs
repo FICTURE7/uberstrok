@@ -111,17 +111,21 @@ namespace UberStrok.Realtime.Server.Game.Core
 
                     /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
                     /* TODO: Calculate armor absorption. */
-                    player.Actor.Damages.Add(byteAngle, shortDamage, BodyPart.Body, 0, 0);
 
                     /* Don't mess with rocket jumps. */
                     if (player.Actor.Cmid != peer.Actor.Cmid)
                     {
                         player.Actor.Info.Health -= shortDamage;
-                        player.Events.Game.SendPlayerHit(force);
+                        player.Actor.Damages.Add(byteAngle, shortDamage, BodyPart.Body, 0, 0);
+                    }
+                    else
+                    {
+                        shortDamage /= 2;
+                        player.Actor.Info.Health -= shortDamage;
                     }
 
                     /* Check if the player is dead. */
-                    if (player.Actor.Info.Health < 0)
+                    if (player.Actor.Info.Health <= 0)
                     {
                         player.Actor.Info.PlayerState |= PlayerStates.Dead;
                         player.Actor.Info.Deaths++;
@@ -138,6 +142,10 @@ namespace UberStrok.Realtime.Server.Game.Core
                             Direction = -direction
                         });
                     }
+                    else
+                    {
+                        player.Events.Game.SendPlayerHit(force);
+                    }
                 }
                 else
                 {
@@ -150,11 +158,30 @@ namespace UberStrok.Realtime.Server.Game.Core
         protected override void OnDirectDamage(GamePeer peer, ushort damage)
         {
             var actualDamage = (short)damage;
+            s_log.Debug($"Damage: {damage}");
             /* THEY SHEATING */
             if (damage < 0)
                 return;
 
             peer.Actor.Info.Health -= actualDamage;
+
+            /* Check if the player is dead. */
+            if (peer.Actor.Info.Health < 0)
+            {
+                peer.Actor.Info.PlayerState |= PlayerStates.Dead;
+                peer.Actor.Info.Deaths++;
+
+                peer.State.Set(PeerState.Id.Killed);
+                OnPlayerKilled(new PlayerKilledEventArgs
+                {
+                    AttackerCmid = peer.Actor.Cmid,
+                    VictimCmid = peer.Actor.Cmid,
+                    ItemClass = UberStrikeItemClass.WeaponMachinegun,
+                    Damage = (ushort)actualDamage,
+                    Part = BodyPart.Body,
+                    Direction = new Vector3()
+                });
+            }
         }
 
         protected override void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets)
