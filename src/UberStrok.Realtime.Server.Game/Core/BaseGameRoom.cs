@@ -7,22 +7,22 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game.Core
 {
-    public abstract partial class GameRoom : GameRoomOperationHandler, IRoom<GamePeer>
+    public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
     {
-        private readonly static ILog s_log = LogManager.GetLogger(nameof(GameRoom));
+        private readonly static ILog s_log = LogManager.GetLogger(nameof(BaseGameRoom));
 
+        private readonly GameRoomActions _actions;
         /* Loop thats going to do the heavy lifting. */
-        private Loop _loop;
+        private readonly Loop _loop;
         /* Current state of the room. */
-        private StateMachine<MatchState.Id> _state;
+        private readonly StateMachine<MatchState.Id> _state;
 
         private byte _nextPlayer;
 
         /* Password of the room. */
         private string _password;
-
         /* Data of the game room. */
-        private readonly GameRoomDataView _data;
+        private readonly GameRoomDataView _view;
 
         /* List of peers connected to the game room (not necessarily playing). */
         private readonly List<GamePeer> _peers;
@@ -40,19 +40,18 @@ namespace UberStrok.Realtime.Server.Game.Core
         private readonly IReadOnlyList<GamePeer> _peersReadOnly;
         private readonly IReadOnlyList<GamePeer> _playersReadonly;
 
-        public GameRoom(GameRoomDataView data)
+        public BaseGameRoom(GameRoomDataView data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
-            if (data.GameMode != GameModeType.TeamDeathMatch)
-                throw new ArgumentException("GameRoomDataView is not in team deathmatch mode.", nameof(data));
 
-            _data = data;
-            _data.ConnectedPlayers = 0;
+            _view = data;
+            _view.ConnectedPlayers = 0;
 
             /* TODO: Allow user to set the tick rate. */
             /* When the tick rate is high, the client side, lag interpolation goes all woncky. */
             _loop = new Loop(20);
+            _actions = new GameRoomActions(this);
 
             _peers = new List<GamePeer>();
             _players = new List<GamePeer>();
@@ -73,12 +72,12 @@ namespace UberStrok.Realtime.Server.Game.Core
             _state.Set(MatchState.Id.WaitingForPlayers);
         }
 
-        public override int Id => 0;
-        public GameRoomDataView Data => _data;
+        public GameRoomDataView View => _view;
         public IReadOnlyList<GamePeer> Peers => _peersReadOnly;
         public IReadOnlyList<GamePeer> Players => _playersReadonly;
         public StateMachine<MatchState.Id> State => _state;
         public PowerUpManager PowerUps => _powerUpManager;
+        public GameRoomActions Actions => _actions;
 
         public event EventHandler<PlayerKilledEventArgs> PlayerKilled;
         public event EventHandler<PlayerRespawnedEventArgs> PlayerRespawned;
@@ -88,8 +87,8 @@ namespace UberStrok.Realtime.Server.Game.Core
         /* Room ID but we call it number since we already defined Id & thats how UberStrike calls it too. */
         public int Number
         {
-            get { return _data.Number; }
-            set { _data.Number = value; }
+            get { return _view.Number; }
+            set { _view.Number = value; }
         }
 
         public string Password
@@ -98,7 +97,7 @@ namespace UberStrok.Realtime.Server.Game.Core
             set
             {
                 /* If the password is null or empty it means its not password protected. */
-                _data.IsPasswordProtected = !string.IsNullOrEmpty(value);
+                _view.IsPasswordProtected = !string.IsNullOrEmpty(value);
                 _password = value;
             }
         }
@@ -182,7 +181,7 @@ namespace UberStrok.Realtime.Server.Game.Core
                 This prepares the client for the game room and
                 sets the client state to 'pre-game'.
              */
-            peer.Events.SendRoomEntered(Data);
+            peer.Events.SendRoomEntered(View);
 
             /* 
                 Set the player in the overview state. Which
@@ -200,18 +199,21 @@ namespace UberStrok.Realtime.Server.Game.Core
             Debug.Assert(peer.Room == this, "GamePeer is leaving room, but its not leaving the correct room.");
 
             /* Let other peers know that the peer has left the room. */
+            /*
             foreach (var otherPeer in Peers)
             {
                 otherPeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
                 otherPeer.KnownActors.Remove(peer.Actor.Cmid);
             }
+            */
+            Actions.PlayerLeft(peer);
 
             lock (_peers)
             {
                 _peers.Remove(peer);
                 _players.Remove(peer);
 
-                _data.ConnectedPlayers = Players.Count;
+                _view.ConnectedPlayers = Players.Count;
             }
 
             /* Set peer state to none, and clean up. */

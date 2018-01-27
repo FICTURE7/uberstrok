@@ -13,7 +13,7 @@ namespace UberStrok.Realtime.Server.Game
         private double _countdownOld;
         private DateTime _countdownEndTime;
 
-        public CountdownMatchState(GameRoom room) : base(room)
+        public CountdownMatchState(BaseGameRoom room) : base(room)
         {
             // Space
         }

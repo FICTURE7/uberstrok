@@ -32,7 +32,7 @@ namespace UberStrok.Realtime.Server.Game.Core
 
             var rooms = new List<GameRoomDataView>(GameApplication.Instance.Rooms.Count);
             foreach (var room in GameApplication.Instance.Rooms)
-                rooms.Add(room.Data);
+                rooms.Add(room.View);
 
             peer.Events.SendGameListUpdate(rooms, new List<int>());
 
@@ -63,14 +63,14 @@ namespace UberStrok.Realtime.Server.Game.Core
             peer.Member = GetMemberFromAuthToken(authToken);
             peer.Loadout = GetLoadoutFromAuthToken(authToken);
 
-            var room = default(GameRoom);
+            var room = default(BaseGameRoom);
             try
             {
                 room = GameApplication.Instance.Rooms.Create(roomData, password);
                 room.ShopManager.Load(authToken);
 
                 /* Enable QUICK-SWATCH boiiiii */
-                room.Data.GameFlags |= 4;
+                room.View.GameFlags |= 4;
             }
             catch (NotSupportedException)
             {
@@ -108,11 +108,11 @@ namespace UberStrok.Realtime.Server.Game.Core
             var room = GameApplication.Instance.Rooms.Get(roomId);
             if (room != null)
             {
-                s_log.Debug($"OnJoinRoom: Room: {roomId} IsPasswordProcted: {room.Data.IsPasswordProtected}");
+                s_log.Debug($"OnJoinRoom: Room: {roomId} IsPasswordProcted: {room.View.IsPasswordProtected}");
 
                 /* Request password if the room is password protected & check password.*/
-                if (room.Data.IsPasswordProtected && password != room.Password)
-                    peer.Events.SendRequestPasswordForRoom(room.Data.Server.ConnectionString, room.Number);
+                if (room.View.IsPasswordProtected && password != room.Password)
+                    peer.Events.SendRequestPasswordForRoom(room.View.Server.ConnectionString, room.Number);
                 else
                     room.Join(peer);
             }

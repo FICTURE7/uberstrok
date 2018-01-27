@@ -15,7 +15,7 @@ namespace UberStrok.Realtime.Server.Game
         /* Current tick we're in. */
         private ushort _frame = 0;
 
-        public RunningMatchState(GameRoom room) : base(room)
+        public RunningMatchState(BaseGameRoom room) : base(room)
         {
             // Space
         }
@@ -27,7 +27,7 @@ namespace UberStrok.Realtime.Server.Game
             Room.PlayerKilled += OnPlayerKilled;
 
             /* Calculate the time when the games ends (in system ticks). */
-            Room.EndTime = Environment.TickCount + Room.Data.TimeLimit * 1000;
+            Room.EndTime = Environment.TickCount + Room.View.TimeLimit * 1000;
 
             foreach (var player in Room.Players)
                 player.State.Set(PeerState.Id.Playing);

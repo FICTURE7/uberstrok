@@ -4,7 +4,7 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class WaitingForPlayersMatchState : MatchState
     {
-        public WaitingForPlayersMatchState(GameRoom room) : base(room)
+        public WaitingForPlayersMatchState(BaseGameRoom room) : base(room)
         {
             // Space
         }

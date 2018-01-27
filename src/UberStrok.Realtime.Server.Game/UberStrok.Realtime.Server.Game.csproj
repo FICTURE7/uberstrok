@@ -47,7 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\BaseGamePeerOperationHandler.cs" />
-    <Compile Include="Core\GameRoomOperationHandler.cs" />
+    <Compile Include="Core\GameRoomActions.cs" />
+    <Compile Include="Core\BaseGameRoomOperationHandler.cs" />
     <Compile Include="CountdownPeerState.cs" />
     <Compile Include="Core\GameActor.cs" />
     <Compile Include="Core\GameActorInfo.cs" />
@@ -57,9 +58,9 @@
     <Compile Include="Core\GamePeer.cs" />
     <Compile Include="Core\GamePeerEvents.cs" />
     <Compile Include="Core\GamePeerOperationHandler.cs" />
-    <Compile Include="Core\GameRoom.cs" />
+    <Compile Include="Core\BaseGameRoom.cs" />
     <Compile Include="Core\GameRoomEvents.cs" />
-    <Compile Include="Core\GameRoom.Handler.cs" />
+    <Compile Include="Core\BaseGameRoom.Handler.cs" />
     <Compile Include="CountdownMatchState.cs" />
     <Compile Include="KilledPeerState.cs" />
     <Compile Include="OverviewPeerState.cs" />

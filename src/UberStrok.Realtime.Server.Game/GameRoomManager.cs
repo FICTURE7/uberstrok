@@ -9,32 +9,32 @@ using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GameRoomManager : IEnumerable<GameRoom>
+    public class GameRoomManager : IEnumerable<BaseGameRoom>
     {
         private int _roomId;
-        private readonly ConcurrentDictionary<int, GameRoom> _rooms;
+        private readonly ConcurrentDictionary<int, BaseGameRoom> _rooms;
 
         public GameRoomManager()
         {
-            _rooms = new ConcurrentDictionary<int, GameRoom>();
+            _rooms = new ConcurrentDictionary<int, BaseGameRoom>();
         }
 
         public int Count => _rooms.Count;
 
-        public GameRoom Get(int roomId)
+        public BaseGameRoom Get(int roomId)
         {
-            var room = default(GameRoom);
+            var room = default(BaseGameRoom);
             _rooms.TryGetValue(roomId, out room);
             return room;
         }
 
         public void Remove(int roomId)
         {
-            var room = default(GameRoom);
+            var room = default(BaseGameRoom);
             _rooms.TryRemove(roomId, out room);
         }
 
-        public GameRoom Create(GameRoomDataView data, string password)
+        public BaseGameRoom Create(GameRoomDataView data, string password)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
@@ -46,7 +46,7 @@ namespace UberStrok.Realtime.Server.Game
                 data.LevelMax = 0;
             }
 
-            var room = default(GameRoom);
+            var room = default(BaseGameRoom);
             switch (data.GameMode)
             {
                 case GameModeType.TeamDeathMatch:
@@ -67,7 +67,7 @@ namespace UberStrok.Realtime.Server.Game
             return room;
         }
 
-        public IEnumerator<GameRoom> GetEnumerator()
+        public IEnumerator<BaseGameRoom> GetEnumerator()
         {
             return _rooms.Values.GetEnumerator();
         }

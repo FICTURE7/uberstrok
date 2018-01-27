@@ -6,7 +6,7 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game.Core
 {
-    public abstract partial class GameRoom : GameRoomOperationHandler, IRoom<GamePeer>
+    public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
     {
         public override void OnDisconnect(GamePeer peer, DisconnectReason reasonCode, string reasonDetail)
         {
@@ -29,7 +29,7 @@ namespace UberStrok.Realtime.Server.Game.Core
             lock (_peers)
             {
                 _players.Add(peer);
-                _data.ConnectedPlayers = Players.Count;
+                _view.ConnectedPlayers = Players.Count;
             }
 
             OnPlayerJoined(new PlayerJoinedEventArgs

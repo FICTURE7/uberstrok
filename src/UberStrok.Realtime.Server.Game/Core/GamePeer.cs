@@ -31,7 +31,7 @@ namespace UberStrok.Realtime.Server.Game.Core
         public GameActor Actor { get; set; }
         /* TODO: Not really sure if we need this. But might want to turn it into a HashSet. */
         public List<int> KnownActors { get; set; }
-        public GameRoom Room { get; set; }
+        public BaseGameRoom Room { get; set; }
         public LoadoutView Loadout { get; set; }
         public UberstrikeUserView Member { get; set; }
 

@@ -14,9 +14,9 @@ namespace UberStrok.Realtime.Server.Game
         private List<TimeSpan> _respawnTimes;
         private List<int> _respawning;
 
-        private readonly GameRoom _room;
+        private readonly BaseGameRoom _room;
 
-        public PowerUpManager(GameRoom room)
+        public PowerUpManager(BaseGameRoom room)
         {
             if (room == null)
                 throw new ArgumentNullException(nameof(room));

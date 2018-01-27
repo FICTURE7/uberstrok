@@ -1,17 +1,19 @@
 ﻿using log4net;
+using System;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class TeamDeathMatchGameRoom : GameRoom
+    public class TeamDeathMatchGameRoom : BaseGameRoom
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(TeamDeathMatchGameRoom));
 
         public TeamDeathMatchGameRoom(GameRoomDataView data) : base(data)
         {
-            // Space
+            if (data.GameMode != GameModeType.TeamDeathMatch)
+                throw new ArgumentException("GameRoomDataView is not in team deathmatch mode.", nameof(data));
         }
 
         public int BlueTeamScore { get; set; }
@@ -23,9 +25,7 @@ namespace UberStrok.Realtime.Server.Game
 
             if (IsRunning)
             {
-                /*
-                    This is to reset the top scoreboard to not display "STARTS IN".
-                 */
+                /* This is to reset the top scoreboard to not display "STARTS IN". */
                 args.Player.Events.Game.SendUpdateRoundScore(RoundNumber, (short)BlueTeamScore, (short)RedTeamScore);
             }
         }

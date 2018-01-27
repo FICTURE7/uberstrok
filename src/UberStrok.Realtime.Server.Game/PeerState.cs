@@ -16,7 +16,7 @@ namespace UberStrok.Realtime.Server.Game
         }
 
         protected GamePeer Peer => _peer;
-        protected GameRoom Room => _peer.Room;
+        protected BaseGameRoom Room => _peer.Room;
 
         public enum Id
         {

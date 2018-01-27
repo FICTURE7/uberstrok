@@ -6,8 +6,10 @@ using UberStrok.Core.Serialization;
 
 namespace UberStrok.Realtime.Server.Game.Core
 {
-    public abstract class GameRoomOperationHandler : BaseOperationHandler<GamePeer>
+    public abstract class BaseGameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {
+        public sealed override int Id => 0;
+
         protected abstract void OnPowerUpPicked(GamePeer peer, int pickupId, byte type, byte value);
         protected abstract void OnRemoveProjectile(GamePeer peer, int projectileId, bool explode);
         protected abstract void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode);
