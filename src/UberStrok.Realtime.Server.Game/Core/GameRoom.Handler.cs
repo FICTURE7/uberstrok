@@ -297,6 +297,8 @@ namespace UberStrok.Realtime.Server.Game.Core
 
         protected override void OnSwitchWeapon(GamePeer peer, byte slot)
         {
+            /* Just incase. */
+            peer.Actor.Info.ShootingTick = 0;
             peer.Actor.Info.CurrentWeaponSlot = slot;
         }
 
@@ -304,7 +306,7 @@ namespace UberStrok.Realtime.Server.Game.Core
         {
             /* 
                 Set player in shooting state for 200ms.
-                To allow client to repond to change and play animation.
+                To allow client to respond to the change and play the animation.
              */
             var duration = Loop.ToTicks(TimeSpan.FromMilliseconds(200));
 

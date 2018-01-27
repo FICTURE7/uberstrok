@@ -12,8 +12,8 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(RunningMatchState));
 
-        /* Force client to update the base time. */
-        private ushort _frame = 6;
+        /* Current tick we're in. */
+        private ushort _frame = 0;
 
         public RunningMatchState(GameRoom room) : base(room)
         {
@@ -53,6 +53,7 @@ namespace UberStrok.Realtime.Server.Game
             /* Expected interval between ticks by the client (10tick/s). */
             const int UBZ_INTERVAL = 100;
 
+            /* Tick the power-up manager. */
             Room.PowerUps.Update();
 
             var deltas = new List<GameActorInfoDeltaView>(Room.Peers.Count);
@@ -80,22 +81,25 @@ namespace UberStrok.Realtime.Server.Game
                 player.State.Update();
             }
 
+            /* Send movement and deltas data to all connected peers, including peers in 'overview' state. */
             foreach (var otherPeer in Room.Peers)
             {
                 otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
                 otherPeer.Events.Game.SendAllPlayerPositions(position, _frame);
             }
 
+            /* Wipe the delta changes. */
             foreach (var delta in deltas)
                 delta.Changes.Clear();
 
+            /* Check if players have done single shots. */
             foreach (var player in Room.Players)
             {
                 if (player.Actor.Info.ShootingTick > 0)
                 {
                     player.Actor.Info.ShootingTick -= 1;
 
-                    if (player.Actor.Info.ShootingTick <= 0)
+                    if (player.Actor.Info.ShootingTick < 0)
                     {
                         player.Actor.Info.ShootingTick = 0;
                         player.Actor.Info.PlayerState &= ~PlayerStates.Shooting;
@@ -108,12 +112,14 @@ namespace UberStrok.Realtime.Server.Game
 
         private void OnPlayerKilled(object sender, PlayerKilledEventArgs e)
         {
+            /* Let all peers know that the player has died. */
             foreach (var otherPeer in Room.Peers)
                 otherPeer.Events.Game.SendPlayerKilled(e.AttackerCmid, e.VictimCmid, e.ItemClass, e.Damage, e.Part, e.Direction);
         }
 
         private void OnPlayerRespawned(object sender, PlayerRespawnedEventArgs e)
         {
+            /* Let all peers know that the player has respawned. */
             e.Player.Actor.Info.Health = 100;
             e.Player.Actor.Info.PlayerState &= ~PlayerStates.Dead;
 
@@ -129,7 +135,7 @@ namespace UberStrok.Realtime.Server.Game
 
         private void OnPlayerJoined(object sender, PlayerJoinedEventArgs e)
         {
-            /* Spawn the player in the room. */
+            /* Spawn the player in the map. */
             var player = e.Player;
             var point = Room.SpawnManager.Get(player.Actor.Team);
             player.Actor.Movement.Position = point.Position;
@@ -137,16 +143,21 @@ namespace UberStrok.Realtime.Server.Game
 
             player.Events.Game.SendMatchStart(Room.RoundNumber, Room.EndTime);
 
-            /* Let all peers know that the client has joined. */
+            /* Let all peers know that the client has joined & has spawned. */
             foreach (var otherPeer in Room.Peers)
             {
                 Debug.Assert(!otherPeer.KnownActors.Contains(player.Actor.Cmid));
 
                 otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Info.View, player.Actor.Movement);
+                otherPeer.Events.Game.SendPlayerRespawned(player.Actor.Cmid, point.Position, point.Rotation);
+
                 otherPeer.KnownActors.Add(player.Actor.Cmid);
             }
 
-            player.Events.Game.SendPlayerRespawned(player.Actor.Cmid, point.Position, point.Rotation);
+            /* Sync the power ups to the server side. */
+            player.Events.Game.SendSetPowerUpState(Room.PowerUps.Respawning);
+
+            player.State.Set(PeerState.Id.Playing);
         }
     }
 }

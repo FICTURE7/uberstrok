@@ -16,11 +16,6 @@ namespace UberStrok.Realtime.Server.Game.Core
         /* Current state of the room. */
         private StateMachine<MatchState.Id> _state;
 
-        /* Where the heavy lifting is done. */
-        //private Thread _loopThread;
-        /* Figure out if the loop has started.*/
-        //private bool _loopStarted;
-
         private byte _nextPlayer;
 
         /* Password of the room. */
@@ -191,7 +186,7 @@ namespace UberStrok.Realtime.Server.Game.Core
 
             /* 
                 Set the player in the overview state. Which
-                also sends all player data in the room.
+                also sends all player data in the room to the peer.
              */
             peer.State.Set(PeerState.Id.Overview);
         }

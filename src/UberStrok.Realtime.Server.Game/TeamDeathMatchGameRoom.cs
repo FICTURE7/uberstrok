@@ -17,6 +17,19 @@ namespace UberStrok.Realtime.Server.Game
         public int BlueTeamScore { get; set; }
         public int RedTeamScore { get; set; }
 
+        protected override void OnPlayerJoined(PlayerJoinedEventArgs args)
+        {
+            base.OnPlayerJoined(args);
+
+            if (IsRunning)
+            {
+                /*
+                    This is to reset the top scoreboard to not display "STARTS IN".
+                 */
+                args.Player.Events.Game.SendUpdateRoundScore(RoundNumber, (short)BlueTeamScore, (short)RedTeamScore);
+            }
+        }
+
         protected override void OnPlayerKilled(PlayerKilledEventArgs args)
         {
             base.OnPlayerKilled(args);
