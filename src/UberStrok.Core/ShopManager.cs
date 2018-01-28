@@ -1,16 +1,13 @@
-﻿using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using UberStrok.Core.Views;
 using UberStrok.WebServices.Client;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Core
 {
     public class ShopManager
     {
-        private static readonly ILog s_log = LogManager.GetLogger(nameof(ShopManager));
-
         private bool _isLoaded;
 
         private Dictionary<int, UberStrikeItemFunctionalView> _functionalItems;
@@ -34,8 +31,6 @@ namespace UberStrok.Realtime.Server.Game
             var data = Encoding.UTF8.GetString(bytes);
 
             var webServer = data.Substring(0, data.IndexOf("#####"));
-
-            s_log.Debug($"Retrieving loadout data {authToken} from the web server {webServer}");
 
             // Retrieve loadout data from the web server.
             var client = new ShopWebServiceClient(webServer);
