@@ -41,17 +41,9 @@ namespace UberStrok.Realtime.Server.Game.Core
             s_log.Info($"Joining team -> CMID:{peer.Actor.Cmid}:{team}:{peer.Actor.Number}");
         }
 
-        protected override void OnChatMessage(GamePeer peer, string message, ChatContext context)
+        protected override void OnChatMessage(GamePeer peer, string message, byte context)
         {
-            var cmid = peer.Actor.Cmid;
-            var playerName = peer.Actor.PlayerName;
-            var accessLevel = peer.Actor.AccessLevel;
-
-            foreach (var otherPeer in Peers)
-            {
-                if (otherPeer.Actor.Cmid != cmid)
-                    otherPeer.Events.Game.SendChatMessage(cmid, playerName, message, accessLevel, context);
-            }
+            Actions.ChatMessage(peer, message, (ChatContext)context);
         }
 
         protected override void OnPowerUpPicked(GamePeer peer, int pickupId, byte type, byte value)

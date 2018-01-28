@@ -8,7 +8,6 @@ using System.Linq;
 
 namespace UberStrok.Realtime.Server
 {
-    /* Server -> Client. */
     public class BasePeer : ClientPeer
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(BasePeer));

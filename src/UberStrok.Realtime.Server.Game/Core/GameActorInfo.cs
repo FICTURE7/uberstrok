@@ -337,6 +337,7 @@ namespace UberStrok.Realtime.Server.Game.Core
         }
 
         public int CurrentWeaponID => _view.CurrentWeaponID;
+
         public GameActorInfoDeltaView ViewDelta => _viewDelta;
         public GameActorInfoView View => _view;
     }

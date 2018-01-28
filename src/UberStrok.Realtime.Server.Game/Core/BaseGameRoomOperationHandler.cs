@@ -24,7 +24,7 @@ namespace UberStrok.Realtime.Server.Game.Core
         protected abstract void OnIsFiring(GamePeer peer, bool on);
         protected abstract void OnJump(GamePeer peer, Vector3 position);
         protected abstract void OnUpdatePositionAndRotation(GamePeer peer, Vector3 position, Vector3 velocity, byte horizontalRotation, byte verticalRotation, byte moveState);
-        protected abstract void OnChatMessage(GamePeer peer, string message, ChatContext context);
+        protected abstract void OnChatMessage(GamePeer peer, string message, byte context);
         protected abstract void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes);
         protected abstract void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations);
         protected abstract void OnJoinGame(GamePeer peer, TeamID team);
@@ -226,7 +226,7 @@ namespace UberStrok.Realtime.Server.Game.Core
             var message = StringProxy.Deserialize(bytes);
             var context = ByteProxy.Deserialize(bytes);
 
-            OnChatMessage(peer, message, (ChatContext)context);
+            OnChatMessage(peer, message, context);
         }
 
         private void PowerUpRespawnTimes(GamePeer peer, MemoryStream bytes)

@@ -1,40 +1,23 @@
-﻿using System;
-using System.Threading;
-
-namespace UberStrok.Realtime.Server.Game.Tests
+﻿namespace UberStrok.Realtime.Server.Game.Tests
 {
+    /*
     public static class Program
     {
         public static void Main()
         {
-            var loop = new Loop(128);
-            Console.WriteLine(loop.Interval);
+            var peer = new TestPeer(null);
 
-            loop.Start(HandleLoop, HandleLoopException);
-            Console.ReadLine();
+            peer.Handlers.Add(new GamePeerOperationHandler());
+            peer.Handlers.Add(new TeamDeathMatchGameRoom(null));
         }
+    }
 
-        private static int totalTick = 0;
-        private static double totalTime = 0;
-        private static DateTime lastTick = DateTime.Now;
-
-        private static double tps = 0f;
-        public static void HandleLoop()
-        {
-            var now = DateTime.Now;
-
-            totalTick++;
-            totalTime += (now - lastTick).TotalSeconds;
-
-            tps = totalTick / totalTime;
-
-            Console.WriteLine(tps);
-            lastTick = now;
-        }
-
-        public static void HandleLoopException(Exception e)
+    public class TestPeer : Peer
+    {
+        public TestPeer(InitRequest request) : base(request)
         {
 
         }
     }
+    */
 }

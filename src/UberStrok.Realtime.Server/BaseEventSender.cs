@@ -6,13 +6,21 @@ using System.IO;
 
 namespace UberStrok.Realtime.Server
 {
+    /// <summary>
+    /// Provides methods to send events.
+    /// </summary>
     public abstract class BaseEventSender
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(BaseEventSender));
 
         private readonly BasePeer _peer;
 
-        public BaseEventSender(BasePeer peer)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseEventSender"/> class with the specified
+        /// <see cref="BasePeer"/>.
+        /// </summary>
+        /// <param name="peer"><see cref="BasePeer"/> to use.</param>
+        protected BaseEventSender(BasePeer peer)
         {
             if (peer == null)
                 throw new ArgumentNullException(nameof(peer));

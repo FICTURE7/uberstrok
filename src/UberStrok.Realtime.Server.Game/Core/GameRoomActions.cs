@@ -1,4 +1,5 @@
 ﻿using System;
+using UberStrok.Core.Common;
 
 namespace UberStrok.Realtime.Server.Game.Core
 {
@@ -15,6 +16,19 @@ namespace UberStrok.Realtime.Server.Game.Core
         }
 
         protected BaseGameRoom Room => _room;
+
+        public void ChatMessage(GamePeer peer, string message, ChatContext chatCtx)
+        {
+            var cmid = peer.Actor.Cmid;
+            var playerName = peer.Actor.PlayerName;
+            var accessLevel = peer.Actor.AccessLevel;
+
+            foreach (var otherPeer in Room.Peers)
+            {
+                if (otherPeer.Actor.Cmid != cmid)
+                    otherPeer.Events.Game.SendChatMessage(cmid, playerName, message, accessLevel, chatCtx);
+            }
+        }
 
         public void MatchCountdown(int countdown)
         {

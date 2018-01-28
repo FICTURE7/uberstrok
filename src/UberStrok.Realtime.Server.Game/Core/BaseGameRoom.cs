@@ -50,7 +50,7 @@ namespace UberStrok.Realtime.Server.Game.Core
 
             /* TODO: Allow user to set the tick rate. */
             /* When the tick rate is high, the client side, lag interpolation goes all woncky. */
-            _loop = new Loop(20);
+            _loop = new Loop(15);
             _actions = new GameRoomActions(this);
 
             _peers = new List<GamePeer>();
@@ -121,7 +121,8 @@ namespace UberStrok.Realtime.Server.Game.Core
 
             Debug.Assert(peer.Room == null, "GamePeer is joining room, but its already in another room.");
 
-            var data = new GameActorInfoView
+            var roomView = View;
+            var actorView = new GameActorInfoView
             {
                 TeamID = TeamID.NONE,
 
@@ -149,22 +150,22 @@ namespace UberStrok.Realtime.Server.Game.Core
 
             /* Set the gears of the character. */
             /* Holo */
-            data.Gear[0] = (int)peer.Loadout.Type;
-            data.Gear[1] = peer.Loadout.Head;
-            data.Gear[2] = peer.Loadout.Face;
-            data.Gear[3] = peer.Loadout.Gloves;
-            data.Gear[4] = peer.Loadout.UpperBody;
-            data.Gear[5] = peer.Loadout.LowerBody;
-            data.Gear[6] = peer.Loadout.Boots;
+            actorView.Gear[0] = (int)peer.Loadout.Type;
+            actorView.Gear[1] = peer.Loadout.Head;
+            actorView.Gear[2] = peer.Loadout.Face;
+            actorView.Gear[3] = peer.Loadout.Gloves;
+            actorView.Gear[4] = peer.Loadout.UpperBody;
+            actorView.Gear[5] = peer.Loadout.LowerBody;
+            actorView.Gear[6] = peer.Loadout.Boots;
 
             /* Sets the weapons of the character. */
-            data.Weapons[0] = peer.Loadout.MeleeWeapon;
-            data.Weapons[1] = peer.Loadout.Weapon1;
-            data.Weapons[2] = peer.Loadout.Weapon2;
-            data.Weapons[3] = peer.Loadout.Weapon3;
+            actorView.Weapons[0] = peer.Loadout.MeleeWeapon;
+            actorView.Weapons[1] = peer.Loadout.Weapon1;
+            actorView.Weapons[2] = peer.Loadout.Weapon2;
+            actorView.Weapons[3] = peer.Loadout.Weapon3;
 
             var number = 0;
-            var actor = new GameActor(data);
+            var actor = new GameActor(actorView);
 
             lock (_peers)
             {
@@ -181,7 +182,7 @@ namespace UberStrok.Realtime.Server.Game.Core
                 This prepares the client for the game room and
                 sets the client state to 'pre-game'.
              */
-            peer.Events.SendRoomEntered(View);
+            peer.Events.SendRoomEntered(roomView);
 
             /* 
                 Set the player in the overview state. Which
