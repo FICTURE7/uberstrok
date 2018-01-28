@@ -1,6 +1,7 @@
 ﻿using PhotonHostRuntimeInterfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -60,6 +61,8 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations)
         {
+            Debug.Assert(positions.Count == rotations.Count, "Number of spawn positions given and number of rotations given is not equal.");
+
             /* We care only about the first operation sent for that team ID. */
             if (!_spawnManager.IsLoaded(team))
                 _spawnManager.Load(team, positions, rotations);
