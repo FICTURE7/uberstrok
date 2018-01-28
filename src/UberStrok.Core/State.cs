@@ -1,4 +1,4 @@
-﻿namespace UberStrok.Realtime
+﻿namespace UberStrok.Core
 {
     public abstract class State
     {

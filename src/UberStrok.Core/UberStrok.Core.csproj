@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D1F31A89-C971-4FBA-8795-95D79CB420C9}</ProjectGuid>
+    <ProjectGuid>{32C19193-C316-4E15-92BD-1030485FAFC1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UberStrok.Realtime.Server</RootNamespace>
-    <AssemblyName>UberStrok.Realtime.Server</AssemblyName>
+    <RootNamespace>UberStrok.Core</RootNamespace>
+    <AssemblyName>UberStrok.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,32 +30,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\photon\lib\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Photon.SocketServer">
-      <HintPath>..\..\photon\lib\Photon.SocketServer.dll</HintPath>
-    </Reference>
-    <Reference Include="PhotonHostRuntimeInterfaces">
-      <HintPath>..\..\photon\lib\PhotonHostRuntimeInterfaces.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseEventSender.cs" />
-    <Compile Include="BaseOperationHandler.cs" />
-    <Compile Include="BasePeer.cs" />
+    <Compile Include="Loop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IRoom.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\UberStrok.Realtime\UberStrok.Realtime.csproj">
-      <Project>{8582768E-780F-4E5A-AD26-07A14893A1B3}</Project>
-      <Name>UberStrok.Realtime</Name>
-    </ProjectReference>
+    <Compile Include="State.cs" />
+    <Compile Include="StateMachine.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace UberStrok.Realtime
+namespace UberStrok.Core
 {
     public class StateMachine<T> where T : struct, IConvertible
     {

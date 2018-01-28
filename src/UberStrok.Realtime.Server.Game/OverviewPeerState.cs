@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
-using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {

@@ -5,7 +5,7 @@ using System.Text;
 using UberStrok.Core.Views;
 using UberStrok.WebServices.Client;
 
-namespace UberStrok.Realtime.Server.Game.Core
+namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeerOperationHandler : BaseGamePeerOperationHandler
     {

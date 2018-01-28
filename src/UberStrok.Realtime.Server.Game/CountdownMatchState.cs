@@ -1,7 +1,6 @@
 ﻿using log4net;
 using System;
 using System.Diagnostics;
-using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {

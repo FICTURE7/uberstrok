@@ -5,7 +5,7 @@ using UberStrok.Core.Serialization;
 using UberStrok.Core.Serialization.Views;
 using UberStrok.Core.Views;
 
-namespace UberStrok.Realtime.Server.Game.Core
+namespace UberStrok.Realtime.Server.Game
 {
     public class GameRoomEvents : BaseEventSender
     {

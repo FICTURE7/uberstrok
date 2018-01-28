@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
-namespace UberStrok.Realtime.Server.Game.Core
+namespace UberStrok.Realtime.Server.Game
 {
     public class GameActorInfo
     {

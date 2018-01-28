@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading;
 
-namespace UberStrok.Realtime.Server
+namespace UberStrok.Core
 {
     public delegate void LoopHandler();
+
     public delegate void LoopExceptionHandler(Exception e);
 
     public class Loop : IDisposable

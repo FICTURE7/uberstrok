@@ -88,6 +88,10 @@
       <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
       <Name>Uberstrok.Core.Views</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UberStrok.Core\UberStrok.Core.csproj">
+      <Project>{32C19193-C316-4E15-92BD-1030485FAFC1}</Project>
+      <Name>UberStrok.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UberStrok.Realtime.Server\UberStrok.Realtime.Server.csproj">
       <Project>{D1F31A89-C971-4FBA-8795-95D79CB420C9}</Project>
       <Name>UberStrok.Realtime.Server</Name>

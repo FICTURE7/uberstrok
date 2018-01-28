@@ -4,7 +4,7 @@ using System.IO;
 using UberStrok.Core.Common;
 using UberStrok.Core.Serialization;
 
-namespace UberStrok.Realtime.Server.Game.Core
+namespace UberStrok.Realtime.Server.Game
 {
     public abstract class BaseGameRoomOperationHandler : BaseOperationHandler<GamePeer>
     {

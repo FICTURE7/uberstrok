@@ -1,7 +1,7 @@
 ﻿using System;
 using UberStrok.Core.Common;
 
-namespace UberStrok.Realtime.Server.Game.Core
+namespace UberStrok.Realtime.Server.Game
 {
     public class GameRoomActions
     {

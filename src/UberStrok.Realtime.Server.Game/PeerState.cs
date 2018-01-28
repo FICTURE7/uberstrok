@@ -1,5 +1,5 @@
 ﻿using System;
-using UberStrok.Realtime.Server.Game.Core;
+using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using UberStrok.Core.Common;
-using UberStrok.Realtime.Server.Game.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
