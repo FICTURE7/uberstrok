@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using UberStrok.Core.Common;
+using UberStrok.Core.Serialization.Common;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Core.Serialization.Views

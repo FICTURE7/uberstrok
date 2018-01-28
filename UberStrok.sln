@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.WebServices.Clien
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Core.Serialization", "src\UberStrok.Core.Serialization\UberStrok.Core.Serialization.csproj", "{31695DBE-D01C-4EA8-92CC-28541E9E0BC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uberstrok.Core.Views", "src\UberStrok.Core.Views\Uberstrok.Core.Views.csproj", "{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Core.Views", "src\UberStrok.Core.Views\UberStrok.Core.Views.csproj", "{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.Core.Common", "src\UberStrok.Core.Common\UberStrok.Core.Common.csproj", "{F6AA8827-1031-4753-BE08-B0D7F3A98C75}"
 EndProject

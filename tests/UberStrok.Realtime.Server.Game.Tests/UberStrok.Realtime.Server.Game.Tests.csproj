@@ -53,9 +53,9 @@
       <Project>{F6AA8827-1031-4753-BE08-B0D7F3A98C75}</Project>
       <Name>UberStrok.Core.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\UberStrok.Core.Views\Uberstrok.Core.Views.csproj">
+    <ProjectReference Include="..\..\src\UberStrok.Core.Views\UberStrok.Core.Views.csproj">
       <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
-      <Name>Uberstrok.Core.Views</Name>
+      <Name>UberStrok.Core.Views</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\UberStrok.Realtime.Server.Game\UberStrok.Realtime.Server.Game.csproj">
       <Project>{030FFB86-1B74-47E5-A5D4-DCBDE195F533}</Project>

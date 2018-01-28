@@ -2,7 +2,7 @@
 using System.IO;
 using UberStrok.Core.Common;
 
-namespace UberStrok.Core.Serialization
+namespace UberStrok.Core.Serialization.Common
 {
     public static class ColorProxy
     {

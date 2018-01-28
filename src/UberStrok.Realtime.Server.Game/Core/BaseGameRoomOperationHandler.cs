@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UberStrok.Core.Common;
 using UberStrok.Core.Serialization;
+using UberStrok.Core.Serialization.Common;
 
 namespace UberStrok.Realtime.Server.Game
 {

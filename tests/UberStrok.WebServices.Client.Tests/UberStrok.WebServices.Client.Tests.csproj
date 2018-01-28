@@ -44,9 +44,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\UberStrok.Core.Views\Uberstrok.Core.Views.csproj">
+    <ProjectReference Include="..\..\src\UberStrok.Core.Views\UberStrok.Core.Views.csproj">
       <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
-      <Name>Uberstrok.Core.Views</Name>
+      <Name>UberStrok.Core.Views</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\UberStrok.WebServices.Client\UberStrok.WebServices.Client.csproj">
       <Project>{F9FA508B-417F-4863-B19D-B7CF3D771B0F}</Project>

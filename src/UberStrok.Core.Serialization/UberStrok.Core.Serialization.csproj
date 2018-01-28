@@ -37,7 +37,7 @@
   <ItemGroup>
     <Compile Include="BooleanProxy.cs" />
     <Compile Include="ByteProxy.cs" />
-    <Compile Include="ColorProxy.cs" />
+    <Compile Include="Common\ColorProxy.cs" />
     <Compile Include="DateTimeProxy.cs" />
     <Compile Include="DictionaryProxy.cs" />
     <Compile Include="EnumProxy.cs" />
@@ -45,9 +45,9 @@
     <Compile Include="Int32Proxy.cs" />
     <Compile Include="Int64Proxy.cs" />
     <Compile Include="ListProxy.cs" />
-    <Compile Include="PlayerMovementProxy.cs" />
-    <Compile Include="ShortVector3Proxy.cs" />
-    <Compile Include="Vector3Proxy.cs" />
+    <Compile Include="Common\PlayerMovementProxy.cs" />
+    <Compile Include="Common\ShortVector3Proxy.cs" />
+    <Compile Include="Common\Vector3Proxy.cs" />
     <Compile Include="Views\AccountCompletionResultViewProxy.cs" />
     <Compile Include="Views\ApplicationConfigurationViewProxy.cs" />
     <Compile Include="Views\AuthenticateApplicationViewProxy.cs" />
@@ -94,9 +94,9 @@
       <Project>{F6AA8827-1031-4753-BE08-B0D7F3A98C75}</Project>
       <Name>UberStrok.Core.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UberStrok.Core.Views\Uberstrok.Core.Views.csproj">
+    <ProjectReference Include="..\UberStrok.Core.Views\UberStrok.Core.Views.csproj">
       <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
-      <Name>Uberstrok.Core.Views</Name>
+      <Name>UberStrok.Core.Views</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -51,9 +51,9 @@
       <Project>{31695DBE-D01C-4EA8-92CC-28541E9E0BC0}</Project>
       <Name>UberStrok.Core.Serialization</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UberStrok.Core.Views\Uberstrok.Core.Views.csproj">
+    <ProjectReference Include="..\UberStrok.Core.Views\UberStrok.Core.Views.csproj">
       <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
-      <Name>Uberstrok.Core.Views</Name>
+      <Name>UberStrok.Core.Views</Name>
     </ProjectReference>
     <ProjectReference Include="..\UberStrok.WebServices.Contracts\UberStrok.WebServices.Contracts.csproj">
       <Project>{2b8bcce1-cf4a-4dc4-8c55-0b18c9c644a4}</Project>

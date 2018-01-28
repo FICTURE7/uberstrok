@@ -2,6 +2,7 @@
 using System.IO;
 using UberStrok.Core.Common;
 using UberStrok.Core.Serialization;
+using UberStrok.Core.Serialization.Common;
 using UberStrok.Core.Serialization.Views;
 using UberStrok.Core.Views;
 

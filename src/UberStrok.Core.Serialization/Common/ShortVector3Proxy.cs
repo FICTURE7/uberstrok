@@ -2,7 +2,7 @@
 using System.IO;
 using UberStrok.Core.Common;
 
-namespace UberStrok.Core.Serialization
+namespace UberStrok.Core.Serialization.Common
 {
     public static class ShortVector3Proxy
     {
@@ -15,7 +15,7 @@ namespace UberStrok.Core.Serialization
 
         public static Vector3 Deserialize(Stream bytes)
         {
-            byte[] array = new byte[6];
+            var array = new byte[6];
             bytes.Read(array, 0, 6);
             return new Vector3(0.01f * BitConverter.ToInt16(array, 0), 0.01f * BitConverter.ToInt16(array, 2), 0.01f * BitConverter.ToInt16(array, 4));
         }
