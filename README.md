@@ -8,11 +8,8 @@ mostly to be able to play this game again with some friends for the sake of nost
 And because [dropshot](https://www.github.com/festivaldev/dropshot) seem to be inactive, so I decided
 to continue on my own.
 
-### Building
-Requires python for the post build events and things.
-
-### Running
-To run the thing you need stuff and things.
+### Setting Up
+Check [issue #9](https://github.com/FICTURE7/uberstrok/issues/9) for some instructions.
 
 ### 'Bugs'
 Its not a bug, its a feature, but if you're not happy with it, you can still create a new issue 
