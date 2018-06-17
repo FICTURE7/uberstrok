@@ -87,6 +87,9 @@ class WebServicesPackager(Packager):
         for t in types:
             files = glob(os.path.join(self.path, t))
             for f in files:
+                if f.endswith(".vshost.exe"):
+                    continue
+
                 nf = os.path.join(self.name, os.path.basename(f))
                 print("\tpacking {0}".format(nf))
                 archive.write(f, arcname=nf)
@@ -100,6 +103,31 @@ class WebServicesPackager(Packager):
             print("\tpacking {0}".format(nf))
             archive.write(f, arcname=nf)
 
+        return True
+
+class PatcherPackager(Packager):
+    """
+    represents a packager which
+    packages the patcher
+    """
+    def __init__(self, src):
+        Packager.__init__(self, src, "UberStrok.Patcher")
+
+    def pack(self, archive):
+        if not Packager.pack(self, archive):
+            return False
+
+        types = ("*.exe", "*.dll", "*.config")
+        files = []
+        for t in types:
+            files = glob(os.path.join(self.path, t))
+            for f in files:
+                if f.endswith(".vshost.exe"):
+                    continue
+
+                nf = os.path.join(self.name, os.path.basename(f))
+                print("\tpacking {0}".format(nf))
+                archive.write(f, arcname=nf)
         return True
 
 class Package(object):
@@ -118,6 +146,7 @@ class Package(object):
         self.__game_server_packager = GameServerPackager(src)
         self.__comm_server_packager = CommServerPackager(src)
         self.__webservices_packager = WebServicesPackager(src)
+        self.__patcher_packager = PatcherPackager(src)
 
     def pack(self):
         print(" root -> {0}".format(self.__root))
@@ -127,6 +156,8 @@ class Package(object):
         self.__comm_server_packager.pack(self.__archive)
         print(" -")
         self.__webservices_packager.pack(self.__archive)
+        print(" -")
+        self.__patcher_packager.pack(self.__archive)
 
 def main():
     # parse command line arguments
