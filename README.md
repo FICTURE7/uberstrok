@@ -9,7 +9,7 @@ And because [dropshot](https://www.github.com/festivaldev/dropshot) seem to be i
 to continue on my own.
 
 ### Setting Up
-Check [issue #9](https://github.com/FICTURE7/uberstrok/issues/9) for some instructions.
+Check [issue #9](https://github.com/FICTURE7/uberstrok/issues/9) & [#13](https://github.com/FICTURE7/uberstrok/issues/13) for some instructions.
 
 ### 'Bugs'
 Its not a bug, its a feature, but if you're not happy with it, you can still create a new issue 
