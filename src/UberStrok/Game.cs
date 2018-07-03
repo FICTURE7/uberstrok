@@ -12,6 +12,17 @@ namespace UberStrok
             _gameObjects = new List<GameObject>();
         }
 
+        public void Tick()
+        {
+            DoDispatch();
+            DoUpdate();
+        }
+
+        private void DoDispatch()
+        {
+
+        }
+
         private void DoUpdate()
         {
             for (int i = 0; i < _gameObjects.Count; i++)

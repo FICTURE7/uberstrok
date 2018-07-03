@@ -2,6 +2,8 @@
 {
     public abstract class Command
     {
-        public int Tick;
+        private readonly int _tick;
+
+        public int Tick => _tick;
     }
 }
