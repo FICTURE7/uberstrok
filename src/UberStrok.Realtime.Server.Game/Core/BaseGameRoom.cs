@@ -51,7 +51,7 @@ namespace UberStrok.Realtime.Server.Game
 
             /* TODO: Allow user to set the tick rate. */
             /* When the tick rate is high, the client side, lag interpolation goes all woncky. */
-            _loop = new Loop(15);
+            _loop = new Loop(10);
             _actions = new GameRoomActions(this);
 
             _peers = new List<GamePeer>();
