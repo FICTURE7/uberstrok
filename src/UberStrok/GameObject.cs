@@ -6,11 +6,19 @@ namespace UberStrok
     public class GameObject
     {
         private readonly Dictionary<Type, Component> _components;
+        /* Game instance which owns this GameObject. */
+        internal Game _game;
 
         public GameObject()
         {
             _components = new Dictionary<Type, Component>();
+
+            Enabled = true;
         }
+
+        public bool Enabled { get; set; }
+        public string Name { get; set; }
+        public Game Game => _game;
 
         public TComponent AddComponent<TComponent>() where TComponent : Component, new()
         {
@@ -49,6 +57,11 @@ namespace UberStrok
             /* TOOO: Avoid foreach. */
             foreach(var kv in _components)
                 kv.Value.DoUpdate();
+        }
+
+        public override string ToString()
+        {
+            return $"{{{Name}:{_components.Count}}}";
         }
     }
 }

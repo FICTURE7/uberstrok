@@ -49,7 +49,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameObjectTests.cs" />
+    <Compile Include="GameTests.cs" />
+    <Compile Include="Mocks\MockCommand.cs" />
     <Compile Include="Mocks\MockComponent.cs" />
+    <Compile Include="Mocks\MockState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using UberStrok.Realtime.Server.Game.Commands;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -49,7 +50,14 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnPowerUpPicked(GamePeer peer, int pickupId, byte type, byte value)
         {
-            PowerUps.PickUp(peer, pickupId, (PickupItemType)type, value);
+            _game.OnCommand(new PowerUpPickedCommand
+            {
+                Id = pickupId,
+                Type = (PickupItemType)type,
+                Value = value
+            });
+
+            //PowerUps.PickUp(peer, pickupId, (PickupItemType)type, value);
         }
 
         protected override void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes)

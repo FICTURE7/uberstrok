@@ -46,6 +46,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\PowerUpPickedCommand.cs" />
+    <Compile Include="Commands\PowerUpRespawnTimesCommand.cs" />
     <Compile Include="Core\BaseGamePeerOperationHandler.cs" />
     <Compile Include="Core\GameRoomActions.cs" />
     <Compile Include="Core\BaseGameRoomOperationHandler.cs" />
@@ -101,6 +103,10 @@
     <ProjectReference Include="..\UberStrok.WebServices.Client\UberStrok.WebServices.Client.csproj">
       <Project>{F9FA508B-417F-4863-B19D-B7CF3D771B0F}</Project>
       <Name>UberStrok.WebServices.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UberStrok\UberStrok.csproj">
+      <Project>{4c184928-3652-4cd0-ac86-6d69d4ef286c}</Project>
+      <Name>UberStrok</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

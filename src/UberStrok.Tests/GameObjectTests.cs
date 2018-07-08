@@ -43,5 +43,23 @@ namespace UberStrok.Tests
 
             Assert.That(component1, Is.EqualTo(component2));
         }
+
+        [Test]
+        public void Name_Set_Get()
+        {
+            var go = new GameObject();
+            go.Name = "xD";
+
+            Assert.That(go.Name, Is.EqualTo("xD"));
+        }
+
+        [Test]
+        public void Enabled_Set_Get()
+        {
+            var go = new GameObject();
+            Assert.That(go.Enabled, Is.EqualTo(true));
+            go.Enabled = false;
+            Assert.That(go.Enabled, Is.EqualTo(false));
+        }
     }
 }

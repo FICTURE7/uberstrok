@@ -20,7 +20,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 /* Total players in all game rooms. */
                 var sum = 0;
-                foreach(var room in Rooms)
+                foreach (var room in Rooms)
                     sum += room.Players.Count;
 
                 return sum;

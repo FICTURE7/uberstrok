@@ -12,9 +12,11 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(BaseGameRoom));
 
+        private readonly UberStrok.Game _game;
+
         private readonly GameRoomActions _actions;
         /* Loop thats going to do the heavy lifting. */
-        private readonly Loop _loop;
+        private readonly Core.Loop _loop;
         /* Current state of the room. */
         private readonly StateMachine<MatchState.Id> _state;
 
@@ -49,9 +51,23 @@ namespace UberStrok.Realtime.Server.Game
             _view = data;
             _view.ConnectedPlayers = 0;
 
+            /*
+                Game State
+                ----------
+                The match state transitions:
+
+                WaitingForPlayersMatchState ----> CountdownMatchState ----> RunningMatchState
+             */
+            _game = new UberStrok.Game();
+            _game.Register<WaitingForPlayersMatchState>();
+            _game.Register<CountdownMatchState>();
+            _game.Register<RunningMatchState>();
+
             /* TODO: Allow user to set the tick rate. */
-            /* When the tick rate is high, the client side, lag interpolation goes all woncky. */
-            _loop = new Loop(10);
+            /* When the tick rate is high, the client side lag interpolation goes all woncky. */
+            _loop = new Core.Loop(10);
+
+            /*
             _actions = new GameRoomActions(this);
 
             _peers = new List<GamePeer>();
@@ -71,6 +87,7 @@ namespace UberStrok.Realtime.Server.Game
             _state.Register(MatchState.Id.Running, new RunningMatchState(this));
 
             _state.Set(MatchState.Id.WaitingForPlayers);
+            */
         }
 
         public GameRoomDataView View => _view;
@@ -108,7 +125,7 @@ namespace UberStrok.Realtime.Server.Game
         /* Time in system ticks when the round ends.*/
         public int EndTime { get; set; }
 
-        public Loop Loop => _loop;
+        public Core.Loop Loop => _loop;
         public ShopManager ShopManager => _shopManager;
         public SpawnManager SpawnManager => _spawnManager;
 
