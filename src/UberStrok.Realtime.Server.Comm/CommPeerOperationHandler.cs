@@ -7,8 +7,9 @@ using UberStrok.WebServices.Client;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public class CommPeerOperationHandler : BaseCommPeerOperationHandler
+    public class CommPeerOperationHandler /*:  BaseCommPeerOperationHandler */
     {
+        /*
         private static readonly ILog Log = LogManager.GetLogger(typeof(CommPeerOperationHandler));
 
         public CommPeerOperationHandler(CommPeer peer) : base(peer)
@@ -52,5 +53,6 @@ namespace UberStrok.Realtime.Server.Comm
         {
             // Space
         }
+        */
     }
 }

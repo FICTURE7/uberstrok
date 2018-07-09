@@ -3,8 +3,9 @@ using UberStrok.Core.Serialization;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public abstract class BaseCommPeerOperationHandler : BaseOperationHandler<CommPeer>
+    public abstract class BaseCommPeerOperationHandler /*: BaseOperationHandler<CommPeer> */
     {
+        /*
         protected BaseCommPeerOperationHandler(CommPeer peer) : base(peer)
         {
             // Space
@@ -45,5 +46,6 @@ namespace UberStrok.Realtime.Server.Comm
 
             OnSendHeartbeatResponse(authToken, responseHash);
         }
+        */
     }
 }

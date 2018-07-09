@@ -3,8 +3,9 @@ using PhotonHostRuntimeInterfaces;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public class LobbyRoomOperationHandler : BaseLobbyRoomOperationHandler
+    public class LobbyRoomOperationHandler /*: BaseLobbyRoomOperationHandler */
     {
+        /*
         private static readonly ILog Log = LogManager.GetLogger(typeof(CommPeerOperationHandler).Name);
 
         public LobbyRoomOperationHandler(CommPeer peer) : base(peer)
@@ -25,5 +26,6 @@ namespace UberStrok.Realtime.Server.Comm
             LobbyManager.Instance.Remove(Peer.Actor.Cmid);
             LobbyManager.Instance.UpdateList();
         }
+        */
     }
 }
