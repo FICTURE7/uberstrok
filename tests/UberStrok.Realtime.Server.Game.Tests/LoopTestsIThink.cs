@@ -5,6 +5,7 @@ namespace UberStrok.Realtime.Server.Game.Tests
 {
     public static class LoopTestsIThink
     {
+        /*
         public static void NotMain()
         {
             var loop = new Loop(128);
@@ -13,6 +14,7 @@ namespace UberStrok.Realtime.Server.Game.Tests
             loop.Start(HandleLoop, HandleLoopException);
             Console.ReadLine();
         }
+        */
 
         private static int totalTick = 0;
         private static double totalTime = 0;

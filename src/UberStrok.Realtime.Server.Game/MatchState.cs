@@ -1,9 +1,8 @@
 ﻿using System;
-using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public abstract class MatchState : State
+    public abstract class MatchState : Core.State
     {
         private readonly BaseGameRoom _room;
 

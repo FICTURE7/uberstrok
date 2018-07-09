@@ -1,9 +1,8 @@
 ﻿using System;
-using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public abstract class PeerState : State
+    public abstract class PeerState : Core.State
     {
         private readonly GamePeer _peer;
 
