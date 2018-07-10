@@ -10,7 +10,7 @@ namespace UberStrok
             // Space
         }
 
-        public void Filter<TCommand>() where TCommand : Command, new()
+        public void Add<TCommand>() where TCommand : Command, new()
         {
 
         }

@@ -25,9 +25,9 @@ namespace UberStrok.Tests
         {
             var go = new GameObject(_game);
             var component = go.AddComponent<MockComponent>();
-            Assert.That(component.GameObject, Is.EqualTo(go));
             Assert.That(component, Is.Not.Null);
-            Assert.That(component, Is.TypeOf<MockComponent>());            
+            Assert.That(component, Is.TypeOf<MockComponent>());
+            Assert.That(component.GameObject, Is.EqualTo(go));
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace UberStrok.Tests
         {
             var go = new GameObject(_game);
             var component = go.AddComponent<MockComponent>();
-            Assert.That(component.GameObject, Is.Not.Null);
+            Assert.That(component.GameObject, Is.EqualTo(go));
             Assert.That(go.RemoveComponent<MockComponent>(), Is.True);
             Assert.That(component.GameObject, Is.Null);
         }

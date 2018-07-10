@@ -6,7 +6,11 @@ namespace UberStrok
     {
         public static readonly GameState Empty = new EmptyGameState();
 
-        public CommandFilter Commands => null;
+        /* Game instance to which this game state is tied to. */
+        internal Game _game;
+
+        public CommandFilter Filter => null;
+        protected Game Game => _game;
 
         private class EmptyGameState : GameState
         {
