@@ -20,16 +20,9 @@ namespace UberStrok
         /* Dictionary of type of game states to game state instances. */
         private readonly Dictionary<Type, GameState> _states;
 
-        public Game() : this(GameState.Empty)
-        {
-            // Space
-        }
 
-        public Game(GameState defaultState)
+        public Game()
         {
-            if (defaultState == null)
-                throw new ArgumentNullException(nameof(defaultState));
-
             _tick = 0;
             _state = null;
             _states = new Dictionary<Type, GameState>();
@@ -46,7 +39,8 @@ namespace UberStrok
         {
             /* 
                 Dispatches the commands in the queue and
-                updates all objects in the game instance.
+                updates all objects in the game instance and
+                the current state.
              */
             DoDispatch();
             DoUpdate();
@@ -71,13 +65,11 @@ namespace UberStrok
             if (!_states.TryGetValue(type, out state))
                 throw new InvalidOperationException("State was not registered.");
 
+            /* TODO: Call OnEnter & OnExit and stuff. */
             _state = state;
         }
 
-        public GameState GetState()
-        {
-            return _state;
-        }
+        public GameState GetState() => _state;
 
         public void OnCommand(Command command)
         {

@@ -25,12 +25,6 @@ namespace UberStrok.Tests
 
             /* State not set, should return null. */
             Assert.That(game.GetState(), Is.Null);
-
-            /*
-            var state = game.GetState();
-            Assert.That(state, Is.Not.Null);
-            Assert.That(state, Is.TypeOf<MockGameState>());
-            */
         }
 
         [Test]
