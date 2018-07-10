@@ -2,7 +2,7 @@
 
 namespace UberStrok.Tests.Mocks
 {
-    public class MockState : State
+    public class MockGameState : GameState
     {
         protected override void OnEnter()
         {

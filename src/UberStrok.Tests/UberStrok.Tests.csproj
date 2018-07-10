@@ -52,7 +52,7 @@
     <Compile Include="GameTests.cs" />
     <Compile Include="Mocks\MockCommand.cs" />
     <Compile Include="Mocks\MockComponent.cs" />
-    <Compile Include="Mocks\MockState.cs" />
+    <Compile Include="Mocks\MockGameState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

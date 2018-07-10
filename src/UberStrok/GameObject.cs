@@ -7,16 +7,26 @@ namespace UberStrok
     {
         private readonly Dictionary<Type, Component> _components;
         /* Game instance which owns this GameObject. */
-        internal Game _game;
+        private readonly Game _game;
 
-        public GameObject()
+        public GameObject(Game game)
         {
+            if (game == null)
+                throw new ArgumentNullException(nameof(game));
+
+            /*
+                Add the new game object to the
+                game's list of objects.
+             */
+            _game = game;
+            _game._gameObjects.Add(this);
+
             _components = new Dictionary<Type, Component>();
 
-            Enabled = true;
+            Enable = true;
         }
 
-        public bool Enabled { get; set; }
+        public bool Enable { get; set; }
         public string Name { get; set; }
         public Game Game => _game;
 

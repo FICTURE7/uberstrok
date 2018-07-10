@@ -59,9 +59,9 @@ namespace UberStrok.Realtime.Server.Game
                 WaitingForPlayersMatchState ----> CountdownMatchState ----> RunningMatchState
              */
             _game = new UberStrok.Game();
-            _game.Register<WaitingForPlayersMatchState>();
-            _game.Register<CountdownMatchState>();
-            _game.Register<RunningMatchState>();
+            //_game.Register<WaitingForPlayersMatchState>();
+            //_game.Register<CountdownMatchState>();
+            //_game.Register<RunningMatchState>();
 
             /* TODO: Allow user to set the tick rate. */
             /* When the tick rate is high, the client side lag interpolation goes all woncky. */

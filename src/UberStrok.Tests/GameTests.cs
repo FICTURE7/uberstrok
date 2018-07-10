@@ -19,8 +19,10 @@ namespace UberStrok.Tests
         public void State_()
         {
             var game = new Game();
-            game.Register<MockState>();
-            var something = game.Recorder.Recording;
+            game.RegisterState<MockGameState>();
+            game.SetState<MockGameState>();
+
+            var state = game.GetState();
         }
     }
 }
