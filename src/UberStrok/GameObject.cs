@@ -20,7 +20,7 @@ namespace UberStrok
                 game's list of objects.
              */
             _game = game;
-            _game._gameObjects.Add(this);
+            _game._objects.Add(this);
 
             _components = new Dictionary<Type, Component>();
 

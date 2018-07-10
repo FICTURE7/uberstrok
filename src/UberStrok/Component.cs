@@ -4,14 +4,9 @@ namespace UberStrok
 {
     public abstract class Component
     {
+        /* GameObject which owns this Component. */
         internal GameObject _gameObject;
 
-        protected Component()
-        {
-            /* Space */
-        }
-
-        /* GameObject which owns this Component. */
         public GameObject GameObject => _gameObject;
 
         protected abstract void OnUpdate();

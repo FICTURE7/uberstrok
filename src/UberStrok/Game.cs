@@ -12,7 +12,7 @@ namespace UberStrok
         private GameState _state;
 
         /* List of game objects in the game instance. */
-        internal readonly List<GameObject> _gameObjects;
+        internal readonly List<GameObject> _objects;
         /* Recorder to record commands received. */
         private readonly CommandRecorder _recorder;
         /* Queue of commands to be dispatched. */
@@ -28,12 +28,12 @@ namespace UberStrok
             _states = new Dictionary<Type, GameState>();
             _recorder = new CommandRecorder();
             _queue = new ConcurrentQueue<Command>();
-            _gameObjects = new List<GameObject>();
+            _objects = new List<GameObject>();
         }
 
         public int Tick => _tick;
         public CommandRecorder Recorder => _recorder;
-        public IReadOnlyList<GameObject> Objects => _gameObjects.AsReadOnly();
+        public IReadOnlyList<GameObject> Objects => _objects.AsReadOnly();
 
         public void DoTick()
         {
@@ -97,8 +97,8 @@ namespace UberStrok
         private void DoUpdate()
         {
             /* Update each game object in the game object list. */
-            for (int i = 0; i < _gameObjects.Count; i++)
-                _gameObjects[i].DoUpdate();
+            for (int i = 0; i < _objects.Count; i++)
+                _objects[i].DoUpdate();
 
             /* Update the current GameState as well if have any. */
             _state?.DoUpdate();
