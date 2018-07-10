@@ -5,6 +5,7 @@ namespace UberStrok
 {
     public class GameObject
     {
+        /* Components in this GameObject. */
         private readonly Dictionary<Type, Component> _components;
         /* Game instance which owns this GameObject. */
         private readonly Game _game;
