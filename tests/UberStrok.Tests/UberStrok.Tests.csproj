@@ -54,6 +54,7 @@
     <Compile Include="Mocks\MockComponent.cs" />
     <Compile Include="Mocks\MockGameState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TransformTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

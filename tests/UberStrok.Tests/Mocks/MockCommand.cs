@@ -6,7 +6,7 @@ namespace UberStrok.Tests.Mocks
     {
         protected override void OnExecute(Game game, GameObject gameObject)
         {
-            // Space
+            
         }
     }
 }

@@ -47,6 +47,7 @@
     <Compile Include="State.cs" />
     <Compile Include="StateMachine.cs" />
     <Compile Include="Transform.cs" />
+    <Compile Include="Vector3.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameState.cs" />
