@@ -36,7 +36,7 @@ namespace UberStrok.Tests
         }
 
         [Test]
-        public void SetState()
+        public void SetState_GetState()
         {
             var game = new Game();
             game.RegisterState<MockGameState>();
@@ -48,6 +48,21 @@ namespace UberStrok.Tests
             var state = game.GetState();
             Assert.That(state, Is.TypeOf<MockGameState>());
             Assert.That(state._game, Is.EqualTo(game));
+        }
+
+        [Test]
+        public void ResetState()
+        {
+            var game = new Game();
+            game.RegisterState<MockGameState>();
+            game.SetState<MockGameState>();
+
+            Assert.That(game.GetState(), Is.Not.Null);
+            Assert.That(game.GetState(), Is.TypeOf<MockGameState>());
+
+            game.ResetState();
+
+            Assert.That(game.GetState(), Is.Null);
         }
 
         [Test]

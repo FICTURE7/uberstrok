@@ -47,6 +47,12 @@ namespace UberStrok
             _tick++;
         }
 
+        public void ResetState()
+        {
+            /* TODO: Call OnEnter & OnExit and stuff. */
+            _state = null;
+        }
+
         public void RegisterState<TGameState>() where TGameState : GameState, new()
         {
             var type = typeof(TGameState);
