@@ -2,9 +2,9 @@
 
 namespace UberStrok.Core.Common
 {
-    public struct Vector3
+    public struct Vector3Old
     {
-        public Vector3(float x, float y, float z)
+        public Vector3Old(float x, float y, float z)
         {
             this.x = x;
             this.y = y;
@@ -17,45 +17,45 @@ namespace UberStrok.Core.Common
 
         public float Magnitude => (float)Math.Sqrt(x * x + y * y + z * z);
 
-        public Vector3 Normalized
+        public Vector3Old Normalized
         {
             get
             {
                 float magnitude = Magnitude;
                 if (magnitude > 1E-05f)
                     return this / magnitude;
-                return new Vector3(0, 0, 0);
+                return new Vector3Old(0, 0, 0);
             }
         }
 
-        public static float Angle(Vector3 from, Vector3 to)
+        public static float Angle(Vector3Old from, Vector3Old to)
         {
             return (float)Math.Acos(MathUtils.Clamp(Dot(from.Normalized, to.Normalized), -1f, 1f)) * 57.29578f;
         }
 
-        public static float Dot(Vector3 a, Vector3 b)
+        public static float Dot(Vector3Old a, Vector3Old b)
         {
             return a.x * b.x + a.y * b.y + a.z * b.z;
         }
 
-        public static Vector3 operator /(Vector3 a, float d)
+        public static Vector3Old operator /(Vector3Old a, float d)
         {
-            return new Vector3(a.x / d, a.y / d, a.z / d);
+            return new Vector3Old(a.x / d, a.y / d, a.z / d);
         }
 
-        public static Vector3 operator *(Vector3 a, int d)
+        public static Vector3Old operator *(Vector3Old a, int d)
         {
-            return new Vector3(a.x * d, a.y * d, a.z * d);
+            return new Vector3Old(a.x * d, a.y * d, a.z * d);
         }
 
-        public static Vector3 operator -(Vector3 a)
+        public static Vector3Old operator -(Vector3Old a)
         {
-            return new Vector3(-a.x, -a.y, -a.z);
+            return new Vector3Old(-a.x, -a.y, -a.z);
         }
 
-        public static Vector3 operator -(Vector3 a, Vector3 b)
+        public static Vector3Old operator -(Vector3Old a, Vector3Old b)
         {
-            return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+            return new Vector3Old(a.x - b.x, a.y - b.y, a.z - b.z);
         }
 
         public override string ToString()

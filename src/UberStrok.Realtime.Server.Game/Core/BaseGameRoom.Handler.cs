@@ -67,7 +67,7 @@ namespace UberStrok.Realtime.Server.Game
                 _powerUpManager.Load(respawnTimes);
         }
 
-        protected override void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations)
+        protected override void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3Old> positions, List<byte> rotations)
         {
             Debug.Assert(positions.Count == rotations.Count, "Number of spawn positions given and number of rotations given is not equal.");
 
@@ -84,7 +84,7 @@ namespace UberStrok.Realtime.Server.Game
             });
         }
 
-        protected override void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3 force)
+        protected override void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3Old force)
         {
             var weaponId = peer.Actor.Info.Weapons[slot];
 
@@ -109,9 +109,9 @@ namespace UberStrok.Realtime.Server.Game
                     var attackerPos = peer.Actor.Movement.Position;
 
                     var direction = attackerPos - victimPos;
-                    var back = new Vector3(0, 0, -1);
+                    var back = new Vector3Old(0, 0, -1);
 
-                    var angle = Vector3.Angle(direction, back);
+                    var angle = Vector3Old.Angle(direction, back);
                     if (direction.x < 0)
                         angle = 360 - angle;
 
@@ -187,7 +187,7 @@ namespace UberStrok.Realtime.Server.Game
                     ItemClass = UberStrikeItemClass.WeaponMachinegun,
                     Damage = (ushort)actualDamage,
                     Part = BodyPart.Body,
-                    Direction = new Vector3()
+                    Direction = new Vector3Old()
                 });
             }
         }
@@ -223,9 +223,9 @@ namespace UberStrok.Realtime.Server.Game
                     var attackerPos = peer.Actor.Movement.Position;
 
                     var direction = attackerPos - victimPos;
-                    var back = new Vector3(0, 0, -1);
+                    var back = new Vector3Old(0, 0, -1);
 
-                    var angle = Vector3.Angle(direction, back);
+                    var angle = Vector3Old.Angle(direction, back);
                     if (direction.x < 0)
                         angle = 360 - angle;
 
@@ -264,7 +264,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
+        protected override void OnEmitProjectile(GamePeer peer, Vector3Old origin, Vector3Old direction, byte slot, int projectileId, bool explode)
         {
             var shooterCmid = peer.Actor.Cmid;
             foreach (var otherPeer in Peers)
@@ -280,7 +280,7 @@ namespace UberStrok.Realtime.Server.Game
                 otherPeer.Events.Game.SendRemoveProjectile(projectileId, explode);
         }
 
-        protected override void OnJump(GamePeer peer, Vector3 position)
+        protected override void OnJump(GamePeer peer, Vector3Old position)
         {
             foreach (var otherPeer in Peers)
             {
@@ -289,7 +289,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnUpdatePositionAndRotation(GamePeer peer, Vector3 position, Vector3 velocity, byte horizontalRotation, byte verticalRotation, byte moveState)
+        protected override void OnUpdatePositionAndRotation(GamePeer peer, Vector3Old position, Vector3Old velocity, byte horizontalRotation, byte verticalRotation, byte moveState)
         {
             peer.Actor.Movement.Position = position;
             peer.Actor.Movement.Velocity = velocity;

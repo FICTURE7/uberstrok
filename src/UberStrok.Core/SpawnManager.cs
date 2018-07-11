@@ -22,7 +22,7 @@ namespace UberStrok.Core
 
         public bool IsLoaded(TeamID team) => _spawnPoints.ContainsKey(team);
 
-        public void Load(TeamID team, List<Vector3> positions, List<byte> rotations)
+        public void Load(TeamID team, List<Vector3Old> positions, List<byte> rotations)
         {
             if (positions == null)
                 throw new ArgumentNullException(nameof(positions));

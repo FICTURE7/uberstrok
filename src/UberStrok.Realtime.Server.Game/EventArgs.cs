@@ -26,6 +26,6 @@ namespace UberStrok.Realtime.Server.Game
         public UberStrikeItemClass ItemClass { get; set; }
         public ushort Damage { get; set; }
         public BodyPart Part { get; set; }
-        public Vector3 Direction { get; set; }
+        public Vector3Old Direction { get; set; }
     }
 }

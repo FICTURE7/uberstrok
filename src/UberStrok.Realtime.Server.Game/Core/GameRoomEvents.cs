@@ -44,7 +44,7 @@ namespace UberStrok.Realtime.Server.Game
                 SendEvent((byte)IGameRoomEventsType.ResetAllPowerups, bytes);
         }
 
-        public void SendPlayerHit(Vector3 force)
+        public void SendPlayerHit(Vector3Old force)
         {
             using (var bytes = new MemoryStream())
             {
@@ -54,7 +54,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public void SendEmitProjectile(int cmid, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
+        public void SendEmitProjectile(int cmid, Vector3Old origin, Vector3Old direction, byte slot, int projectileId, bool explode)
         {
             using (var bytes = new MemoryStream())
             {
@@ -90,7 +90,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public void SendPlayerKilled(int shooter, int target, UberStrikeItemClass weaponClass, ushort damage, BodyPart bodyPart, Vector3 direction)
+        public void SendPlayerKilled(int shooter, int target, UberStrikeItemClass weaponClass, ushort damage, BodyPart bodyPart, Vector3Old direction)
         {
             using (var bytes = new MemoryStream())
             {
@@ -121,7 +121,7 @@ namespace UberStrok.Realtime.Server.Game
                 SendEvent((byte)IGameRoomEventsType.PrepareNextRound, bytes);
         }
 
-        public void SendPlayerJumped(int cmid, Vector3 position)
+        public void SendPlayerJumped(int cmid, Vector3Old position)
         {
             using (var bytes = new MemoryStream())
             {
@@ -239,7 +239,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public void SendPlayerRespawned(int cmid, Vector3 position, byte rotation)
+        public void SendPlayerRespawned(int cmid, Vector3Old position, byte rotation)
         {
             using (var bytes = new MemoryStream())
             {

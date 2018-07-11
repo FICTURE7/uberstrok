@@ -13,9 +13,9 @@ namespace UberStrok.Realtime.Server.Game
 
         protected abstract void OnPowerUpPicked(GamePeer peer, int pickupId, byte type, byte value);
         protected abstract void OnRemoveProjectile(GamePeer peer, int projectileId, bool explode);
-        protected abstract void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode);
+        protected abstract void OnEmitProjectile(GamePeer peer, Vector3Old origin, Vector3Old direction, byte slot, int projectileId, bool explode);
         protected abstract void OnRespawnRequest(GamePeer peer);
-        protected abstract void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3 force);
+        protected abstract void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3Old force);
         protected abstract void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets);
         protected abstract void OnDirectDamage(GamePeer peer, ushort damage);
         protected abstract void OnSwitchWeapon(GamePeer peer, byte slot);
@@ -23,11 +23,11 @@ namespace UberStrok.Realtime.Server.Game
         protected abstract void OnIsPaused(GamePeer peer, bool on);
         protected abstract void OnIsInSniperMode(GamePeer peer, bool on);
         protected abstract void OnIsFiring(GamePeer peer, bool on);
-        protected abstract void OnJump(GamePeer peer, Vector3 position);
-        protected abstract void OnUpdatePositionAndRotation(GamePeer peer, Vector3 position, Vector3 velocity, byte horizontalRotation, byte verticalRotation, byte moveState);
+        protected abstract void OnJump(GamePeer peer, Vector3Old position);
+        protected abstract void OnUpdatePositionAndRotation(GamePeer peer, Vector3Old position, Vector3Old velocity, byte horizontalRotation, byte verticalRotation, byte moveState);
         protected abstract void OnChatMessage(GamePeer peer, string message, byte context);
         protected abstract void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes);
-        protected abstract void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations);
+        protected abstract void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3Old> positions, List<byte> rotations);
         protected abstract void OnJoinGame(GamePeer peer, TeamID team);
 
         public override void OnOperationRequest(GamePeer peer, byte opCode, MemoryStream bytes)
@@ -240,7 +240,7 @@ namespace UberStrok.Realtime.Server.Game
         private void SpawnPositions(GamePeer peer, MemoryStream bytes)
         {
             var team = EnumProxy<TeamID>.Deserialize(bytes);
-            var positions = ListProxy<Vector3>.Deserialize(bytes, Vector3Proxy.Deserialize);
+            var positions = ListProxy<Vector3Old>.Deserialize(bytes, Vector3Proxy.Deserialize);
             var rotations = ListProxy<byte>.Deserialize(bytes, ByteProxy.Deserialize);
 
             OnSpawnPositions(peer, team, positions, rotations);
