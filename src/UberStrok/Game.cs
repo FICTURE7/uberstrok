@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace UberStrok
 {
-    public class Game
+    public class Game : IStateMachine<GameState>
     {
         /* Current tick. */
         private int _tick;
@@ -107,7 +107,7 @@ namespace UberStrok
                 _objects[i].DoUpdate();
 
             /* Update the current GameState as well if have any. */
-            _state?.DoUpdate();
+            _state?.OnUpdate();
         }
     }
 }

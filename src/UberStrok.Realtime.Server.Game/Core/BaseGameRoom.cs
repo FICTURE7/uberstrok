@@ -18,7 +18,7 @@ namespace UberStrok.Realtime.Server.Game
         /* Loop thats going to do the heavy lifting. */
         private readonly Core.Loop _loop;
         /* Current state of the room. */
-        private readonly StateMachine<MatchState.Id> _state;
+        private readonly StateMachineOld<MatchState.Id> _state;
 
         private byte _nextPlayer;
 
@@ -93,7 +93,7 @@ namespace UberStrok.Realtime.Server.Game
         public GameRoomDataView View => _view;
         public IReadOnlyList<GamePeer> Peers => _peersReadOnly;
         public IReadOnlyList<GamePeer> Players => _playersReadonly;
-        public StateMachine<MatchState.Id> State => _state;
+        public StateMachineOld<MatchState.Id> State => _state;
         public PowerUpManager PowerUps => _powerUpManager;
         public GameRoomActions Actions => _actions;
 

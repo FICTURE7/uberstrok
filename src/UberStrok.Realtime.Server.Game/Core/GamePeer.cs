@@ -8,13 +8,13 @@ namespace UberStrok.Realtime.Server.Game
     public class GamePeer : BasePeer
     {
         private readonly GamePeerEvents _events;
-        private readonly StateMachine<PeerState.Id> _state;
+        private readonly StateMachineOld<PeerState.Id> _state;
 
         public GamePeer(InitRequest initRequest) : base(initRequest)
         {
             _events = new GamePeerEvents(this);
 
-            _state = new StateMachine<PeerState.Id>();
+            _state = new StateMachineOld<PeerState.Id>();
             _state.Register(PeerState.Id.None, null);
             _state.Register(PeerState.Id.Overview, new OverviewPeerState(this));
             _state.Register(PeerState.Id.WaitingForPlayers, new WaitingForPlayersPeerState(this));
@@ -38,6 +38,6 @@ namespace UberStrok.Realtime.Server.Game
         public UberstrikeUserView Member { get; set; }
 
         public GamePeerEvents Events => _events;
-        public StateMachine<PeerState.Id> State => _state;
+        public StateMachineOld<PeerState.Id> State => _state;
     }
 }

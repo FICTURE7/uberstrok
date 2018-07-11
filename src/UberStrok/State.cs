@@ -1,16 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace UberStrok
+﻿namespace UberStrok
 {
-    public abstract class State
+    public abstract class State : IState
     {
-        protected abstract void OnEnter();
-        protected abstract void OnResume();
-        protected abstract void OnUpdate();
-        protected abstract void OnExit();
-
-        /* wrapper */
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void DoUpdate() => OnUpdate();
+        public abstract void OnEnter();
+        public abstract void OnResume();
+        public abstract void OnUpdate();
+        public abstract void OnExit();
     }
 }

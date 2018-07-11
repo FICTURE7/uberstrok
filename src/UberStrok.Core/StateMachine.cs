@@ -4,14 +4,14 @@ using System.Diagnostics;
 
 namespace UberStrok.Core
 {
-    public class StateMachine<T> where T : struct, IConvertible
+    public class StateMachineOld<T> where T : struct, IConvertible
     {
         private State _current;
 
         private readonly Stack<T> _states;
         private readonly Dictionary<T, State> _registeredStates;
 
-        public StateMachine()
+        public StateMachineOld()
         {
             _states = new Stack<T>();
             _registeredStates = new Dictionary<T, State>();
