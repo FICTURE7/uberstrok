@@ -5,6 +5,8 @@ namespace UberStrok
 {
     public class GameObject
     {
+        /* TODO: Filter DataComponents and Components into seperate dictionaries. */
+
         /* Components in this GameObject. */
         private readonly Dictionary<Type, Component> _components;
         /* Game instance which owns this GameObject. */
