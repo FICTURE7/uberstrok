@@ -34,18 +34,6 @@ namespace UberStrok
         public CommandRecorder Recorder => _recorder;
         public IReadOnlyList<GameObject> Objects => _objects.AsReadOnly();
 
-        public void DoTick()
-        {
-            /* 
-                Dispatches the commands in the queue and
-                updates all objects in the game instance and
-                the current state.
-             */
-            DoDispatch();
-            DoUpdate();
-            _tick++;
-        }
-
         public void ResetState()
         {
             /* TODO: Call OnEnter & OnExit and stuff. */
@@ -86,6 +74,18 @@ namespace UberStrok
             _queue.Enqueue(command);
             /* Record command, incase we want to replay it. */
             _recorder.Record(command);
+        }
+
+        public void DoTick()
+        {
+            /* 
+                Dispatches the commands in the queue and
+                updates all objects in the game instance and
+                the current state.
+             */
+            DoDispatch();
+            DoUpdate();
+            _tick++;
         }
 
         private void DoDispatch()
