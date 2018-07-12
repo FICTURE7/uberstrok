@@ -50,7 +50,7 @@ namespace UberStrok
             state._game = this;
             _states.Add(type, state);
         }
-        
+
         public void SetState<TGameState>() where TGameState : GameState, new()
         {
             var type = typeof(TGameState);
@@ -103,7 +103,11 @@ namespace UberStrok
         {
             /* Update each game object in the game object list. */
             for (int i = 0; i < _objects.Count; i++)
-                _objects[i].DoUpdate();
+            {
+                var obj = _objects[i];
+                if (obj.Enable)
+                    obj.DoUpdate();
+            }
 
             /* Update the current GameState as well if have any. */
             _state?.OnUpdate();
