@@ -20,7 +20,6 @@ namespace UberStrok
         /* Dictionary of type of game states to game state instances. */
         private readonly Dictionary<Type, GameState> _states;
 
-
         public Game()
         {
             _tick = 0;
@@ -82,7 +81,7 @@ namespace UberStrok
             if (command == null)
                 throw new ArgumentNullException(nameof(command));
 
-            command._tick = Tick;
+            command._tick = _tick;
             /* Add the command in the dispatch queue. */
             _queue.Enqueue(command);
             /* Record command, incase we want to replay it. */

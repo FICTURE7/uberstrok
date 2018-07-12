@@ -4,6 +4,7 @@
     {
         /* Game instance to which this game state is tied to. */
         internal Game _game;
+        /* Command filter for this game state. */
         private readonly CommandFilter _filter;
         
         protected GameState()
