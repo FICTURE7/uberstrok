@@ -21,6 +21,13 @@ namespace UberStrok.Tests
         }
 
         [Test]
+        public void Ctor_Set_Name()
+        {
+            var go = new GameObject(_game, "xD");
+            Assert.That(go.Name, Is.EqualTo("xD"));
+        }
+
+        [Test]
         public void AddComponent()
         {
             var go = new GameObject(_game);

@@ -12,7 +12,12 @@ namespace UberStrok
         /* Game instance which owns this GameObject. */
         private readonly Game _game;
 
-        public GameObject(Game game)
+        public GameObject(Game game) : this(game, null)
+        {
+            /* Space */
+        }
+
+        public GameObject(Game game, string name)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
@@ -27,6 +32,7 @@ namespace UberStrok
             _components = new Dictionary<Type, Component>();
 
             Enable = true;
+            Name = name;
         }
 
         public bool Enable { get; set; }
