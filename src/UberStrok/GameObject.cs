@@ -20,33 +20,6 @@ namespace UberStrok
             Enable = true;
         }
 
-        [Obsolete]
-        public GameObject(Game game) : this(game, null)
-        {
-            /* Space */
-        }
-
-        [Obsolete]
-        public GameObject(Game game, string name)
-        {
-            if (game == null)
-                throw new ArgumentNullException(nameof(game));
-
-            /*
-                Add the new game object to the
-                game's list of objects.
-             */
-             /*
-            _game = game;
-            _game._objects.Add(this);
-
-            _components = new Dictionary<Type, Component>();
-
-            Enable = true;
-            Name = name;
-            */
-        }
-
         public bool Enable { get; set; }
         public string Name { get; set; }
         public Game Game => _game;

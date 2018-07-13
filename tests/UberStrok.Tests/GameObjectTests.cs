@@ -15,22 +15,9 @@ namespace UberStrok.Tests
         }
 
         [Test]
-        public void Ctor_NullArg_Exception()
-        {
-            Assert.That(() => new GameObject(null), Throws.ArgumentNullException);
-        }
-
-        [Test]
-        public void Ctor_Set_Name()
-        {
-            var go = new GameObject(_game, "xD");
-            Assert.That(go.Name, Is.EqualTo("xD"));
-        }
-
-        [Test]
         public void AddComponent()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             var component = go.AddComponent<MockComponent>();
             Assert.That(component, Is.Not.Null);
             Assert.That(component, Is.TypeOf<MockComponent>());
@@ -40,7 +27,7 @@ namespace UberStrok.Tests
         [Test]
         public void AddComponent_ComponentAlreadyExists_ThrowException()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             var component = go.AddComponent<MockComponent>();
             Assert.That(() => go.AddComponent<MockComponent>(), Throws.InvalidOperationException);
         }
@@ -48,7 +35,7 @@ namespace UberStrok.Tests
         [Test]
         public void RemoveComponent()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             var component = go.AddComponent<MockComponent>();
             Assert.That(component.GameObject, Is.EqualTo(go));
             Assert.That(go.RemoveComponent<MockComponent>(), Is.True);
@@ -58,14 +45,14 @@ namespace UberStrok.Tests
         [Test]
         public void RemoveComponent_Not_Exists_Returns_False()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             Assert.That(go.RemoveComponent<MockComponent>(), Is.False);
         }
 
         [Test]
         public void GetComponent()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             var component1 = go.AddComponent<MockComponent>();
             var component2 = go.GetComponent<MockComponent>();
 
@@ -75,7 +62,7 @@ namespace UberStrok.Tests
         [Test]
         public void ToString_Returns_String_Representation()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             go.Name = "testObject";
             go.AddComponent<MockComponent>();
 
@@ -85,7 +72,7 @@ namespace UberStrok.Tests
         [Test]
         public void Name_Set_Get()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             go.Name = "xD";
 
             Assert.That(go.Name, Is.EqualTo("xD"));
@@ -94,7 +81,7 @@ namespace UberStrok.Tests
         [Test]
         public void Enable_Set_Get()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             Assert.That(go.Enable, Is.EqualTo(true));
             go.Enable = false;
             Assert.That(go.Enable, Is.EqualTo(false));
@@ -103,14 +90,14 @@ namespace UberStrok.Tests
         [Test]
         public void Game_Get()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             Assert.That(go.Game, Is.EqualTo(_game));
         }
 
         [Test]
         public void Ctor_Registered_In_GameObject_List()
         {
-            var go = new GameObject(_game);
+            var go = _game.Objects.Create();
             Assert.That(_game.Objects, Contains.Item(go));
         }
     }

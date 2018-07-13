@@ -12,7 +12,7 @@ namespace UberStrok.Tests
         public void SetUp()
         {
             _game = new Game();
-            _go = new GameObject(_game);
+            _go = _game.Objects.Create();
         }
 
         [Test]
