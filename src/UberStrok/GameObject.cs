@@ -36,6 +36,7 @@ namespace UberStrok
                 Add the new game object to the
                 game's list of objects.
              */
+             /*
             _game = game;
             _game._objects.Add(this);
 
@@ -43,6 +44,7 @@ namespace UberStrok
 
             Enable = true;
             Name = name;
+            */
         }
 
         public bool Enable { get; set; }
