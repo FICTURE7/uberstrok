@@ -46,6 +46,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\JoinGameCommand.cs" />
     <Compile Include="Commands\PowerUpPickedCommand.cs" />
     <Compile Include="Commands\PowerUpRespawnTimesCommand.cs" />
     <Compile Include="Core\BaseGamePeerOperationHandler.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="KilledPeerState.cs" />
     <Compile Include="OverviewPeerState.cs" />
     <Compile Include="PeerState.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="PlayingPeerState.cs" />
     <Compile Include="PowerUpManager.cs" />
     <Compile Include="RunningMatchState.cs" />

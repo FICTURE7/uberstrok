@@ -43,6 +43,7 @@
     <Compile Include="DataComponent.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameObject.cs" />
+    <Compile Include="IConnection.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="Loop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

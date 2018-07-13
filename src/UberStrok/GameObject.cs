@@ -7,16 +7,26 @@ namespace UberStrok
     {
         /* TODO: Filter DataComponents and Components into seperate dictionaries. */
 
+        /* Game instance which owns this GameObject. */
+        internal Game _game;
         /* Components in this GameObject. */
         private readonly Dictionary<Type, Component> _components;
-        /* Game instance which owns this GameObject. */
-        private readonly Game _game;
 
+        internal GameObject()
+        {
+            _components = new Dictionary<Type, Component>();
+
+            /* Enabled by default. */
+            Enable = true;
+        }
+
+        [Obsolete]
         public GameObject(Game game) : this(game, null)
         {
             /* Space */
         }
 
+        [Obsolete]
         public GameObject(Game game, string name)
         {
             if (game == null)
