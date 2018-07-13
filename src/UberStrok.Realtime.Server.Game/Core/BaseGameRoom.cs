@@ -16,7 +16,7 @@ namespace UberStrok.Realtime.Server.Game
 
         private readonly GameRoomActions _actions;
         /* Loop thats going to do the heavy lifting. */
-        private readonly Core.Loop _loop;
+        private readonly LoopOld _loop;
         /* Current state of the room. */
         private readonly StateMachineOld<MatchState.Id> _state;
 
@@ -65,7 +65,7 @@ namespace UberStrok.Realtime.Server.Game
 
             /* TODO: Allow user to set the tick rate. */
             /* When the tick rate is high, the client side lag interpolation goes all woncky. */
-            _loop = new Core.Loop(10);
+            _loop = new Core.LoopOld(10);
 
             /*
             _actions = new GameRoomActions(this);
@@ -125,7 +125,7 @@ namespace UberStrok.Realtime.Server.Game
         /* Time in system ticks when the round ends.*/
         public int EndTime { get; set; }
 
-        public Core.Loop Loop => _loop;
+        public LoopOld Loop => _loop;
         public ShopManager ShopManager => _shopManager;
         public SpawnManager SpawnManager => _spawnManager;
 

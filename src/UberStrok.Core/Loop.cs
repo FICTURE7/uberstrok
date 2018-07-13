@@ -7,7 +7,7 @@ namespace UberStrok.Core
 
     public delegate void LoopExceptionHandler(Exception e);
 
-    public class Loop : IDisposable
+    public class LoopOld : IDisposable
     {
         /* Figure out if we've been disposed. */
         private bool _disposed;
@@ -33,7 +33,7 @@ namespace UberStrok.Core
         /* Thread that is going to do the work. */
         private readonly Thread _thread;
 
-        public Loop(int tickRateSeconds)
+        public LoopOld(int tickRateSeconds)
         {
             if (tickRateSeconds < 0)
                 throw new ArgumentOutOfRangeException(nameof(tickRateSeconds), "Tick rate cannot be less than 0.");
