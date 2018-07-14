@@ -69,6 +69,7 @@ namespace UberStrok
             if (command == null)
                 throw new ArgumentNullException(nameof(command));
 
+            command._game = this;
             command._tick = _tick;
             /* Add the command in the dispatch queue. */
             _queue.Enqueue(command);
@@ -95,7 +96,7 @@ namespace UberStrok
             {
                 var command = default(Command);
                 if (_queue.TryDequeue(out command))
-                    command.DoExecute(this, null);
+                    command.DoExecute();
             }
         }
 

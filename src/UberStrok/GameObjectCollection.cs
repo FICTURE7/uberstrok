@@ -53,6 +53,21 @@ namespace UberStrok
             return gameObject;
         }
 
+        public bool Destroy(GameObject gameObject)
+        {
+            if (gameObject == null)
+                throw new ArgumentNullException(nameof(gameObject));
+            if (gameObject.Game != _game)
+                throw new ArgumentException("Game object is in another game instance.");
+
+            return Destroy(gameObject.Name);
+        }
+
+        public bool Destroy(string name)
+        {
+            return _objects.Remove(name);
+        }
+
         public IEnumerator<GameObject> GetEnumerator()
         {
             return _objects.Values.GetEnumerator();
