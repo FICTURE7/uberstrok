@@ -7,13 +7,15 @@ namespace UberStrok.Realtime.Server.Game.Commands
         /* Team which the player joined. */
         public TeamID Team { get; set; }
 
-        protected override void OnExecute(UberStrok.Game game, GameObject gameObject)
+        protected override void OnExecute()
         {
             /* 
-                Add a game object which represents 
+                Create a game object which represents 
                 the player to the game instance.
              */
-            var playerObject = new GameObject(game);
+            var playerObject = Game.Objects.Create();
+
+            /* Add the player components. */
             playerObject.AddComponent<Player>();
         }
     }

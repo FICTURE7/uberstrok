@@ -11,7 +11,7 @@ namespace UberStrok.Realtime.Server.Game.Commands
         /* Pick up value. E.g Armor points, Health points etc... */
         public byte Value { get; set; }
 
-        protected override void OnExecute(UberStrok.Game game, GameObject gameObject)
+        protected override void OnExecute()
         {
             
         }

@@ -2,7 +2,7 @@
 {
     public class PowerUpRespawnTimesCommand : Command
     {
-        protected override void OnExecute(UberStrok.Game game, GameObject gameObject)
+        protected override void OnExecute()
         {
             // Space
         }
