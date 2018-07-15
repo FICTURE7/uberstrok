@@ -18,25 +18,5 @@ namespace UberStrok.Realtime.Server.Game
         {
             
         }
-
-        public override void OnEnter()
-        {
-            /* Space */
-        }
-
-        public override void OnExit()
-        {
-            /* Space */
-        }
-
-        public override void OnResume()
-        {
-            /* Space */
-        }
-
-        public override void OnUpdate()
-        {
-            /* Space */
-        }
     }
 }
