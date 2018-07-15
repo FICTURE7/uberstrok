@@ -59,8 +59,8 @@ namespace UberStrok
         {
             /* NOTE: Performance loss here. */
             /* TOOO: Avoid foreach. */
-            foreach(var kv in _components)
-                kv.Value.DoUpdate();
+            foreach(var component in _components.Values)
+                component.DoUpdate();
         }
 
         public override string ToString()
