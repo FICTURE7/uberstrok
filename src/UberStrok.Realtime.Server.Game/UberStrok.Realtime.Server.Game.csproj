@@ -69,9 +69,11 @@
     <Compile Include="OverviewPeerState.cs" />
     <Compile Include="PeerState.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="PlayerConnection.cs" />
     <Compile Include="PlayingPeerState.cs" />
     <Compile Include="PowerUpManager.cs" />
     <Compile Include="RunningMatchState.cs" />
+    <Compile Include="WaitingForPlayersGameState.cs" />
     <Compile Include="WaitingForPlayersMatchState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeamDeathMatchGameRoom.cs" />

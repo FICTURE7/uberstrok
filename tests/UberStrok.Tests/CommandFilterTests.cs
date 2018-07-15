@@ -47,15 +47,15 @@ namespace UberStrok.Tests
         }
 
         [Test]
-        public void Filtering_Get_Set()
+        public void Enable_Get_Set()
         {
             var filter = new CommandFilter();
 
-            Assert.That(filter.Filtering, Is.False);
+            Assert.That(filter.Enable, Is.False);
 
-            filter.Filtering = true;
+            filter.Enable = true;
 
-            Assert.That(filter.Filtering, Is.True);
+            Assert.That(filter.Enable, Is.True);
         }
     }
 }

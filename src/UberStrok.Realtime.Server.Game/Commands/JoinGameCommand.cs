@@ -15,8 +15,18 @@ namespace UberStrok.Realtime.Server.Game.Commands
              */
             var playerObject = Game.Objects.Create();
 
-            /* Add the player components. */
+            /* Add the components. */
+            playerObject.AddComponent<Transform>();
             playerObject.AddComponent<Player>();
+            playerObject.AddComponent<PlayerConnection>();
+
+            /* Fire the event, so the current game state can handle it. */
+            Game.OnEvent(new PlayerJoinedEvent());
         }
+    }
+
+    public class PlayerJoinedEvent : Event
+    {
+
     }
 }

@@ -77,6 +77,12 @@ namespace UberStrok
             _recorder.Record(command);
         }
 
+        public void OnEvent<TEvent>(TEvent @event) where TEvent : Event
+        {
+            if (@event == null)
+                throw new ArgumentNullException(nameof(@event));
+        }
+
         public void DoTick()
         {
             /* 
@@ -102,8 +108,9 @@ namespace UberStrok
 
         private void DoUpdate()
         {
+            /* TODO: Avoid foreach here. */
             /* Update each game object in the game object list. */
-            foreach(var obj in _objects)
+            foreach (var obj in _objects)
             {
                 if (obj.Enable)
                     obj.DoUpdate();

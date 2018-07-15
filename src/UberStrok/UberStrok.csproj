@@ -41,6 +41,7 @@
     <Compile Include="CommandRecorder.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="DataComponent.cs" />
+    <Compile Include="Event.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GameObjectCollection.cs" />
