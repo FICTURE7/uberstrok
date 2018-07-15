@@ -1,4 +1,6 @@
-﻿using UberStrok.Realtime.Server.Game.Commands;
+﻿using System;
+using UberStrok.Realtime.Server.Game.Commands;
+using UberStrok.Realtime.Server.Game.Events;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -16,7 +18,17 @@ namespace UberStrok.Realtime.Server.Game
 
         public void OnEvent(PlayerJoinedEvent @event)
         {
-            
+
+        }
+
+        public void OnEvent(PlayerLeftEvent @event)
+        {
+
+        }
+
+        public override void OnUpdate()
+        {
+            /* Space */
         }
     }
 }

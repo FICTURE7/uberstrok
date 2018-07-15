@@ -1,4 +1,5 @@
 ﻿using UberStrok.Core.Common;
+using UberStrok.Realtime.Server.Game.Events;
 
 namespace UberStrok.Realtime.Server.Game.Commands
 {
@@ -23,10 +24,5 @@ namespace UberStrok.Realtime.Server.Game.Commands
             /* Fire the event, so the current game state can handle it. */
             Game.OnEvent(new PlayerJoinedEvent());
         }
-    }
-
-    public class PlayerJoinedEvent : Event
-    {
-
     }
 }

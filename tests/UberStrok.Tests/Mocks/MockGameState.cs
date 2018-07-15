@@ -21,5 +21,10 @@
         {
 
         }
+
+        private void OnEvent(MockEvent @event)
+        {
+
+        }
     }
 }

@@ -55,6 +55,8 @@
     <Compile Include="CountdownPeerState.cs" />
     <Compile Include="Core\GameActor.cs" />
     <Compile Include="Core\GameActorInfo.cs" />
+    <Compile Include="Events\PlayerJoinedEvent.cs" />
+    <Compile Include="Events\PlayerLeftEvent.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="GameRoomManager.cs" />
