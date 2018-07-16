@@ -21,10 +21,12 @@ namespace UberStrok.Tests
             var game = new Game();
             Assert.That(game.GetState(), Is.Null);
 
-            game.RegisterState<MockGameState>();
+            var state = game.RegisterState<MockGameState>();
 
             /* State not set, should return null. */
             Assert.That(game.GetState(), Is.Null);
+            Assert.That(state, Is.Not.Null);
+            Assert.That(state, Is.TypeOf<MockGameState>());
         }
 
         [Test]
@@ -82,6 +84,32 @@ namespace UberStrok.Tests
         {
             var game = new Game();
             Assert.That(() => game.OnCommand(null), Throws.ArgumentNullException);
+        }
+
+        [Test]
+        public void OnEvent()
+        {
+            var called = false;
+            var game = new Game();
+            var mockEvent = new MockEvent();
+            var state = game.RegisterState<MockGameState>();
+            state.OnMockEventCallback = (@event) =>
+            {
+                called = true;
+                Assert.That(@event, Is.EqualTo(mockEvent));
+            };
+           
+            game.SetState<MockGameState>();
+            game.OnEvent(mockEvent);
+
+            Assert.That(called, Is.True);
+        }
+
+        [Test]
+        public void OnEvent_Null_Args_Exception()
+        {
+            var game = new Game();
+            Assert.That(() => game.OnEvent<MockEvent>(null), Throws.ArgumentNullException);
         }
 
         [Test]

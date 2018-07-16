@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace UberStrok
 {
@@ -40,7 +41,7 @@ namespace UberStrok
             _state = null;
         }
 
-        public void RegisterState<TGameState>() where TGameState : GameState, new()
+        public TGameState RegisterState<TGameState>() where TGameState : GameState, new()
         {
             var type = typeof(TGameState);
             if (_states.ContainsKey(type))
@@ -49,6 +50,8 @@ namespace UberStrok
             var state = new TGameState();
             state._game = this;
             _states.Add(type, state);
+
+            return state;
         }
 
         public void SetState<TGameState>() where TGameState : GameState, new()
@@ -81,6 +84,18 @@ namespace UberStrok
         {
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
+
+            /* If we are not in any state, we return early. */
+            if (_state == null)
+                return;
+
+            /* TODO: Optimize this shit, cause its slow af. */
+            var type = typeof(TEvent);
+            var method = default(MethodInfo);
+            if (!_state._onEventMethods.TryGetValue(type, out method))
+                return;
+
+            method.Invoke(_state, new object[] { @event });
         }
 
         public void DoTick()
