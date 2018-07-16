@@ -106,6 +106,20 @@ namespace UberStrok.Tests
         }
 
         [Test]
+        public void OnEvent_StateNotSet_OnEvent_NotCalled()
+        {
+            var called = false;
+            var game = new Game();
+            var mockEvent = new MockEvent();
+            var state = game.RegisterState<MockGameState>();
+
+            state.OnMockEventCallback = (@event) => called = true;
+            game.OnEvent(mockEvent);
+
+            Assert.That(called, Is.False);
+        }
+
+        [Test]
         public void OnEvent_Null_Args_Exception()
         {
             var game = new Game();
