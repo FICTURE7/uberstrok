@@ -18,6 +18,7 @@ namespace UberStrok
             _filter = new CommandFilter();
             _onEventMethods = new Dictionary<Type, MethodInfo>();
 
+            /* TODO: Cache the results in a static dictionary or something. */
             var type = GetType();
             var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             foreach (var method in methods)

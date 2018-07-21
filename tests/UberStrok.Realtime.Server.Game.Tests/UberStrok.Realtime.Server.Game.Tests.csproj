@@ -65,6 +65,10 @@
       <Project>{D1F31A89-C971-4FBA-8795-95D79CB420C9}</Project>
       <Name>UberStrok.Realtime.Server</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\UberStrok\UberStrok.csproj">
+      <Project>{4C184928-3652-4CD0-AC86-6D69D4EF286C}</Project>
+      <Name>UberStrok</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

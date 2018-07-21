@@ -7,11 +7,15 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameApplication : ApplicationBase
     {
-        private static readonly ILog s_log = LogManager.GetLogger(nameof(GameApplication));
+        private static readonly ILog Log = LogManager.GetLogger(nameof(GameApplication));
 
         public static new GameApplication Instance => (GameApplication)ApplicationBase.Instance;
 
+        /* Main game instance. */
+        private UberStrok.Game _main;
+        /* Game room manager. */
         private GameRoomManager _rooms;
+
         public GameRoomManager Rooms => _rooms;
 
         public int PlayerCount
@@ -27,30 +31,31 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override PeerBase CreatePeer(InitRequest initRequest)
+        protected override PeerBase CreatePeer(InitRequest request)
         {
-            s_log.Info($"Accepted new connection at {initRequest.RemoteIP}:{initRequest.RemotePort}");
-
-            return new GamePeer(initRequest);
+            Log.Info($"Accepted new connection at {request.RemoteIP}:{request.RemotePort}");
+            return new GamePeer(request);
         }
 
         protected override void Setup()
         {
-            // Add a the log path to the properties so can use them in log4net.config.
+            /* Add the log path to the properties so can use them in log4net.config. */
             GlobalContext.Properties["Photon:ApplicationLogPath"] = Path.Combine(ApplicationPath, "log");
-            // Configure log4net to use log4net.config file.
+
+            /* Configure log4net to use log4net.config file. */
             var configFile = new FileInfo(Path.Combine(BinaryPath, "log4net.config"));
             if (configFile.Exists)
                 XmlConfigurator.ConfigureAndWatch(configFile);
 
-            s_log.Info("Started GameServer...");
-
+            _main = new UberStrok.Game();
             _rooms = new GameRoomManager();
+
+            Log.Info("Started GameServer...");
         }
 
         protected override void TearDown()
         {
-            s_log.Info("Stopped CommServer...");
+            Log.Info("Stopped CommServer...");
         }
     }
 }

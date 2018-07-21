@@ -3,9 +3,9 @@ using System.Threading;
 
 namespace UberStrok.Core
 {
-    public delegate void LoopHandler();
+    public delegate void LoopHandlerOld();
 
-    public delegate void LoopExceptionHandler(Exception e);
+    public delegate void LoopExceptionHandlerOld(Exception e);
 
     public class LoopOld : IDisposable
     {
@@ -23,9 +23,9 @@ namespace UberStrok.Core
         private TimeSpan _deltaTime;
 
         /* Loop handler which is called every tick. */
-        private LoopHandler _handler;
+        private LoopHandlerOld _handler;
         /* Loop exception handler which is called when _handler throws an exception. */
-        private LoopExceptionHandler _exceptionHandler;
+        private LoopExceptionHandlerOld _exceptionHandler;
 
         private readonly EventWaitHandle _pauseWaitHandle;
         /* Amount of time the thread needs to sleep in ms. */
@@ -47,7 +47,7 @@ namespace UberStrok.Core
         public DateTime Time => _time;
         public TimeSpan DeltaTime => _deltaTime;
 
-        public void Start(LoopHandler handler, LoopExceptionHandler exceptionHandler)
+        public void Start(LoopHandlerOld handler, LoopExceptionHandlerOld exceptionHandler)
         {
             if (_started)
                 throw new InvalidOperationException("Loop already started.");

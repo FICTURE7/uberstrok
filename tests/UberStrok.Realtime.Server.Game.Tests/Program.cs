@@ -2,7 +2,7 @@
 {
     public static class Program
     {
-        public static void Main()
+        public static void xDMain()
         {
             /*
             var peer = new TestPeer(null);
