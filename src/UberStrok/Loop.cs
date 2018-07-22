@@ -7,6 +7,14 @@ namespace UberStrok
     public delegate void LoopHandler();
     public delegate void LoopExceptionHandler(Exception ex);
 
+    public enum LoopState
+    {
+        Idle,
+        Started,
+        Paused,
+        Stopped
+    }
+
     public class Loop : IDisposable
     {
         /* Counter for loop threads, so they have unique names. */
@@ -14,6 +22,8 @@ namespace UberStrok
 
         /* Figure out if we've been disposed. */
         private bool _disposed;
+        /* Current state of the Loop instance. */
+        private LoopState _state;
 
         /* Figure out if the loop has started. */
         private bool _started;
@@ -46,6 +56,7 @@ namespace UberStrok
             if (tps < 0)
                 throw new ArgumentOutOfRangeException(nameof(tps), "Tick rate cannot be less than 0.");
 
+            _state = LoopState.Idle;
             _lagSw = new Stopwatch();
             _deltaTimeSw = new Stopwatch();
             _pauseWaitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
@@ -53,6 +64,7 @@ namespace UberStrok
             _interval = tps > 0 ? 1000d / tps : 0;
         }
 
+        public LoopState State => _state;
         public double Interval => _interval;
         public DateTime Time => _time;
         public TimeSpan DeltaTime => _deltaTime;
@@ -70,6 +82,7 @@ namespace UberStrok
                 throw new ArgumentNullException(nameof(exceptionHandler));
 
             _started = true;
+            _state = LoopState.Started;
 
             _handler = handler;
             _exceptionHandler = exceptionHandler;
@@ -85,6 +98,7 @@ namespace UberStrok
                 throw new InvalidOperationException("Loop not started.");
 
             _started = false;
+            _state = LoopState.Stopped;
 
             /* 
                 Give the thread a chance to spin a couple of times to shut down
@@ -103,6 +117,7 @@ namespace UberStrok
 
             /* Set signal to wait */
             _pauseWaitHandle.Reset();
+            _state = LoopState.Paused;
         }
 
         public void Resume()
@@ -118,6 +133,7 @@ namespace UberStrok
 
             /* Set signal */
             _pauseWaitHandle.Set();
+            _state = LoopState.Started;
         }
 
         public int ToTicks(TimeSpan span)
