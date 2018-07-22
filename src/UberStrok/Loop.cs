@@ -31,7 +31,9 @@ namespace UberStrok
         private LoopExceptionHandler _exceptionHandler;
 
         /* Stopwatch to measure lag. */
-        private readonly Stopwatch _stopwatch;
+        private readonly Stopwatch _lagSw;
+        /* Stopwatch to measure delta time. */
+        private readonly Stopwatch _deltaTimeSw;
         /* EventWaitHandle to pause/resume the loop thread. */
         private readonly EventWaitHandle _pauseWaitHandle;
         /* Amount of time the thread needs to sleep in ms. */
@@ -44,7 +46,8 @@ namespace UberStrok
             if (tps < 0)
                 throw new ArgumentOutOfRangeException(nameof(tps), "Tick rate cannot be less than 0.");
 
-            _stopwatch = new Stopwatch();
+            _lagSw = new Stopwatch();
+            _deltaTimeSw = new Stopwatch();
             _pauseWaitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
             _thread = new Thread(Work) { Name = "GameLoop-thread" + Interlocked.Increment(ref s_threadId) };
             _interval = tps > 0 ? 1000d / tps : 0;
@@ -136,23 +139,41 @@ namespace UberStrok
 
             try
             {
-                while (_started)
+                /* 
+                    If the tick interval is greater than 0, then
+                    we calculate 'tick' lag and compensate for; otherwise
+                    we tick as fast as we can.
+                 */
+                if (_interval > 0)
                 {
-                    _lag += _stopwatch.Elapsed.TotalMilliseconds;
-                    _stopwatch.Restart();
-
-                    /* Wait to get the signal first. */
-                    _pauseWaitHandle.WaitOne();
-
-                    /* Catch up if we've lagged more than the a tick interval. */
-                    while (_lag >= _interval)
+                    while (_started)
                     {
-                        DoUpdate();
-                        _lag -= _interval;
-                    }
+                        _lag += _lagSw.Elapsed.TotalMilliseconds;
+                        _lagSw.Restart();
 
-                    Thread.Sleep(ceiledInterval);
-                    _stopwatch.Stop();
+                        /* Wait to get the signal first. */
+                        _pauseWaitHandle.WaitOne();
+
+                        /* Catch up if we've lagged more than the a tick interval. */
+                        while (_lag >= _interval)
+                        {
+                            DoUpdate();
+                            _lag -= _interval;
+                        }
+
+                        Thread.Sleep(ceiledInterval);
+                        _lagSw.Stop();
+                    }
+                }
+                else
+                {
+                    /* Tick as fast as we can. */
+                    while (_started)
+                    {
+                        /* Wait to get the signal first. */
+                        _pauseWaitHandle.WaitOne();
+                        DoUpdate();
+                    }
                 }
             }
             catch (ThreadAbortException)
@@ -161,16 +182,9 @@ namespace UberStrok
             }
         }
 
-        private void DoTime()
-        {
-            /* Calculate the delta time & the lag. */
-            var now = DateTime.Now;
-            _deltaTime = now - _time;
-            _time = now;
-        }
-
         private void DoUpdate()
         {
+            _time = DateTime.Now;
             /*
                 Pass control to the user code and if it throws an exception, 
                 pass it back to user exception handler.
@@ -178,7 +192,8 @@ namespace UberStrok
             try { _handler(); }
             catch (Exception ex) { _exceptionHandler(ex); }
 
-            DoTime();
+            _deltaTime = _deltaTimeSw.Elapsed;
+            _deltaTimeSw.Restart();
         }
 
         public void Dispose()
