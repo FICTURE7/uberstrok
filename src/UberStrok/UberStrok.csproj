@@ -45,6 +45,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GameObjectCollection.cs" />
+    <Compile Include="GameTicker.cs" />
     <Compile Include="IConnection.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="Loop.cs" />

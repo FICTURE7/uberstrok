@@ -52,6 +52,7 @@
     <Compile Include="GameObjectTests.cs" />
     <Compile Include="GameStateTests.cs" />
     <Compile Include="GameTests.cs" />
+    <Compile Include="GameTickerTests.cs" />
     <Compile Include="Mocks\MockCommand.cs" />
     <Compile Include="Mocks\MockComponent.cs" />
     <Compile Include="Mocks\MockEvent.cs" />
