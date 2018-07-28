@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace UberStrok
 {
-    public class GameTicker : IDisposable
+    public class MultiGameTicker : IDisposable
     {
         private bool _disposed;
 
@@ -11,7 +11,7 @@ namespace UberStrok
         private readonly Loop _loop;
         private readonly List<Game> _games;
 
-        public GameTicker(int tps)
+        public MultiGameTicker(int tps)
         {
             if (tps < 0)
                 throw new ArgumentOutOfRangeException(nameof(tps), "Tick rate cannot be less than 0.");
@@ -60,16 +60,13 @@ namespace UberStrok
 
         private void HandleLoop()
         {
-            lock (_games)
+            /* Tick through all Game instances in this Game Ticker instance. */
+            for (int i = 0; i < _games.Count; i++)
             {
-                /* Tick through all Game instances in this Game Ticker instance. */
-                for (int i = 0; i < _games.Count; i++)
+                try { _games[i].DoTick(); }
+                catch (Exception ex)
                 {
-                    try { _games[i].DoTick(); }
-                    catch (Exception ex)
-                    {
-                        OnException(ex);
-                    }
+                    OnException(ex);
                 }
             }
         }
