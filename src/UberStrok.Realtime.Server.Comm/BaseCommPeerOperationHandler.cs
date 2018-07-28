@@ -5,45 +5,45 @@ namespace UberStrok.Realtime.Server.Comm
 {
     public abstract class BaseCommPeerOperationHandler : BaseOperationHandler<CommPeer>
     {
-        protected BaseCommPeerOperationHandler(CommPeer peer) : base(peer)
+        protected BaseCommPeerOperationHandler()
         {
             // Space
         }
 
         public override int Id => 1;
 
-        public abstract void OnAuthenticationRequest(string authToken, string magicHash);
-        public abstract void OnSendHeartbeatResponse(string authToken, string responseHash);
+        public abstract void OnAuthenticationRequest(CommPeer peer, string authToken, string magicHash);
+        public abstract void OnSendHeartbeatResponse(CommPeer peer, string authToken, string responseHash);
 
-        public override void OnOperationRequest(byte opCode, MemoryStream bytes)
+        public override void OnOperationRequest(CommPeer peer, byte opCode, MemoryStream bytes)
         {
             var operation = (ICommPeerOperationsType)opCode;
             switch (operation)
             {
                 case ICommPeerOperationsType.AuthenticationRequest:
-                    AuthenticationRequest(bytes);
+                    AuthenticationRequest(peer, bytes);
                     break;
 
                 case ICommPeerOperationsType.SendHeartbeatResponse:
-                    SendHeartbeatResponse(bytes);
+                    SendHeartbeatResponse(peer, bytes);
                     break;
             }
         }
 
-        private void AuthenticationRequest(MemoryStream bytes)
+        private void AuthenticationRequest(CommPeer peer, MemoryStream bytes)
         {
             var authToken = StringProxy.Deserialize(bytes);
             var magicHash = StringProxy.Deserialize(bytes);
 
-            OnAuthenticationRequest(authToken, magicHash);
+            OnAuthenticationRequest(peer, authToken, magicHash);
         }
 
-        private void SendHeartbeatResponse(MemoryStream bytes)
+        private void SendHeartbeatResponse(CommPeer peer, MemoryStream bytes)
         {
             var authToken = StringProxy.Deserialize(bytes);
             var responseHash = StringProxy.Deserialize(bytes);
 
-            OnSendHeartbeatResponse(authToken, responseHash);
+            OnSendHeartbeatResponse(peer, authToken, responseHash);
         }
     }
 }

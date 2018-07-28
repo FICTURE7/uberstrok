@@ -11,12 +11,12 @@ namespace UberStrok.Realtime.Server.Comm
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CommPeerOperationHandler));
 
-        public CommPeerOperationHandler(CommPeer peer) : base(peer)
+        public CommPeerOperationHandler()
         {
             // Space
         }
 
-        public override void OnAuthenticationRequest(string authToken, string magicHash)
+        public override void OnAuthenticationRequest(CommPeer peer, string authToken, string magicHash)
         {
             Log.Info($"Received AuthenticationRequest! {authToken}:{magicHash}");
 
@@ -39,16 +39,16 @@ namespace UberStrok.Realtime.Server.Comm
                 Cmid = member.CmuneMemberView.PublicProfile.Cmid,
                 PlayerName = member.CmuneMemberView.PublicProfile.Name,
             };
-            var actor = new CommActor(Peer, view);
+            var actor = new CommActor(peer, view);
 
-            Peer.Actor = actor;
+            peer.Actor = actor;
             // Add user to the lobby room's actors.
             LobbyManager.Instance.Add(actor);
             // Update all peers' actor list including this peer.
             LobbyManager.Instance.UpdateList();
         }
 
-        public override void OnSendHeartbeatResponse(string authToken, string responseHash)
+        public override void OnSendHeartbeatResponse(CommPeer peer, string authToken, string responseHash)
         {
             // Space
         }

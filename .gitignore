@@ -5,6 +5,7 @@
 
 # Visual Studio
 .vs/
+TestResults/
 
 # Logging files.
 *.log
