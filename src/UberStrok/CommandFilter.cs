@@ -40,5 +40,11 @@ namespace UberStrok
         {
             return _commands.Contains(typeof(TCommand));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Contains(Type commandType)
+        {
+            return _commands.Contains(commandType);
+        }
     }
 }

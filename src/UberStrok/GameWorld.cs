@@ -5,12 +5,12 @@ using System.Reflection;
 
 namespace UberStrok
 {
-    public class Game : IStateMachine<GameState>
+    public partial class GameWorld : IStateMachine<GameWorldState>
     {
         /* Current tick. */
         private int _tick;
         /* Current game state. */
-        private GameState _state;
+        private GameWorldState _state;
 
         /* List of game objects in the game instance. */
         internal readonly GameObjectCollection _objects;
@@ -19,13 +19,13 @@ namespace UberStrok
         /* Queue of commands to be dispatched. */
         private readonly ConcurrentQueue<Command> _queue;
         /* Dictionary of type of game states to game state instances. */
-        private readonly Dictionary<Type, GameState> _states;
+        private readonly Dictionary<Type, GameWorldState> _states;
 
-        public Game()
+        public GameWorld()
         {
             _tick = 0;
             _state = null;
-            _states = new Dictionary<Type, GameState>();
+            _states = new Dictionary<Type, GameWorldState>();
             _recorder = new CommandRecorder();
             _queue = new ConcurrentQueue<Command>();
             _objects = new GameObjectCollection(this);
@@ -41,7 +41,7 @@ namespace UberStrok
             _state = null;
         }
 
-        public TGameState RegisterState<TGameState>() where TGameState : GameState, new()
+        public TGameState RegisterState<TGameState>() where TGameState : GameWorldState, new()
         {
             var type = typeof(TGameState);
             if (_states.ContainsKey(type))
@@ -54,10 +54,10 @@ namespace UberStrok
             return state;
         }
 
-        public void SetState<TGameState>() where TGameState : GameState, new()
+        public void SetState<TGameState>() where TGameState : GameWorldState, new()
         {
             var type = typeof(TGameState);
-            var state = default(GameState);
+            var state = default(GameWorldState);
             if (!_states.TryGetValue(type, out state))
                 throw new InvalidOperationException("State was not registered.");
 
@@ -65,7 +65,7 @@ namespace UberStrok
             _state = state;
         }
 
-        public GameState GetState() => _state;
+        public GameWorldState GetState() => _state;
 
         public void OnCommand(Command command)
         {
@@ -116,7 +116,7 @@ namespace UberStrok
             while (!_queue.IsEmpty)
             {
                 var command = default(Command);
-                if (_queue.TryDequeue(out command))
+                if (_queue.TryDequeue(out command) && _state._filter.Contains(command.GetType()))
                     command.DoExecute();
             }
         }

@@ -12,10 +12,11 @@ namespace UberStrok.Realtime.Server.Game
         public static new GameApplication Instance => (GameApplication)ApplicationBase.Instance;
 
         /* Main game instance. */
-        private UberStrok.Game _main;
+        private GameWorld _main;
         /* Game room manager. */
         private GameRoomManager _rooms;
 
+        public GameWorld Main => _main;
         public GameRoomManager Rooms => _rooms;
 
         public int PlayerCount
@@ -42,12 +43,13 @@ namespace UberStrok.Realtime.Server.Game
             /* Add the log path to the properties so can use them in log4net.config. */
             GlobalContext.Properties["Photon:ApplicationLogPath"] = Path.Combine(ApplicationPath, "log");
 
-            /* Configure log4net to use log4net.config file. */
-            var configFile = new FileInfo(Path.Combine(BinaryPath, "log4net.config"));
+            /* Configure log4net to use the log4net.config file. */
+            var configFilePath = Path.Combine(BinaryPath, "log4net.config");
+            var configFile = new FileInfo(configFilePath);
             if (configFile.Exists)
                 XmlConfigurator.ConfigureAndWatch(configFile);
 
-            _main = new UberStrok.Game();
+            _main = new GameWorld();
             _rooms = new GameRoomManager();
 
             Log.Info("Started GameServer...");

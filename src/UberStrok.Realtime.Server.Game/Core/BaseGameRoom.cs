@@ -12,7 +12,7 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(BaseGameRoom));
 
-        private readonly UberStrok.Game _game;
+        private readonly UberStrok.GameWorld _game;
 
         private readonly GameRoomActions _actions;
         /* Loop thats going to do the heavy lifting. */
@@ -58,7 +58,7 @@ namespace UberStrok.Realtime.Server.Game
 
                 WaitingForPlayersMatchState ----> CountdownMatchState ----> RunningMatchState
              */
-            _game = new UberStrok.Game();
+            _game = new UberStrok.GameWorld();
             //_game.Register<WaitingForPlayersMatchState>();
             //_game.Register<CountdownMatchState>();
             //_game.Register<RunningMatchState>();

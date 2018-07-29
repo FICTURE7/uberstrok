@@ -1,6 +1,6 @@
 ﻿namespace UberStrok.Realtime.Server.Game.Events
 {
-    public class PlayerJoinedEvent : Event
+    public class PlayerJoinedEvent : GameWorld.Event
     {
 
     }

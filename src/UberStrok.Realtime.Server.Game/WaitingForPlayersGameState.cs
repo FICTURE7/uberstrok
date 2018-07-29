@@ -4,7 +4,7 @@ using UberStrok.Realtime.Server.Game.Events;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class WaitingForPlayersGameState : GameState
+    public class WaitingForPlayersGameState : GameWorldState
     {
         public WaitingForPlayersGameState()
         {

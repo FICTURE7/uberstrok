@@ -1,6 +1,6 @@
 ﻿namespace UberStrok.Tests.Mocks
 {
-    public class MockGameState : GameState
+    public class MockGameWorldState : GameWorldState
     {
         /* To test if the OnEvent methods are getting called. */
         public delegate void OnMockEvent(MockEvent @event);

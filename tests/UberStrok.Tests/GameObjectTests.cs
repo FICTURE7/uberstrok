@@ -6,12 +6,12 @@ namespace UberStrok.Tests
     [TestFixture]
     public class GameObjectTests
     {
-        private Game _game;
+        private GameWorld _game;
 
         [SetUp]
         public void SetUp()
         {
-            _game = new Game();
+            _game = new GameWorld();
         }
 
         [Test]

@@ -3,25 +3,25 @@ using System.Collections.Generic;
 
 namespace UberStrok
 {
-    public class MultiGameTicker : IDisposable
+    public class GameWorldTicker : IDisposable
     {
         private bool _disposed;
 
         private bool _started;
         private readonly Loop _loop;
-        private readonly List<Game> _games;
+        private readonly List<GameWorld> _games;
 
-        public MultiGameTicker(int tps)
+        public GameWorldTicker(int tps)
         {
             if (tps < 0)
                 throw new ArgumentOutOfRangeException(nameof(tps), "Tick rate cannot be less than 0.");
 
             _loop = new Loop(tps);
-            _games = new List<Game>(16);
+            _games = new List<GameWorld>(16);
         }
 
         public Loop Loop => _loop;
-        public IReadOnlyCollection<Game> Games => _games;
+        public IReadOnlyCollection<GameWorld> Games => _games;
 
         public event EventHandler<ExceptionEventArgs> Exception;
 
@@ -35,7 +35,7 @@ namespace UberStrok
             _loop.Stop();
         }
 
-        public void Add(Game game)
+        public void Add(GameWorld game)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
@@ -49,7 +49,7 @@ namespace UberStrok
             }
         }
 
-        public bool Remove(Game game)
+        public bool Remove(GameWorld game)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));

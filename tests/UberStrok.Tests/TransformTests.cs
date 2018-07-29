@@ -5,13 +5,13 @@ namespace UberStrok.Tests
     [TestFixture]
     public class TransformTests
     {
-        private Game _game;
+        private GameWorld _game;
         private GameObject _go;
 
         [SetUp]
         public void SetUp()
         {
-            _game = new Game();
+            _game = new GameWorld();
             _go = _game.Objects.Create();
         }
 

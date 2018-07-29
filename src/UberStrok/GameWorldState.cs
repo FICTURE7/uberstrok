@@ -4,16 +4,16 @@ using System.Reflection;
 
 namespace UberStrok
 {
-    public abstract class GameState : State
+    public abstract class GameWorldState : State
     {
         /* Game instance to which this game state is tied to. */
-        internal Game _game;
+        internal GameWorld _game;
         /* Command filter for this game state. */
         internal readonly CommandFilter _filter;
         /* Dictionary mapping event types to their on event method in this game state. */
         internal readonly Dictionary<Type, MethodInfo> _onEventMethods;
 
-        protected GameState()
+        protected GameWorldState()
         {
             _filter = new CommandFilter();
             _onEventMethods = new Dictionary<Type, MethodInfo>();
@@ -38,7 +38,7 @@ namespace UberStrok
 
                 /* Check parameter return type. */
                 var parameter = parameters[0];
-                if (!parameter.ParameterType.IsSubclassOf(typeof(Event)))
+                if (!parameter.ParameterType.IsSubclassOf(typeof(GameWorld.Event)))
                     continue;
 
                 _onEventMethods.Add(parameter.ParameterType, method);
@@ -46,6 +46,6 @@ namespace UberStrok
         }
 
         protected CommandFilter Filter => _filter;
-        protected Game Game => _game;
+        protected GameWorld Game => _game;
     }
 }

@@ -5,12 +5,12 @@ using UberStrok.Tests.Mocks;
 namespace UberStrok.Tests
 {
     [TestFixture]
-    public class GameStateTests
+    public class GameWorldStateTests
     {
         [Test]
         public void Find_OnEvent_Methods()
         {
-            var state = new MockGameState();
+            var state = new MockGameWorldState();
 
             Assert.That(state._onEventMethods, Contains.Key(typeof(MockEvent)));
 

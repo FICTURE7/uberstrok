@@ -8,7 +8,7 @@ namespace UberStrok
         /* TODO: Filter DataComponents and Components into seperate dictionaries. */
 
         /* Game instance which owns this GameObject. */
-        internal Game _game;
+        internal GameWorld _game;
         /* Components in this GameObject. */
         private readonly Dictionary<Type, Component> _components;
 
@@ -22,7 +22,7 @@ namespace UberStrok
 
         public bool Enable { get; set; }
         public string Name { get; set; }
-        public Game Game => _game;
+        public GameWorld Game => _game;
 
         public TComponent AddComponent<TComponent>() where TComponent : Component, new()
         {

@@ -7,11 +7,11 @@ namespace UberStrok
     public class GameObjectCollection : IReadOnlyCollection<GameObject>
     {
         /* Game instance which owns this collection. */
-        private readonly Game _game;
+        private readonly GameWorld _game;
         /* Dictionary mapping game object names to game object instances. */
         private readonly Dictionary<string, GameObject> _objects;
 
-        internal GameObjectCollection(Game game)
+        internal GameObjectCollection(GameWorld game)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));

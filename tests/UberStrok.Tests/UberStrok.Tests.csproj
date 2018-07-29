@@ -50,13 +50,13 @@
   <ItemGroup>
     <Compile Include="CommandFilterTests.cs" />
     <Compile Include="GameObjectTests.cs" />
-    <Compile Include="GameStateTests.cs" />
-    <Compile Include="GameTests.cs" />
-    <Compile Include="GameTickerTests.cs" />
+    <Compile Include="GameWorldStateTests.cs" />
+    <Compile Include="GameWorldTests.cs" />
+    <Compile Include="GameWorldTickerTests.cs" />
     <Compile Include="Mocks\MockCommand.cs" />
     <Compile Include="Mocks\MockComponent.cs" />
     <Compile Include="Mocks\MockEvent.cs" />
-    <Compile Include="Mocks\MockGameState.cs" />
+    <Compile Include="Mocks\MockGameWorldState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransformTests.cs" />
   </ItemGroup>

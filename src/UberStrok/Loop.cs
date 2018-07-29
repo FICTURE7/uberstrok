@@ -9,7 +9,7 @@ namespace UberStrok
 
     public enum LoopState
     {
-        Idle,
+        None,
         Started,
         Paused,
         Stopped
@@ -56,7 +56,7 @@ namespace UberStrok
             if (tps < 0)
                 throw new ArgumentOutOfRangeException(nameof(tps), "Tick rate cannot be less than 0.");
 
-            _state = LoopState.Idle;
+            _state = LoopState.None;
             _lagSw = new Stopwatch();
             _deltaTimeSw = new Stopwatch();
             _pauseWaitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
