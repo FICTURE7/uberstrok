@@ -29,7 +29,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public string AuthToken { get; set; }
         public ushort Ping { get; set; }
-        public GameActor Actor { get; set; }
+        public OldGameActor Actor { get; set; }
 
         /* TODO: Not really sure if we need this. But might want to turn it into a HashSet. */
         public List<int> KnownActors { get; set; }

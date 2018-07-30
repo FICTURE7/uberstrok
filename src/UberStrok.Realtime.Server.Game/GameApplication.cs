@@ -2,6 +2,7 @@
 using log4net.Config;
 using Photon.SocketServer;
 using System.IO;
+using UberStrok.Realtime.Server.Game.Events;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -11,31 +12,30 @@ namespace UberStrok.Realtime.Server.Game
 
         public static new GameApplication Instance => (GameApplication)ApplicationBase.Instance;
 
-        /* Main game instance. */
-        private GameWorld _main;
+        /* Main/Lobby room. */
+        private GameLobbyRoom _lobby;
         /* Game room manager. */
         private GameRoomManager _rooms;
 
-        public GameWorld Main => _main;
+        public GameLobbyRoom Lobby => _lobby;
         public GameRoomManager Rooms => _rooms;
-
-        public int PlayerCount
-        {
-            get
-            {
-                /* Total players in all game rooms. */
-                var sum = 0;
-                foreach (var room in Rooms)
-                    sum += room.Players.Count;
-
-                return sum;
-            }
-        }
 
         protected override PeerBase CreatePeer(InitRequest request)
         {
             Log.Info($"Accepted new connection at {request.RemoteIP}:{request.RemotePort}");
-            return new GamePeer(request);
+
+            var peer = new GamePeer(request);
+            var actor = new GameActor();
+
+            /* Add the actor the players in the main lobby/room */
+            _lobby.Join(actor);
+            _lobby.OnEvent(new PeerJoinedEvent
+            {
+                Peer = peer,
+                Actor = actor
+            });
+
+            return peer;
         }
 
         protected override void Setup()
@@ -49,8 +49,7 @@ namespace UberStrok.Realtime.Server.Game
             if (configFile.Exists)
                 XmlConfigurator.ConfigureAndWatch(configFile);
 
-            _main = new GameWorld();
-            _rooms = new GameRoomManager();
+            _lobby = new GameLobbyRoom();
 
             Log.Info("Started GameServer...");
         }

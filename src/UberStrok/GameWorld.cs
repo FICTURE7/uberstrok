@@ -5,13 +5,14 @@ using System.Reflection;
 
 namespace UberStrok
 {
-    public partial class GameWorld : IStateMachine<GameWorldState>
+    public class GameWorld : IStateMachine<GameWorldState>, ICommandDispatcher, IEventDispatcher
     {
         /* Current tick. */
         private int _tick;
         /* Current game state. */
         private GameWorldState _state;
 
+        /* TODO: Seperate enabled game objects and disabled game objects into seperate lists. */
         /* List of game objects in the game instance. */
         internal readonly GameObjectCollection _objects;
         /* Recorder to record commands received. */

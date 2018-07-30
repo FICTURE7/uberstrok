@@ -16,33 +16,7 @@ namespace UberStrok
         protected GameWorldState()
         {
             _filter = new CommandFilter();
-            _onEventMethods = new Dictionary<Type, MethodInfo>();
-
-            /* TODO: Cache the results in a static dictionary or something. */
-            var type = GetType();
-            var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (var method in methods)
-            {
-                /* 
-                    Look for methods which has the name "OnEvent,
-                    returns a void (returns no value) and has 1
-                    parameter whose type inherits from Event.
-                 */
-                if (method.Name != "OnEvent" || method.ReturnType != typeof(void))
-                    continue;
-
-                /* Check parameter count. */
-                var parameters = method.GetParameters();
-                if (parameters.Length != 1)
-                    continue;
-
-                /* Check parameter return type. */
-                var parameter = parameters[0];
-                if (!parameter.ParameterType.IsSubclassOf(typeof(GameWorld.Event)))
-                    continue;
-
-                _onEventMethods.Add(parameter.ParameterType, method);
-            }
+            _onEventMethods = Event.GetEvents(GetType());
         }
 
         protected CommandFilter Filter => _filter;

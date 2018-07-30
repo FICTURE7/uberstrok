@@ -43,9 +43,9 @@ namespace UberStrok.Realtime.Server.Game
         {
             /* UberStrike does not care about this value, it uses its client side value. */
             s_loadView.Latency = peer.RoundTripTime / 2;
-            s_loadView.PeersConnected = GameApplication.Instance.PlayerCount;
+            //s_loadView.PeersConnected = GameApplication.Instance.PlayerCount;
             /* UberStrike also does not care about this value, it uses PeersConnected. */
-            s_loadView.PlayersConnected = GameApplication.Instance.PlayerCount;
+            //s_loadView.PlayersConnected = GameApplication.Instance.PlayerCount;
             s_loadView.RoomsCreated = GameApplication.Instance.Rooms.Count;
             s_loadView.TimeStamp = DateTime.UtcNow;
 

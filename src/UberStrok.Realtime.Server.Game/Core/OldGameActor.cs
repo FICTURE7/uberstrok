@@ -4,13 +4,13 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GameActor
+    public class OldGameActor
     {
         private readonly GameActorInfo _info;
         private readonly PlayerMovement _movement;
         private readonly DamageEventView _damages;
 
-        public GameActor(GameActorInfoView data)
+        public OldGameActor(GameActorInfoView data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));

@@ -183,7 +183,7 @@ namespace UberStrok.Realtime.Server.Game
             actorView.Weapons[3] = peer.Loadout.Weapon3;
 
             var number = 0;
-            var actor = new GameActor(actorView);
+            var actor = new OldGameActor(actorView);
 
             lock (_peers)
             {

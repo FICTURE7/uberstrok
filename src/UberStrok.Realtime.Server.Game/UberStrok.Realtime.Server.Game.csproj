@@ -46,6 +46,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\PeerJoinedEvent.cs" />
+    <Compile Include="GameActor.cs" />
     <Compile Include="Commands\JoinGameCommand.cs" />
     <Compile Include="Commands\PowerUpPickedCommand.cs" />
     <Compile Include="Commands\PowerUpRespawnTimesCommand.cs" />
@@ -53,12 +55,13 @@
     <Compile Include="Core\GameRoomActions.cs" />
     <Compile Include="Core\BaseGameRoomOperationHandler.cs" />
     <Compile Include="CountdownPeerState.cs" />
-    <Compile Include="Core\GameActor.cs" />
+    <Compile Include="Core\OldGameActor.cs" />
     <Compile Include="Core\GameActorInfo.cs" />
     <Compile Include="Events\PlayerJoinedEvent.cs" />
     <Compile Include="Events\PlayerLeftEvent.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="EventArgs.cs" />
+    <Compile Include="GameLobbyRoom.cs" />
     <Compile Include="GameRoomManager.cs" />
     <Compile Include="Core\GamePeer.cs" />
     <Compile Include="Core\GamePeerEvents.cs" />

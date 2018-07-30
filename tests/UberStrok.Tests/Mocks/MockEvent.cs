@@ -1,6 +1,6 @@
 ﻿namespace UberStrok.Tests.Mocks
 {
-    public class MockEvent : GameWorld.Event
+    public class MockEvent : Event
     {
 
     }
