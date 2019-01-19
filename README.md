@@ -17,8 +17,8 @@ And because [dropshot](https://www.github.com/festivaldev/dropshot) seem to be i
 to continue on my own.
 
 #### Does multiplayer work?
-Yes.
-
+Yes, however only CuberStrike in Team Deathmatch mode is supported.
+ 
 #### Are features missing?
 Yes.
 
