@@ -1,15 +1,157 @@
 ﻿{
     "FunctionalItems": [ ],
     "GearItems": [
-		{
+	{
             "ItemType": 3,
             "ArmorPoints": 0,
             "ArmorWeight": 0,
             "ItemClass": 13,
-            "ID": 1084,
-            "Name": "Cap'n Bradford's Hat",
-            "PrefabName": "PirateHead",
-            "Description": "Cap'n Bradford's Finery (5/6)",
+            "ID": 1091,
+            "Name": "UberSanta Hat",
+            "PrefabName": "SantaHead",
+            "Description": null,
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 0,
+            "ArmorWeight": 0,
+            "ItemClass": 12,
+            "ID": 1090,
+            "Name": "UberSanta Beard",
+            "PrefabName": "SantaBeard-SantaBeard",
+            "Description": null,
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		
+		{
+            "ItemType": 3,
+            "ArmorPoints": 0,
+            "ArmorWeight": 0,
+            "ItemClass": 17,
+            "ID": 1089,
+            "Name": "UberSanta Gloves",
+            "PrefabName": "SantaGloves",
+            "Description": null,
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 12,
+            "ID": 1088,
+            "Name": "UberSanta Boots",
+            "PrefabName": "SantaBoots",
+            "Description": null,
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 16,
+            "ID": 1087,
+            "Name": "UberSanta Pants",
+            "PrefabName": "SantaLowerbody",
+            "Description": null,
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 15,
+            "ID": 1086,
+            "Name": "UberSanta Jacket",
+            "PrefabName": "SantaUpperbody",
+            "Description": null,
             "LevelLock": 0,
             "MaxDurationDays": 0,
             "IsConsumable": false,
@@ -34,7 +176,7 @@
             "ArmorPoints": 0,
             "ArmorWeight": 0,
             "ItemClass": 14,
-            "ID": 1083,
+            "ID": 1085,
             "Name": "Cap'n Bradford's Patch",
             "PrefabName": "PirateEyepatch-PirateEyepatch",
             "Description": "Cap'n Bradford's Finery (6/6)",
@@ -57,12 +199,13 @@
             "CustomProperties": { },
             "ItemProperties": { }
         },
+		
 		{
             "ItemType": 3,
             "ArmorPoints": 0,
             "ArmorWeight": 0,
             "ItemClass": 17,
-            "ID": 1082,
+            "ID": 1084,
             "Name": "Cap'n Bradford's Gloves",
             "PrefabName": "PirateGloves",
             "Description": "Cap'n Bradford's Finery (4/6)",
@@ -90,7 +233,7 @@
             "ArmorPoints": 100,
             "ArmorWeight": 0,
             "ItemClass": 12,
-            "ID": 1081,
+            "ID": 1083,
             "Name": "Cap'n Bradford's Boots",
             "PrefabName": "PirateShoes",
             "Description": "Cap'n Bradford's Finery (3/6)",
@@ -118,7 +261,7 @@
             "ArmorPoints": 100,
             "ArmorWeight": 0,
             "ItemClass": 16,
-            "ID": 1080,
+            "ID": 1082,
             "Name": "Cap'n Bradford's Pants",
             "PrefabName": "PirateLowerbody",
             "Description": "Cap'n Bradford's Finery (2/6)",
@@ -141,12 +284,13 @@
             "CustomProperties": { },
             "ItemProperties": { }
         },
+		
 		{
             "ItemType": 3,
             "ArmorPoints": 100,
             "ArmorWeight": 0,
             "ItemClass": 15,
-            "ID": 1079,
+            "ID": 1081,
             "Name": "Cap'n Bradford's Jacket",
             "PrefabName": "PirateUpperbody",
             "Description": "Cap'n Bradford's Finery (1/6)",
@@ -174,7 +318,7 @@
             "ArmorPoints": 100,
             "ArmorWeight": 0,
             "ItemClass": 15,
-            "ID": 1078,
+            "ID": 1080,
             "Name": "UberJacket",
             "PrefabName": "UberJacket",
             "Description": "Represent.",
@@ -197,7 +341,7 @@
             "CustomProperties": { },
             "ItemProperties": { }
         },
-		{
+{
             "ItemType": 3,
             "ArmorPoints": 100,
             "ArmorWeight": 0,
