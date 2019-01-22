@@ -110,19 +110,40 @@ namespace UberStrok.Realtime.Server.Game
                     var byteAngle = Conversions.Angle2Byte(angle);
 
                     /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
-                    /* TODO: Calculate armor absorption. */
 
                     /* Don't mess with rocket jumps. */
                     if (player.Actor.Cmid != peer.Actor.Cmid)
                     {
-                        player.Actor.Info.Health -= shortDamage;
+                        // take off armor™
+                        if (player.Actor.Info.ArmorPoints > 0)
+                        {
+                            // player's armor before they were damaged, we store this to calculate the diff
+                            int originalArmor = player.Actor.Info.ArmorPoints;
+                            // make sure their armor cant go below 0, also allows partial absorption
+                            player.Actor.Info.ArmorPoints = (byte)Math.Max(0, player.Actor.Info.ArmorPoints - shortDamage);
+                            // the value the diff is multiplied by is the armor absorption ratio
+                            // maybe put this value into the config?
+                            double diff = (originalArmor - player.Actor.Info.ArmorPoints) * 0.75;
+                            // subtract the absorbed damage from the damage value
+                            shortDamage -= (short)diff;
+                        }
+                        // lol idk what this does but i think its necessary for enemy damage
                         player.Actor.Damages.Add(byteAngle, shortDamage, BodyPart.Body, 0, 0);
                     }
                     else
                     {
+                        // take off armor based on the halved value
                         shortDamage /= 2;
-                        player.Actor.Info.Health -= shortDamage;
+                        if (player.Actor.Info.ArmorPoints > 0)
+                        {
+                            int originalArmor = player.Actor.Info.ArmorPoints;
+                            player.Actor.Info.ArmorPoints = (byte)Math.Max(0, player.Actor.Info.ArmorPoints - shortDamage);
+                            double diff = (originalArmor - player.Actor.Info.ArmorPoints) * 0.75;
+                            shortDamage -= (short)diff;
+                        }
                     }
+
+                    player.Actor.Info.Health -= shortDamage;
 
                     /* Check if the player is dead. */
                     if (player.Actor.Info.Health <= 0)
@@ -224,7 +245,27 @@ namespace UberStrok.Realtime.Server.Game
                     var byteAngle = Conversions.Angle2Byte(angle);
 
                     /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
-                    /* TODO: Calculate armor absorption. */
+
+                    /* 
+                     * Armor absorption percentage
+                     * Change 'armorAbsorbPercent' to modify effective health given by armor.
+                     * E.g. currently, 100 armor is equal to 66 extra health (if you are on at least 33% of your armor in health)
+                     */
+                    var armorAbsorbPercent = 0.66;
+                    
+                    if (player.Actor.Info.ArmorPoints > 0)
+                    {
+                        // player's armor before they were damaged, we store this to calculate the diff
+                        int originalArmor = player.Actor.Info.ArmorPoints;
+                        // make sure their armor cant go below 0, also allows partial absorption
+                        player.Actor.Info.ArmorPoints = (byte)Math.Max(0, player.Actor.Info.ArmorPoints - shortDamage);
+                        // the value the diff is multiplied by is the armor absorption ratio
+                        // maybe put this value into the config? -------------------------v
+                        double diff = (originalArmor - player.Actor.Info.ArmorPoints) * armorAbsorbPercent;
+                        // subtract the absorbed damage from the damage value
+                        shortDamage -= (short)diff;
+                    }
+
                     player.Actor.Damages.Add(byteAngle, shortDamage, part, 0, 0);
                     player.Actor.Info.Health -= shortDamage;
 
