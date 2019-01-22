@@ -94,6 +94,9 @@ namespace UberStrok.Realtime.Server.Game
 
                     s_log.Debug($"Calculated: {damageExplosion} damage explosive {damage}, {radius}, {distance}, {force}");
 
+                    peer.IncrementDamageDone(weapon.ItemClass, weaponId, (int)damageExplosion);
+                    peer.IncrementShotsHit(weapon.ItemClass, weaponId);
+
                     /* Calculate the direction of the hit. */
                     var shortDamage = (short)damageExplosion;
 
@@ -229,6 +232,9 @@ namespace UberStrok.Realtime.Server.Game
                             damage = (int)Math.Round(damage + (damage * (bonus / 100f)));
                     }
 
+                    peer.IncrementDamageDone(weapon.ItemClass, weaponId, damage);
+                    peer.IncrementShotsHit(weapon.ItemClass, weaponId);
+
                     /* Calculate the direction of the hit. */
                     var shortDamage = (short)damage;
 
@@ -276,6 +282,19 @@ namespace UberStrok.Realtime.Server.Game
                         player.Actor.Info.Deaths++;
                         peer.Actor.Info.Kills++;
 
+                        peer.IncrementKills(weapon.ItemClass);
+
+                        if (part == BodyPart.Head)
+                        {
+                            peer.TotalStats.Headshots++;
+                            peer.CurrentLifeStats.Headshots++;
+                        }
+                        else if (part == BodyPart.Nuts)
+                        {
+                            peer.TotalStats.Nutshots++;
+                            peer.CurrentLifeStats.Nutshots++;
+                        }
+
                         player.State.Set(PeerState.Id.Killed);
                         OnPlayerKilled(new PlayerKilledEventArgs
                         {
@@ -302,6 +321,14 @@ namespace UberStrok.Realtime.Server.Game
             var shooterCmid = peer.Actor.Cmid;
             foreach (var otherPeer in Peers)
             {
+                var weaponId = peer.Actor.Info.CurrentWeaponID;
+                var weapon = default(UberStrikeItemWeaponView);
+
+                if (ShopManager.WeaponItems.TryGetValue(weaponId, out weapon))
+                    peer.IncrementShotsFired(weapon.ItemClass, weaponId);
+                else
+                    s_log.Debug($"Unable to find weapon with ID {weaponId}");
+
                 if (otherPeer.Actor.Cmid != shooterCmid)
                     otherPeer.Events.Game.SendEmitProjectile(shooterCmid, origin, direction, slot, projectileId, explode);
             }

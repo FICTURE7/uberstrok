@@ -239,6 +239,16 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        public void SendMatchEnd(EndOfMatchDataView endOfMatchData)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                EndOfMatchDataViewProxy.Serialize(bytes, endOfMatchData);
+
+                SendEvent((byte)IGameRoomEventsType.MatchEnd, bytes);
+            }
+        }
+
         public void SendPlayerRespawned(int cmid, Vector3 position, byte rotation)
         {
             using (var bytes = new MemoryStream())

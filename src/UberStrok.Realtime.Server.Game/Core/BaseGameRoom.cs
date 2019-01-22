@@ -51,7 +51,7 @@ namespace UberStrok.Realtime.Server.Game
 
             /* TODO: Allow user to set the tick rate. */
             /* When the tick rate is high, the client side, lag interpolation goes all woncky. */
-            _loop = new Loop(15);
+            _loop = new Loop(10);
             _actions = new GameRoomActions(this);
 
             _peers = new List<GamePeer>();
@@ -251,6 +251,16 @@ namespace UberStrok.Realtime.Server.Game
         protected virtual void OnPlayerKilled(PlayerKilledEventArgs args)
         {
             PlayerKilled?.Invoke(this, args);
+
+            foreach (var player in Players)
+            {
+                if (player.Actor.Cmid != args.VictimCmid)
+                    continue;
+
+                player.TotalStats.Deaths++;
+                player.StatsPerLife.Add(player.CurrentLifeStats);
+                player.CurrentLifeStats = new StatsCollectionView();
+            }
         }
     }
 }
