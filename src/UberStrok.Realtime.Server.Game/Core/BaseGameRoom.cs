@@ -80,6 +80,7 @@ namespace UberStrok.Realtime.Server.Game
         public PowerUpManager PowerUps => _powerUpManager;
         public GameRoomActions Actions => _actions;
 
+        public event EventHandler MatchEnded;
         public event EventHandler<PlayerKilledEventArgs> PlayerKilled;
         public event EventHandler<PlayerRespawnedEventArgs> PlayerRespawned;
         public event EventHandler<PlayerJoinedEventArgs> PlayerJoined;
@@ -231,11 +232,21 @@ namespace UberStrok.Realtime.Server.Game
             _loop.Start(
                 () => {
                     State.Update();
+                    // End match due to countdown.
+                    if (Environment.TickCount > EndTime)
+                    {
+                        OnMatchEnded(new EventArgs());
+                    }
                 },
                 (Exception ex) => {
                     s_log.Error("Failed to tick game loop.", ex);
                 }
             );
+        }
+
+        protected virtual void OnMatchEnded(EventArgs e)
+        {
+            MatchEnded?.Invoke(this, e);
         }
 
         protected virtual void OnPlayerRespawned(PlayerRespawnedEventArgs args)
@@ -254,12 +265,22 @@ namespace UberStrok.Realtime.Server.Game
 
             foreach (var player in Players)
             {
-                if (player.Actor.Cmid != args.VictimCmid)
-                    continue;
-
-                player.TotalStats.Deaths++;
-                player.StatsPerLife.Add(player.CurrentLifeStats);
-                player.CurrentLifeStats = new StatsCollectionView();
+                if (player.Actor.Cmid == args.AttackerCmid)
+                {
+                    bool flag = DateTime.Now.TimeOfDay < player.lastKillTime.Add(TimeSpan.FromSeconds(10));
+                    player.killCounter = ((!flag) ? 1 : (player.killCounter + 1));
+                    player.lastKillTime = DateTime.Now.TimeOfDay;
+                    if (player.killCounter > player.CurrentLifeStats.ConsecutiveSnipes)
+                        player.CurrentLifeStats.ConsecutiveSnipes = player.killCounter;
+                    if (player.killCounter > player.TotalStats.ConsecutiveSnipes)
+                        player.TotalStats.ConsecutiveSnipes = player.killCounter;
+                }
+                else if (player.Actor.Cmid == args.VictimCmid)
+                {
+                    player.TotalStats.Deaths++;
+                    player.StatsPerLife.Add(player.CurrentLifeStats);
+                    player.CurrentLifeStats = new StatsCollectionView();
+                }
             }
         }
     }

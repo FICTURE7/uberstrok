@@ -206,6 +206,17 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        public void SendKillsRemaining(int killsRemaining, int leaderCmid)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, killsRemaining);
+                Int32Proxy.Serialize(bytes, leaderCmid);
+
+                SendEvent((byte)IGameRoomEventsType.KillsRemaining, bytes);
+            }
+        }
+
         public void SendUpdateRoundScore(int round, short blue, short red)
         {
             using (var bytes = new MemoryStream())

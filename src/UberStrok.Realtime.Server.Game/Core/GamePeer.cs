@@ -1,4 +1,5 @@
 ﻿using Photon.SocketServer;
+using System;
 using System.Linq;
 using UberStrok.Core.Common;
 using System.Collections.Generic;
@@ -288,6 +289,9 @@ namespace UberStrok.Realtime.Server.Game
             // Efficiency score: Accuracy * Damage
             return WeaponStats.Max(x => (x.Value.ShotsHit * x.Value.ShotsFired) * x.Value.DamageDone);
         }
+
+        public TimeSpan lastKillTime;
+        public int killCounter;
 
         public StatsCollectionView TotalStats { get; set; }
         public StatsCollectionView CurrentLifeStats { get; set; }
