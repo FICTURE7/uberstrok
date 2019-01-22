@@ -493,38 +493,5 @@
 			},
             "3": { }
         }
-    },
-	{
-        "DisplayName": "Monkey Island [Hallowmas]",
-        "Description": "Map Description",
-        "SceneName": "LevelMonkeyIslandHallowmas",
-        "IsBlueBox": false,
-		"MapId": 14,
-        "MaxPlayer": 32,
-        "Settings": {
-            "1": {
-				"KillsMin": 1,
-                "KillsMax": 200,
-                "KillsCurrent": 100,
-                "PlayersMin": 2,
-                "PlayersMax": 32,
-                "PlayersCurrent": 10,
-                "TimeMin": 60,
-                "TimeMax": 1200,
-                "TimeCurrent": 300
-			},
-            "2": { 
-				"KillsMin": 1,
-                "KillsMax": 200,
-                "KillsCurrent": 100,
-                "PlayersMin": 2,
-                "PlayersMax": 32,
-                "PlayersCurrent": 10,
-                "TimeMin": 60,
-                "TimeMax": 1200,
-                "TimeCurrent": 300
-			},
-            "3": { }
-        }
     }
 ]
