@@ -86,32 +86,32 @@ namespace UberStrok.Realtime.Server.Game
             switch (itemClass)
             {
                 case UberStrikeItemClass.WeaponShotgun:
-                    TotalStats.ShotgunDamageDone++;
-                    CurrentLifeStats.ShotgunDamageDone++;
+                    TotalStats.ShotgunDamageDone += dmg;
+                    CurrentLifeStats.ShotgunDamageDone += dmg;
                     break;
                 case UberStrikeItemClass.WeaponSniperRifle:
-                    TotalStats.SniperDamageDone++;
-                    CurrentLifeStats.SniperDamageDone++;
+                    TotalStats.SniperDamageDone += dmg;
+                    CurrentLifeStats.SniperDamageDone += dmg;
                     break;
                 case UberStrikeItemClass.WeaponSplattergun:
-                    TotalStats.SplattergunDamageDone++;
-                    CurrentLifeStats.SplattergunDamageDone++;
+                    TotalStats.SplattergunDamageDone += dmg;
+                    CurrentLifeStats.SplattergunDamageDone += dmg;
                     break;
                 case UberStrikeItemClass.WeaponMelee:
-                    TotalStats.MeleeDamageDone++;
-                    CurrentLifeStats.MeleeDamageDone++;
+                    TotalStats.MeleeDamageDone += dmg;
+                    CurrentLifeStats.MeleeDamageDone += dmg;
                     break;
                 case UberStrikeItemClass.WeaponMachinegun:
-                    TotalStats.MachineGunDamageDone++;
-                    CurrentLifeStats.MachineGunDamageDone++;
+                    TotalStats.MachineGunDamageDone += dmg;
+                    CurrentLifeStats.MachineGunDamageDone += dmg;
                     break;
                 case UberStrikeItemClass.WeaponLauncher:
-                    TotalStats.LauncherDamageDone++;
-                    CurrentLifeStats.LauncherDamageDone++;
+                    TotalStats.LauncherDamageDone += dmg;
+                    CurrentLifeStats.LauncherDamageDone += dmg;
                     break;
                 case UberStrikeItemClass.WeaponCannon:
-                    TotalStats.CannonDamageDone++;
-                    CurrentLifeStats.CannonDamageDone++;
+                    TotalStats.CannonDamageDone += dmg;
+                    CurrentLifeStats.CannonDamageDone += dmg;
                     break;
             }
         }

@@ -123,6 +123,11 @@ namespace UberStrok.Realtime.Server.Game
 
             Debug.Assert(peer.Room == null, "GamePeer is joining room, but its already in another room.");
 
+            peer.StatsPerLife = new List<StatsCollectionView>();
+            peer.TotalStats = new StatsCollectionView();
+            peer.CurrentLifeStats = new StatsCollectionView();
+            peer.WeaponStats = new Dictionary<int, WeaponStats>();
+
             var roomView = View;
             var actorView = new GameActorInfoView
             {
