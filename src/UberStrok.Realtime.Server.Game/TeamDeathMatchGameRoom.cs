@@ -94,6 +94,7 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnPlayerKilled(PlayerKilledEventArgs args)
         {
             base.OnPlayerKilled(args);
+            
 
             foreach (var player in Players)
             {
@@ -103,13 +104,20 @@ namespace UberStrok.Realtime.Server.Game
                 var killReq = player.Room.View.KillLimit;
                 if (player.Actor.Team == TeamID.BLUE)
                 {
-                    BlueTeamScore++;
+                    if (args.AttackerCmid == args.VictimCmid)
+                        BlueTeamScore--;
+                    else
+                        BlueTeamScore++;
+
                     if (BlueTeamScore >= killReq)
                         EndMatch(TeamID.BLUE);
                 }
                 else if (player.Actor.Team == TeamID.RED)
                 {
-
+                    if (args.AttackerCmid == args.VictimCmid)
+                        RedTeamScore--;
+                    else
+                        RedTeamScore++;
                     RedTeamScore++;
                     if (RedTeamScore >= killReq)
                         EndMatch(TeamID.RED);
