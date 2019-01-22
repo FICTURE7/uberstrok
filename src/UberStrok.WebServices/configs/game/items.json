@@ -3,6 +3,370 @@
     "GearItems": [
 		{
             "ItemType": 3,
+            "ArmorPoints": 0,
+            "ArmorWeight": 0,
+            "ItemClass": 13,
+            "ID": 1084,
+            "Name": "Cap'n Bradford's Hat",
+            "PrefabName": "PirateHead",
+            "Description": "Cap'n Bradford's Finery (5/6)",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 0,
+            "ArmorWeight": 0,
+            "ItemClass": 14,
+            "ID": 1083,
+            "Name": "Cap'n Bradford's Patch",
+            "PrefabName": "PirateEyepatch-PirateEyepatch",
+            "Description": "Cap'n Bradford's Finery (6/6)",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 0,
+            "ArmorWeight": 0,
+            "ItemClass": 17,
+            "ID": 1082,
+            "Name": "Cap'n Bradford's Gloves",
+            "PrefabName": "PirateGloves",
+            "Description": "Cap'n Bradford's Finery (4/6)",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 12,
+            "ID": 1081,
+            "Name": "Cap'n Bradford's Boots",
+            "PrefabName": "PirateShoes",
+            "Description": "Cap'n Bradford's Finery (3/6)",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 16,
+            "ID": 1080,
+            "Name": "Cap'n Bradford's Pants",
+            "PrefabName": "PirateLowerbody",
+            "Description": "Cap'n Bradford's Finery (2/6)",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 15,
+            "ID": 1079,
+            "Name": "Cap'n Bradford's Jacket",
+            "PrefabName": "PirateUpperbody",
+            "Description": "Cap'n Bradford's Finery (1/6)",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 15,
+            "ID": 1078,
+            "Name": "UberJacket",
+            "PrefabName": "UberJacket",
+            "Description": "Represent.",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 16,
+            "ID": 1079,
+            "Name": "Baron's Blue Pants",
+            "PrefabName": "UberCommando-Blue-LB",
+            "Description": "Useful for protecting yourself against bullets and fashion disasters!",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 15,
+            "ID": 1078,
+            "Name": "Baron's Blue Jacket",
+            "PrefabName": "UberCommando-Blue-UB",
+            "Description": "Useful for protecting yourself against bullets and fashion disasters!",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 17,
+            "ID": 1077,
+            "Name": "Baron's Gloves",
+            "PrefabName": "UberCommando-Default-Gloves",
+            "Description": "Useful for protecting yourself against bullets and fashion disasters!",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 12,
+            "ID": 1076,
+            "Name": "Baron's Boots",
+            "PrefabName": "UberCommando-Default-Boots",
+            "Description": "Useful for protecting yourself against bullets and fashion disasters!",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 16,
+            "ID": 1075,
+            "Name": "Baron's Pants",
+            "PrefabName": "UberCommando-Default-LB",
+            "Description": "Useful for protecting yourself against bullets and fashion disasters!",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
+            "ArmorPoints": 100,
+            "ArmorWeight": 0,
+            "ItemClass": 15,
+            "ID": 1074,
+            "Name": "Baron's Jacket",
+            "PrefabName": "UberCommando-Default-UB",
+            "Description": "Useful for protecting yourself against bullets and fashion disasters!",
+            "LevelLock": 0,
+            "MaxDurationDays": 0,
+            "IsConsumable": false,
+            "Prices": [
+                {
+                    "Price": 0,
+                    "Currency": 1,
+                    "Discount": 0,
+                    "Amount": 1,
+                    "PackType": 0,
+                    "Duration": 5,
+                    "IsConsumable": true
+                }
+            ],
+            "IsForSale": true,
+            "ShopHighlightType": 3,
+            "CustomProperties": { },
+            "ItemProperties": { }
+        },
+		{
+            "ItemType": 3,
             "ArmorPoints": 100,
             "ArmorWeight": 0,
             "ItemClass": 17,
@@ -2592,7 +2956,7 @@
             "Tier": 1,
             "SecondaryActionReticle": 9,
             "WeaponSecondaryAction": 2,
-            "CriticalStrikeBonus": 56,
+            "CriticalStrikeBonus": 0,
             "DamagePerSecond": 0.0,
             "HasAutomaticFire": true,
             "DefaultZoomMultiplier": 0,
@@ -3892,7 +4256,7 @@
             "Tier": 1,
             "SecondaryActionReticle": 0,
             "WeaponSecondaryAction": 2,
-            "CriticalStrikeBonus": 48,
+            "CriticalStrikeBonus": 50,
             "DamagePerSecond": 0.0,
             "HasAutomaticFire": true,
             "DefaultZoomMultiplier": 0,
@@ -3942,7 +4306,7 @@
             "Tier": 1,
             "SecondaryActionReticle": 0,
             "WeaponSecondaryAction": 2,
-            "CriticalStrikeBonus": 48,
+            "CriticalStrikeBonus": 50,
             "DamagePerSecond": 0.0,
             "HasAutomaticFire": true,
             "DefaultZoomMultiplier": 0,
@@ -3992,7 +4356,7 @@
             "Tier": 1,
             "SecondaryActionReticle": 0,
             "WeaponSecondaryAction": 2,
-            "CriticalStrikeBonus": 48,
+            "CriticalStrikeBonus": 50,
             "DamagePerSecond": 0.0,
             "HasAutomaticFire": true,
             "DefaultZoomMultiplier": 0,
@@ -4042,7 +4406,7 @@
             "Tier": 1,
             "SecondaryActionReticle": 0,
             "WeaponSecondaryAction": 2,
-            "CriticalStrikeBonus": 48,
+            "CriticalStrikeBonus": 50,
             "DamagePerSecond": 0.0,
             "HasAutomaticFire": true,
             "DefaultZoomMultiplier": 0,
@@ -4092,7 +4456,7 @@
             "Tier": 1,
             "SecondaryActionReticle": 0,
             "WeaponSecondaryAction": 2,
-            "CriticalStrikeBonus": 48,
+            "CriticalStrikeBonus": 50,
             "DamagePerSecond": 0.0,
             "HasAutomaticFire": true,
             "DefaultZoomMultiplier": 0,
