@@ -9,6 +9,8 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
     {
+        double baseArmorAbsorption = 0.50;
+
         public override void OnDisconnect(GamePeer peer, DisconnectReason reasonCode, string reasonDetail)
         {
             Leave(peer);
@@ -114,6 +116,20 @@ namespace UberStrok.Realtime.Server.Game
 
                     /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
 
+                    var weightedArmorAbsorption = baseArmorAbsorption;
+                    // Armor weight. Max armor absorption is 72% (two armor pieces of 20 weight)
+                    foreach (var armor in player.Actor.Info.Gear)
+                    {
+                        var gear = default(UberStrikeItemGearView);
+                        if (ShopManager.GearItems.TryGetValue(armor, out gear))
+                            if (gear.ArmorWeight > 100)
+                                weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100);
+                            else
+                                s_log.Debug($"Could not find gear with ID {armor}.");
+                    }
+
+                    s_log.Debug($"weightedArmorAbsorption: {weightedArmorAbsorption}.");
+
                     /* Don't mess with rocket jumps. */
                     if (player.Actor.Cmid != peer.Actor.Cmid)
                     {
@@ -126,7 +142,7 @@ namespace UberStrok.Realtime.Server.Game
                             player.Actor.Info.ArmorPoints = (byte)Math.Max(0, player.Actor.Info.ArmorPoints - shortDamage);
                             // the value the diff is multiplied by is the armor absorption ratio
                             // maybe put this value into the config?
-                            double diff = (originalArmor - player.Actor.Info.ArmorPoints) * 0.75;
+                            double diff = (originalArmor - player.Actor.Info.ArmorPoints) * weightedArmorAbsorption;
                             // subtract the absorbed damage from the damage value
                             shortDamage -= (short)diff;
                         }
@@ -141,7 +157,7 @@ namespace UberStrok.Realtime.Server.Game
                         {
                             int originalArmor = player.Actor.Info.ArmorPoints;
                             player.Actor.Info.ArmorPoints = (byte)Math.Max(0, player.Actor.Info.ArmorPoints - shortDamage);
-                            double diff = (originalArmor - player.Actor.Info.ArmorPoints) * 0.75;
+                            double diff = (originalArmor - player.Actor.Info.ArmorPoints) * weightedArmorAbsorption;
                             shortDamage -= (short)diff;
                         }
                     }
@@ -260,8 +276,20 @@ namespace UberStrok.Realtime.Server.Game
                      * Change 'armorAbsorbPercent' to modify effective health given by armor.
                      * E.g. currently, 100 armor is equal to 66 extra health (if you are on at least 33% of your armor in health)
                      */
-                    var armorAbsorbPercent = 0.66;
-                    
+                    var weightedArmorAbsorption = baseArmorAbsorption;
+                    // Armor weight. Max armor absorption is 72% (two armor pieces of 20 weight)
+                    foreach (var armor in player.Actor.Info.Gear)
+                    {
+                        var gear = default(UberStrikeItemGearView);
+                        if (ShopManager.GearItems.TryGetValue(armor, out gear))
+                            if (gear.ArmorWeight > 100)
+                                weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100);
+                        else
+                            s_log.Debug($"Could not find gear with ID {armor}.");
+                    }
+
+                    s_log.Debug($"weightedArmorAbsorption: {weightedArmorAbsorption}.");
+
                     if (player.Actor.Info.ArmorPoints > 0)
                     {
                         // player's armor before they were damaged, we store this to calculate the diff
@@ -270,7 +298,7 @@ namespace UberStrok.Realtime.Server.Game
                         player.Actor.Info.ArmorPoints = (byte)Math.Max(0, player.Actor.Info.ArmorPoints - shortDamage);
                         // the value the diff is multiplied by is the armor absorption ratio
                         // maybe put this value into the config? -------------------------v
-                        double diff = (originalArmor - player.Actor.Info.ArmorPoints) * armorAbsorbPercent;
+                        double diff = (originalArmor - player.Actor.Info.ArmorPoints) * weightedArmorAbsorption;
                         // subtract the absorbed damage from the damage value
                         shortDamage -= (short)diff;
                     }

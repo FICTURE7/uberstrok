@@ -229,7 +229,7 @@
 		{
             "ItemType": 3,
             "ArmorPoints": 100,
-            "ArmorWeight": 0,
+            "ArmorWeight": 20,
             "ItemClass": 16,
             "ID": 1093,
             "Name": "Black Sentai Samurai Greaves",
@@ -257,7 +257,7 @@
 		{
             "ItemType": 3,
             "ArmorPoints": 100,
-            "ArmorWeight": 0,
+            "ArmorWeight": 20,
             "ItemClass": 15,
             "ID": 1092,
             "Name": "Black Sentai Samurai Harness",
