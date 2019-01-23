@@ -144,7 +144,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 var gear = default(UberStrikeItemGearView);
                 if (Room.ShopManager.GearItems.TryGetValue(armor, out gear))
-                    e.Player.Actor.Info.ArmorPointCapacity += (byte)gear.ArmorPoints;
+                    e.Player.Actor.Info.ArmorPointCapacity = (byte)Math.Min(200, e.Player.Actor.Info.ArmorPointCapacity + gear.ArmorPoints);
                 else
                     s_log.Debug($"Could not find gear with ID {armor}.");
             }
