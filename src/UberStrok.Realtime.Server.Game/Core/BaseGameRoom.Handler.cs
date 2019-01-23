@@ -128,13 +128,13 @@ namespace UberStrok.Realtime.Server.Game
                     {
                         var gear = default(UberStrikeItemGearView);
                         if (ShopManager.GearItems.TryGetValue(armor, out gear))
+                        {
                             if (gear.ArmorWeight > 0)
-                                weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100);
-                            else
-                                s_log.Debug($"Could not find gear with ID {armor}.");
+                                weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100f);
+                        }
+                        else
+                            s_log.Debug($"Could not find gear with ID {armor}.");
                     }
-
-                    s_log.Debug($"weightedArmorAbsorption: {weightedArmorAbsorption}.");
 
                     /* Don't mess with rocket jumps. */
                     if (player.Actor.Cmid != peer.Actor.Cmid)
@@ -300,13 +300,13 @@ namespace UberStrok.Realtime.Server.Game
                     {
                         var gear = default(UberStrikeItemGearView);
                         if (ShopManager.GearItems.TryGetValue(armor, out gear))
+                        {
                             if (gear.ArmorWeight > 0)
-                                weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100);
+                                weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100f);
+                        }
                         else
                             s_log.Debug($"Could not find gear with ID {armor}.");
                     }
-
-                    s_log.Debug($"weightedArmorAbsorption: {weightedArmorAbsorption}.");
 
                     if (player.Actor.Info.ArmorPoints > 0)
                     {

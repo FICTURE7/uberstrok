@@ -251,7 +251,6 @@ namespace UberStrok.Realtime.Server.Game
                     // 10 seconds failsafe.
                     if (failsafe)
                     {
-                        s_log.Debug("Initiated 10 second failsafe.");
                         EndTime = Environment.TickCount + 10 * 1000;
                         failsafe = false;
                     }
@@ -260,7 +259,6 @@ namespace UberStrok.Realtime.Server.Game
                     if (Environment.TickCount > EndTime
                     && !hasMatchEnded)
                     {
-                        s_log.Debug("Match ended due to timeout.");
                         OnMatchEnded(new EventArgs());
                         hasMatchEnded = true;
                     }
@@ -273,13 +271,11 @@ namespace UberStrok.Realtime.Server.Game
 
         protected virtual void OnMatchEnded(EventArgs e)
         {
-            s_log.Debug("Match ended invoked.");
             MatchEnded?.Invoke(this, e);
             List<GamePeer> playersToRemove = new List<GamePeer>();
 
             foreach (var i in _players)
             {
-                s_log.Debug($"Adding {i.Actor.PlayerName} to list of players to remove.");
                 foreach (var x in _players)
                 {
                     if (x.Actor.Cmid == i.Actor.Cmid)
@@ -290,22 +286,18 @@ namespace UberStrok.Realtime.Server.Game
             }
             foreach (var i in playersToRemove)
             {
-                s_log.Debug($"Removing {i.Actor.PlayerName} from _players.");
                 _players.Remove(i);
             }
             _view.ConnectedPlayers = Players.Count;
-            s_log.Debug($"{_view.ConnectedPlayers} players connected post match end.");
         }
 
         protected virtual void OnPlayerRespawned(PlayerRespawnedEventArgs args)
         {
-            s_log.Debug($"OnPlayerRespawned invoked.");
             PlayerRespawned?.Invoke(this, args);
         }
 
         protected virtual void OnPlayerJoined(PlayerJoinedEventArgs args)
         {
-            s_log.Debug($"OnPlayerJoined invoked.");
             PlayerJoined?.Invoke(this, args);
         }
 
