@@ -122,7 +122,7 @@ namespace UberStrok.Realtime.Server.Game
                     {
                         var gear = default(UberStrikeItemGearView);
                         if (ShopManager.GearItems.TryGetValue(armor, out gear))
-                            if (gear.ArmorWeight > 100)
+                            if (gear.ArmorWeight > 0)
                                 weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100);
                             else
                                 s_log.Debug($"Could not find gear with ID {armor}.");
@@ -282,7 +282,7 @@ namespace UberStrok.Realtime.Server.Game
                     {
                         var gear = default(UberStrikeItemGearView);
                         if (ShopManager.GearItems.TryGetValue(armor, out gear))
-                            if (gear.ArmorWeight > 100)
+                            if (gear.ArmorWeight > 0)
                                 weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100);
                         else
                             s_log.Debug($"Could not find gear with ID {armor}.");
