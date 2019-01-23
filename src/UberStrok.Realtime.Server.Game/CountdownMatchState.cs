@@ -1,6 +1,9 @@
 ﻿using log4net;
 using System;
 using System.Diagnostics;
+using UberStrok.Core.Common;
+using UberStrok.Core.Views;
+using System.Collections.Generic;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -89,6 +92,70 @@ namespace UberStrok.Realtime.Server.Game
                 countdown thingy.
              */
             player.State.Set(PeerState.Id.Countdown);
+
+            // Reset stats, so if the player is rejoining they do not retain their previous match stats.
+            player.WeaponStats = new Dictionary<int, WeaponStats>();
+            player.CurrentLifeStats = new StatsCollectionView();
+            player.StatsPerLife = new List<StatsCollectionView>();
+            player.TotalStats = new StatsCollectionView();
+
+            var actorView = new GameActorInfoView
+            {
+                // we don't want their team to change
+                TeamID = player.Actor.Team,
+
+                Health = 100,
+
+                Deaths = 0,
+                Kills = 0,
+
+                Level = 1,
+
+                Channel = ChannelType.Steam,
+                PlayerState = PlayerStates.None,
+
+                Ping = (ushort)(player.RoundTripTime / 2),
+
+                Cmid = player.Member.CmuneMemberView.PublicProfile.Cmid,
+                ClanTag = player.Member.CmuneMemberView.PublicProfile.GroupTag,
+                AccessLevel = player.Member.CmuneMemberView.PublicProfile.AccessLevel,
+                PlayerName = player.Member.CmuneMemberView.PublicProfile.Name,
+            };
+
+            /* Set the gears of the character. */
+            /* Holo */
+            actorView.Gear[0] = (int)player.Loadout.Type;
+            actorView.Gear[1] = player.Loadout.Head;
+            actorView.Gear[2] = player.Loadout.Face;
+            actorView.Gear[3] = player.Loadout.Gloves;
+            actorView.Gear[4] = player.Loadout.UpperBody;
+            actorView.Gear[5] = player.Loadout.LowerBody;
+            actorView.Gear[6] = player.Loadout.Boots;
+            
+
+            // Calculate armor capacity
+            foreach (var armor in actorView.Gear)
+            {
+                var gear = default(UberStrikeItemGearView);
+                if (Room.ShopManager.GearItems.TryGetValue(armor, out gear))
+                    actorView.ArmorPointCapacity = (byte)Math.Min(200, actorView.ArmorPointCapacity + gear.ArmorPoints);
+                else
+                    s_log.Debug($"Could not find gear with ID {armor}.");
+            }
+            // Set armor on spawn to the max capacity
+            actorView.ArmorPoints = actorView.ArmorPointCapacity;
+
+            /* Sets the weapons of the character. */
+            actorView.Weapons[0] = player.Loadout.MeleeWeapon;
+            actorView.Weapons[1] = player.Loadout.Weapon1;
+            actorView.Weapons[2] = player.Loadout.Weapon2;
+            actorView.Weapons[3] = player.Loadout.Weapon3;
+
+            var number = player.Actor.Number;
+            var actor = new GameActor(actorView);
+            player.Room = Room;
+            player.Actor = actor;
+            player.Actor.Number = number;
 
             /* Let all peers know that the player has joined the game. */
             foreach (var otherPeer in Room.Peers)

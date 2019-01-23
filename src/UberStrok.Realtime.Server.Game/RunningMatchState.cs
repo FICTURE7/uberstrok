@@ -85,6 +85,7 @@ namespace UberStrok.Realtime.Server.Game
                 var delta = player.Actor.Info.ViewDelta;
                 if (delta.Changes.Count > 0)
                 {
+                    
                     delta.UpdateMask();
                     deltas.Add(delta);
                 }

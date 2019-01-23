@@ -33,7 +33,14 @@
 
             /* If we got more than 1 player we start the countdown. */
             if (Room.Players.Count > 1)
+            {
+                foreach (var otherPeer in Room.Peers)
+                {
+                    otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Info.View, player.Actor.Movement);
+                    otherPeer.KnownActors.Add(player.Actor.Cmid);
+                }
                 Room.State.Set(Id.Countdown);
+            }
             else
             {
                 /* Let all peers know that the client has joined. */

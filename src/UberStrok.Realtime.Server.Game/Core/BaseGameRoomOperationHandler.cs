@@ -17,6 +17,7 @@ namespace UberStrok.Realtime.Server.Game
         protected abstract void OnRespawnRequest(GamePeer peer);
         protected abstract void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3 force);
         protected abstract void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets);
+        protected abstract void OnDirectDeath(GamePeer peer);
         protected abstract void OnDirectDamage(GamePeer peer, ushort damage);
         protected abstract void OnSwitchWeapon(GamePeer peer, byte slot);
         protected abstract void OnSingleBulletFire(GamePeer peer);
@@ -67,6 +68,9 @@ namespace UberStrok.Realtime.Server.Game
                     DirectDamage(peer, bytes);
                     break;
 
+                case IGameRoomOperationsType.DirectDeath:
+                    break;
+
                 case IGameRoomOperationsType.SwitchWeapon:
                     SwitchWeapon(peer, bytes);
                     break;
@@ -108,6 +112,7 @@ namespace UberStrok.Realtime.Server.Game
                     break;
 
                 default:
+                    
                     throw new NotSupportedException();
             }
         }
@@ -181,6 +186,13 @@ namespace UberStrok.Realtime.Server.Game
             var damage = UInt16Proxy.Deserialize(bytes);
 
             OnDirectDamage(peer, damage);
+        }
+
+        // DirectDeath seems to be some form of client suicide?
+        // Not sure why, but it happens when it happens
+        private void DirectDeath(GamePeer peer)
+        {
+            OnDirectDeath(peer);
         }
 
         private void SwitchWeapon(GamePeer peer, MemoryStream bytes)

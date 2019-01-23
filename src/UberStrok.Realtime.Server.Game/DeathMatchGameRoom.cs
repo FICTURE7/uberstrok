@@ -11,7 +11,7 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class DeathMatchGameRoom : BaseGameRoom
     {
-        private readonly static ILog s_log = LogManager.GetLogger(nameof(TeamDeathMatchGameRoom));
+        private readonly static ILog s_log = LogManager.GetLogger(nameof(DeathMatchGameRoom));
 
         public DeathMatchGameRoom(GameRoomDataView data) : base(data)
         {
@@ -21,23 +21,19 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnMatchEnded(EventArgs e)
         {
-            base.OnMatchEnded(e);
-
             int winnerCmid = 0;
             int winnerKills = 0;
             foreach (var player in Players)
                 if (player.Actor.Info.Kills > winnerKills)
                     winnerCmid = player.Actor.Cmid;
-
             EndMatch(winnerCmid);
+            base.OnMatchEnded(e);
         }
 
         public void EndMatch(int winnerCmid)
         {
-            List<GamePeer> PeersToMurder = new List<GamePeer>();
             foreach (var player in Players)
             {
-                PeersToMurder.Add(player);
                 bool hasWon = winnerCmid == player.Actor.Cmid;
 
                 // Calculate MVPs.
@@ -92,13 +88,13 @@ namespace UberStrok.Realtime.Server.Game
         {
             base.OnPlayerKilled(args);
             var leader = Players.MaxBy(x => x.Actor.Info.Kills);
-            var remaining = leader.Room.View.KillLimit - leader.TotalStats.GetKills();
+            var remaining = leader.Room.View.KillLimit - leader.Actor.Info.Kills;
 
             foreach (var player in Players)
                 player.Events.Game.SendKillsRemaining(remaining, leader.Actor.Cmid);
 
             if (leader.Actor.Info.Kills >= leader.Room.View.KillLimit)
-                EndMatch(leader.Actor.Cmid);
+                OnMatchEnded(new EventArgs());
 
         }
     }

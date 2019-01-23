@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using System.Linq;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -31,8 +32,13 @@ namespace UberStrok.Realtime.Server.Game
 
             lock (_peers)
             {
-                _players.Add(peer);
-                _view.ConnectedPlayers = Players.Count;
+                // Make sure that we're not doubling up.
+                // This is for when a client is rejoining.
+                if (_players.FirstOrDefault(x => x.Actor.Cmid == peer.Actor.Cmid) == null)
+                {
+                    _players.Add(peer);
+                    _view.ConnectedPlayers = Players.Count;
+                }
             }
 
             OnPlayerJoined(new PlayerJoinedEventArgs
@@ -196,6 +202,18 @@ namespace UberStrok.Realtime.Server.Game
                 }
                 return;
             }
+        }
+
+        protected override void OnDirectDeath(GamePeer peer)
+        {
+            OnPlayerKilled(new PlayerKilledEventArgs
+            {
+                AttackerCmid = peer.Actor.Cmid,
+                VictimCmid = peer.Actor.Cmid,
+                ItemClass = UberStrikeItemClass.WeaponMachinegun,
+                Part = BodyPart.Body,
+                Direction = new Vector3()
+            });
         }
 
         protected override void OnDirectDamage(GamePeer peer, ushort damage)

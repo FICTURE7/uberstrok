@@ -5,6 +5,7 @@ using UberStrok.Core.Common;
 using System.Collections.Generic;
 using UberStrok.Core;
 using UberStrok.Core.Views;
+using MoreLinq;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -287,7 +288,11 @@ namespace UberStrok.Realtime.Server.Game
         {
             // Get the weapon with highest efficiency score.
             // Efficiency score: Accuracy * Damage
-            return WeaponStats.Max(x => (x.Value.ShotsHit * x.Value.ShotsFired) * x.Value.DamageDone);
+            if (WeaponStats.Count > 0)
+                return WeaponStats.MaxBy(x => (x.Value.ShotsHit * x.Value.ShotsFired) * x.Value.DamageDone).Key;
+            else
+                // Splatbat weapon ID. Placeholder.
+                return 1;
         }
 
         public TimeSpan lastKillTime;

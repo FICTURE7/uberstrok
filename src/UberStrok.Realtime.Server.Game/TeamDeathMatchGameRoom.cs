@@ -22,7 +22,8 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnMatchEnded(EventArgs args)
         {
-            base.OnMatchEnded(args);
+            foreach (var player in Players)
+                player.Events.Game.SendUpdateRoundScore(RoundNumber, (short)BlueTeamScore, (short)RedTeamScore);
 
             if (BlueTeamScore > RedTeamScore)
                 EndMatch(TeamID.BLUE);
@@ -30,6 +31,8 @@ namespace UberStrok.Realtime.Server.Game
                 EndMatch(TeamID.RED);
             else if (RedTeamScore == BlueTeamScore)
                 EndMatch(TeamID.NONE);
+
+            base.OnMatchEnded(args);
         }
 
         public void EndMatch(TeamID winningTeam)
@@ -93,7 +96,6 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnPlayerKilled(PlayerKilledEventArgs args)
         {
             base.OnPlayerKilled(args);
-            
 
             foreach (var player in Players)
             {
@@ -103,23 +105,34 @@ namespace UberStrok.Realtime.Server.Game
                 var killReq = player.Room.View.KillLimit;
                 if (player.Actor.Team == TeamID.BLUE)
                 {
+                    // if this is true, they killed themselves
                     if (args.AttackerCmid == args.VictimCmid)
                         BlueTeamScore--;
                     else
                         BlueTeamScore++;
 
                     if (BlueTeamScore >= killReq)
-                        EndMatch(TeamID.BLUE);
+                    {
+                        OnMatchEnded(new EventArgs());
+                        // no need to keep going, also to prevent errors
+                        break;
+                    }
+
                 }
                 else if (player.Actor.Team == TeamID.RED)
                 {
+                    // if this is true, they killed themselves
                     if (args.AttackerCmid == args.VictimCmid)
                         RedTeamScore--;
                     else
                         RedTeamScore++;
                     RedTeamScore++;
                     if (RedTeamScore >= killReq)
-                        EndMatch(TeamID.RED);
+                    {
+                        OnMatchEnded(new EventArgs());
+                        // no need to keep going, also to prevent errors
+                        break;
+                    }
                 }
             }
 
