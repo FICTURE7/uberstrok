@@ -126,12 +126,19 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnLeaveRoom(GamePeer peer)
         {
             //TODO: Kill room if the number of connected players is 0.
+            var room = peer.Room;
 
             if (peer.Room != null)
+            {
                 peer.Room.Leave(peer);
+                if (room.Peers.Count <= 0)
+                    GameApplication.Instance.Rooms.Remove(room.Number);
+            }
             else
                 /* wtf fam?*/
                 s_log.Error("A client tried to a leave a game room even though it was not in a room.");
+
+            
         }
 
         protected override void OnUpdatePing(GamePeer peer, ushort ping)
