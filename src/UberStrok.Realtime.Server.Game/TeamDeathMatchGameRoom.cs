@@ -38,7 +38,6 @@ namespace UberStrok.Realtime.Server.Game
             {
                 bool hasWon = winningTeam == player.Actor.Team;
 
-                /* PLACEHOLDER! TODO: Calculate MVPs. */
                 List<StatsSummaryView> MostValuablePlayers = new List<StatsSummaryView>();
                 foreach (var mvp in Players)
                 {

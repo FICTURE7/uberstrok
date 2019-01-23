@@ -135,10 +135,6 @@ namespace UberStrok.Realtime.Server.Game
 
                 Health = 100,
 
-                //TODO: Calculate armor points & armor capacity (but who cares about those).
-                ArmorPoints = 0,
-                ArmorPointCapacity = 0,
-
                 Deaths = 0,
                 Kills = 0,
 
@@ -164,6 +160,18 @@ namespace UberStrok.Realtime.Server.Game
             actorView.Gear[4] = peer.Loadout.UpperBody;
             actorView.Gear[5] = peer.Loadout.LowerBody;
             actorView.Gear[6] = peer.Loadout.Boots;
+
+            // Calculate armor capacity
+            foreach (var armor in actorView.Gear)
+            {
+                var gear = default(UberStrikeItemGearView);
+                if (ShopManager.GearItems.TryGetValue(armor, out gear))
+                    actorView.ArmorPointCapacity += (byte)gear.ArmorPoints;
+                else
+                    s_log.Debug($"Could not find gear with ID {armor}.");
+            }
+            // Set armor on spawn to the max capacity
+            actorView.ArmorPoints = actorView.ArmorPointCapacity;
 
             /* Sets the weapons of the character. */
             actorView.Weapons[0] = peer.Loadout.MeleeWeapon;

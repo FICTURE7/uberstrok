@@ -125,7 +125,6 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnLeaveRoom(GamePeer peer)
         {
-            //TODO: Kill room if the number of connected players is 0.
             var room = peer.Room;
 
             if (peer.Room != null)
