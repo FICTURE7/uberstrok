@@ -125,19 +125,51 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnLeaveRoom(GamePeer peer)
         {
-            //TODO: Kill room if the number of connected players is 0.
+            var room = peer.Room;
 
             if (peer.Room != null)
+            {
                 peer.Room.Leave(peer);
+                if (room.Peers.Count <= 0)
+                    GameApplication.Instance.Rooms.Remove(room.Number);
+            }
             else
                 /* wtf fam?*/
                 s_log.Error("A client tried to a leave a game room even though it was not in a room.");
+
+            
         }
 
         protected override void OnUpdatePing(GamePeer peer, ushort ping)
         {
             /* Ignore ping value sent by client, cause we use the server side only. */
             peer.Actor.Info.Ping = (ushort)(peer.RoundTripTime / 2);
+        }
+
+        protected override void OnUpdateLoadout(GamePeer peer)
+        {
+            // Update the loadout while ingame.
+            // There is an approximate 5 second delay after this request for the loadout to take effect on other clients' sides.
+            // Maybe add a join delay after changing loadout?
+            var loadout = GetLoadoutFromAuthToken(peer.AuthToken);
+            var weapons = new List<int> {
+                loadout.MeleeWeapon,
+                loadout.Weapon1,
+                loadout.Weapon2,
+                loadout.Weapon3
+            };
+            peer.Actor.Info.Weapons = weapons;
+            var gear = new List<int>
+            {
+                (int)loadout.Type,
+                loadout.Head,
+                loadout.Face,
+                loadout.Gloves,
+                loadout.UpperBody,
+                loadout.LowerBody,
+                loadout.Boots
+            };
+            peer.Actor.Info.Gear = gear;
         }
 
         protected override void OnUpdateKeyState(GamePeer peer, byte state)

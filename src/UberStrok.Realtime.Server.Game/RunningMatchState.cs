@@ -47,6 +47,7 @@ namespace UberStrok.Realtime.Server.Game
             Room.PlayerKilled -= OnPlayerKilled;
         }
 
+        private TimeSpan depleteTime;
         public override void OnUpdate()
         {
             /* Expected interval between ticks by the client (10tick/s). */
@@ -57,9 +58,21 @@ namespace UberStrok.Realtime.Server.Game
 
             var deltas = new List<GameActorInfoDeltaView>(Room.Peers.Count);
             var position = new List<PlayerMovement>(Room.Players.Count);
+            
             foreach (var player in Room.Players)
             {
                 position.Add(player.Actor.Movement);
+
+                // Armor depletion if over capacity
+                if (player.Actor.Info.ArmorPoints > player.Actor.Info.ArmorPointCapacity
+                    && DateTime.Now.TimeOfDay >= depleteTime)
+                    player.Actor.Info.ArmorPoints--;
+
+                // Maybe let user set max health before depletion?
+                // Health depletion if over 100
+                if (player.Actor.Info.Health > 100
+                    && DateTime.Now.TimeOfDay >= depleteTime)
+                    player.Actor.Info.Health--;
 
                 /* If the player has any damage events, we sent them. */
                 if (player.Actor.Damages.Count > 0)
@@ -72,6 +85,7 @@ namespace UberStrok.Realtime.Server.Game
                 var delta = player.Actor.Info.ViewDelta;
                 if (delta.Changes.Count > 0)
                 {
+                    
                     delta.UpdateMask();
                     deltas.Add(delta);
                 }
@@ -106,6 +120,10 @@ namespace UberStrok.Realtime.Server.Game
                 }
             }
 
+            // Tick armor/hp every second.
+            if (DateTime.Now.TimeOfDay >= depleteTime)
+                depleteTime = DateTime.Now.TimeOfDay.Add(TimeSpan.FromSeconds(1));
+
             _frame += (ushort)(UBZ_INTERVAL / Room.Loop.Interval);
         }
 
@@ -121,6 +139,18 @@ namespace UberStrok.Realtime.Server.Game
             /* Let all peers know that the player has respawned. */
             e.Player.Actor.Info.Health = 100;
             e.Player.Actor.Info.PlayerState &= ~PlayerStates.Dead;
+
+            // Calculate armor capacity
+            foreach (var armor in e.Player.Actor.Info.Gear)
+            {
+                var gear = default(UberStrikeItemGearView);
+                if (Room.ShopManager.GearItems.TryGetValue(armor, out gear))
+                    e.Player.Actor.Info.ArmorPointCapacity = (byte)Math.Min(200, e.Player.Actor.Info.ArmorPointCapacity + gear.ArmorPoints);
+                else
+                    s_log.Debug($"Could not find gear with ID {armor}.");
+            }
+            // Set armor on spawn to the max capacity
+            e.Player.Actor.Info.ArmorPoints = e.Player.Actor.Info.ArmorPointCapacity;
 
             var spawn = Room.SpawnManager.Get(e.Player.Actor.Team);
             foreach (var otherPeer in Room.Peers)

@@ -13,11 +13,14 @@ namespace UberStrok.Core
         private readonly Random _rand;
         /* List of spawn points of the players in respective teams. */
         private readonly Dictionary<TeamID, List<SpawnPoint>> _spawnPoints;
+        // List of all spawn points (for deathmatches).
+        private readonly List<SpawnPoint> _totalSpawnPoints;
 
         public SpawnManager()
         {
             _rand = new Random();
             _spawnPoints = new Dictionary<TeamID, List<SpawnPoint>>();
+            _totalSpawnPoints = new List<SpawnPoint>();
         }
 
         public bool IsLoaded(TeamID team) => _spawnPoints.ContainsKey(team);
@@ -35,18 +38,31 @@ namespace UberStrok.Core
                 spawns.Add(new SpawnPoint(positions[i], rotations[i]));
 
             _spawnPoints[team] = spawns;
+            _totalSpawnPoints.AddRange(spawns);
             _index = _rand.Next(_spawnPoints.Count);
         }
 
         public SpawnPoint Get(TeamID team)
         {
             /* Slightly less random spawns. */
-            if (_spawnCount % 5 == 0)
-                _index = _rand.Next(_spawnPoints.Count);
-            else
-                _index++;
+            if (team == TeamID.NONE)
+            {
+                if (_spawnCount % 5 == 0)
+                    _index = _rand.Next(_totalSpawnPoints.Count);
+                else
+                    _index++;
 
-            return _spawnPoints[team][_index];
+                return _totalSpawnPoints[_index];
+            }
+            else
+            {
+                if (_spawnCount % 5 == 0)
+                    _index = _rand.Next(_spawnPoints.Count);
+                else
+                    _index++;
+
+                return _spawnPoints[team][_index];
+            }
         }
     }
 }

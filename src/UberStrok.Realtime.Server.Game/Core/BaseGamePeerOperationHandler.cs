@@ -10,6 +10,7 @@ namespace UberStrok.Realtime.Server.Game
     {
         public sealed override int Id => 1;
 
+        protected abstract void OnUpdateLoadout(GamePeer peer);
         protected abstract void OnUpdateKeyState(GamePeer peer, byte state);
         protected abstract void OnGetGameListUpdates(GamePeer peer);
         protected abstract void OnGetServerLoad(GamePeer peer);
@@ -23,6 +24,10 @@ namespace UberStrok.Realtime.Server.Game
             var operation = (IGamePeerOperationsType)opCode;
             switch (operation)
             {
+                case IGamePeerOperationsType.UpdateLoadout:
+                    UpdateLoadout(peer);
+                    break;
+
                 case IGamePeerOperationsType.UpdateKeyState:
                     UpdateKeyState(peer, bytes);
                     break;
@@ -54,6 +59,11 @@ namespace UberStrok.Realtime.Server.Game
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private void UpdateLoadout(GamePeer peer)
+        {
+            OnUpdateLoadout(peer);
         }
 
         private void UpdateKeyState(GamePeer peer, MemoryStream bytes)

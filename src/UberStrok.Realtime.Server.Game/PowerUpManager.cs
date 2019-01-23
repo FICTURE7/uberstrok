@@ -60,10 +60,10 @@ namespace UberStrok.Realtime.Server.Game
             switch (type)
             {
                 case PickupItemType.Health:
-                    peer.Actor.Info.Health += value;
+                    peer.Actor.Info.Health = (byte)Math.Min(200, peer.Actor.Info.Health + value); ;
                     break;
                 case PickupItemType.Armor:
-                    peer.Actor.Info.ArmorPoints += value;
+                    peer.Actor.Info.ArmorPoints = (byte)Math.Min(200, peer.Actor.Info.ArmorPoints + value);
                     break;
             } 
         }

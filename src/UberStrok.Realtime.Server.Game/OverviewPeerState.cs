@@ -26,6 +26,7 @@ namespace UberStrok.Realtime.Server.Game
                 var allPositions = new List<PlayerMovement>(players.Count);
                 foreach (var player in players)
                 {
+                    
                     allPlayers.Add(player.Actor.Info.View);
                     allPositions.Add(player.Actor.Movement);
 

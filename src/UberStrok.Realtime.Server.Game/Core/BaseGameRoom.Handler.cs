@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using System.Linq;
 
 namespace UberStrok.Realtime.Server.Game
 {
     public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
     {
+        double baseArmorAbsorption = 0.50;
+
         public override void OnDisconnect(GamePeer peer, DisconnectReason reasonCode, string reasonDetail)
         {
             Leave(peer);
@@ -29,8 +32,13 @@ namespace UberStrok.Realtime.Server.Game
 
             lock (_peers)
             {
-                _players.Add(peer);
-                _view.ConnectedPlayers = Players.Count;
+                // Make sure that we're not doubling up.
+                // This is for when a client is rejoining.
+                if (_players.FirstOrDefault(x => x.Actor.Cmid == peer.Actor.Cmid) == null)
+                {
+                    _players.Add(peer);
+                    _view.ConnectedPlayers = Players.Count;
+                }
             }
 
             OnPlayerJoined(new PlayerJoinedEventArgs
@@ -94,6 +102,9 @@ namespace UberStrok.Realtime.Server.Game
 
                     s_log.Debug($"Calculated: {damageExplosion} damage explosive {damage}, {radius}, {distance}, {force}");
 
+                    peer.IncrementDamageDone(weapon.ItemClass, weaponId, (int)damageExplosion);
+                    peer.IncrementShotsHit(weapon.ItemClass, weaponId);
+
                     /* Calculate the direction of the hit. */
                     var shortDamage = (short)damageExplosion;
 
@@ -110,26 +121,64 @@ namespace UberStrok.Realtime.Server.Game
                     var byteAngle = Conversions.Angle2Byte(angle);
 
                     /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
-                    /* TODO: Calculate armor absorption. */
+
+                    var weightedArmorAbsorption = baseArmorAbsorption;
+                    // Armor weight. Max armor absorption is 72% (two armor pieces of 20 weight)
+                    foreach (var armor in player.Actor.Info.Gear)
+                    {
+                        var gear = default(UberStrikeItemGearView);
+                        if (ShopManager.GearItems.TryGetValue(armor, out gear))
+                        {
+                            if (gear.ArmorWeight > 0)
+                                weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100f);
+                        }
+                        else
+                            s_log.Debug($"Could not find gear with ID {armor}.");
+                    }
 
                     /* Don't mess with rocket jumps. */
                     if (player.Actor.Cmid != peer.Actor.Cmid)
                     {
-                        player.Actor.Info.Health -= shortDamage;
+                        // take off armor™
+                        if (player.Actor.Info.ArmorPoints > 0)
+                        {
+                            // player's armor before they were damaged, we store this to calculate the diff
+                            int originalArmor = player.Actor.Info.ArmorPoints;
+                            // make sure their armor cant go below 0, also allows partial absorption
+                            player.Actor.Info.ArmorPoints = (byte)Math.Max(0, player.Actor.Info.ArmorPoints - shortDamage);
+                            // the value the diff is multiplied by is the armor absorption ratio
+                            // maybe put this value into the config?
+                            double diff = (originalArmor - player.Actor.Info.ArmorPoints) * weightedArmorAbsorption;
+                            // subtract the absorbed damage from the damage value
+                            shortDamage -= (short)diff;
+                        }
+                        // lol idk what this does but i think its necessary for enemy damage
                         player.Actor.Damages.Add(byteAngle, shortDamage, BodyPart.Body, 0, 0);
                     }
                     else
                     {
+                        // take off armor based on the halved value
                         shortDamage /= 2;
-                        player.Actor.Info.Health -= shortDamage;
+                        if (player.Actor.Info.ArmorPoints > 0)
+                        {
+                            int originalArmor = player.Actor.Info.ArmorPoints;
+                            player.Actor.Info.ArmorPoints = (byte)Math.Max(0, player.Actor.Info.ArmorPoints - shortDamage);
+                            double diff = (originalArmor - player.Actor.Info.ArmorPoints) * weightedArmorAbsorption;
+                            shortDamage -= (short)diff;
+                        }
                     }
+
+                    player.Actor.Info.Health -= shortDamage;
 
                     /* Check if the player is dead. */
                     if (player.Actor.Info.Health <= 0)
                     {
                         player.Actor.Info.PlayerState |= PlayerStates.Dead;
                         player.Actor.Info.Deaths++;
-                        peer.Actor.Info.Kills++;
+                        if (peer.Actor.Cmid != player.Actor.Cmid)
+                            peer.Actor.Info.Kills++;
+                        else
+                            peer.Actor.Info.Kills--;
 
                         player.State.Set(PeerState.Id.Killed);
                         OnPlayerKilled(new PlayerKilledEventArgs
@@ -155,6 +204,18 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        protected override void OnDirectDeath(GamePeer peer)
+        {
+            OnPlayerKilled(new PlayerKilledEventArgs
+            {
+                AttackerCmid = peer.Actor.Cmid,
+                VictimCmid = peer.Actor.Cmid,
+                ItemClass = UberStrikeItemClass.WeaponMachinegun,
+                Part = BodyPart.Body,
+                Direction = new Vector3()
+            });
+        }
+
         protected override void OnDirectDamage(GamePeer peer, ushort damage)
         {
             var actualDamage = (short)damage;
@@ -166,7 +227,7 @@ namespace UberStrok.Realtime.Server.Game
             peer.Actor.Info.Health -= actualDamage;
 
             /* Check if the player is dead. */
-            if (peer.Actor.Info.Health < 0)
+            if (peer.Actor.Info.Health <= 0)
             {
                 peer.Actor.Info.PlayerState |= PlayerStates.Dead;
                 peer.Actor.Info.Deaths++;
@@ -208,6 +269,9 @@ namespace UberStrok.Realtime.Server.Game
                             damage = (int)Math.Round(damage + (damage * (bonus / 100f)));
                     }
 
+                    peer.IncrementDamageDone(weapon.ItemClass, weaponId, damage);
+                    peer.IncrementShotsHit(weapon.ItemClass, weaponId);
+
                     /* Calculate the direction of the hit. */
                     var shortDamage = (short)damage;
 
@@ -224,16 +288,62 @@ namespace UberStrok.Realtime.Server.Game
                     var byteAngle = Conversions.Angle2Byte(angle);
 
                     /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
-                    /* TODO: Calculate armor absorption. */
+
+                    /* 
+                     * Armor absorption percentage
+                     * Change 'armorAbsorbPercent' to modify effective health given by armor.
+                     * E.g. currently, 100 armor is equal to 66 extra health (if you are on at least 33% of your armor in health)
+                     */
+                    var weightedArmorAbsorption = baseArmorAbsorption;
+                    // Armor weight. Max armor absorption is 72% (two armor pieces of 20 weight)
+                    foreach (var armor in player.Actor.Info.Gear)
+                    {
+                        var gear = default(UberStrikeItemGearView);
+                        if (ShopManager.GearItems.TryGetValue(armor, out gear))
+                        {
+                            if (gear.ArmorWeight > 0)
+                                weightedArmorAbsorption *= 1 + (gear.ArmorWeight / 100f);
+                        }
+                        else
+                            s_log.Debug($"Could not find gear with ID {armor}.");
+                    }
+
+                    if (player.Actor.Info.ArmorPoints > 0)
+                    {
+                        // player's armor before they were damaged, we store this to calculate the diff
+                        int originalArmor = player.Actor.Info.ArmorPoints;
+                        // make sure their armor cant go below 0, also allows partial absorption
+                        player.Actor.Info.ArmorPoints = (byte)Math.Max(0, player.Actor.Info.ArmorPoints - shortDamage);
+                        // the value the diff is multiplied by is the armor absorption ratio
+                        // maybe put this value into the config? -------------------------v
+                        double diff = (originalArmor - player.Actor.Info.ArmorPoints) * weightedArmorAbsorption;
+                        // subtract the absorbed damage from the damage value
+                        shortDamage -= (short)diff;
+                    }
+
                     player.Actor.Damages.Add(byteAngle, shortDamage, part, 0, 0);
                     player.Actor.Info.Health -= shortDamage;
 
                     /* Check if the player is dead. */
-                    if (player.Actor.Info.Health < 0)
+                    if (player.Actor.Info.Health <= 0)
                     {
                         player.Actor.Info.PlayerState |= PlayerStates.Dead;
                         player.Actor.Info.Deaths++;
                         peer.Actor.Info.Kills++;
+                        
+
+                        peer.IncrementKills(weapon.ItemClass);
+
+                        if (part == BodyPart.Head)
+                        {
+                            peer.TotalStats.Headshots++;
+                            peer.CurrentLifeStats.Headshots++;
+                        }
+                        else if (part == BodyPart.Nuts)
+                        {
+                            peer.TotalStats.Nutshots++;
+                            peer.CurrentLifeStats.Nutshots++;
+                        }
 
                         player.State.Set(PeerState.Id.Killed);
                         OnPlayerKilled(new PlayerKilledEventArgs
@@ -261,6 +371,14 @@ namespace UberStrok.Realtime.Server.Game
             var shooterCmid = peer.Actor.Cmid;
             foreach (var otherPeer in Peers)
             {
+                var weaponId = peer.Actor.Info.CurrentWeaponID;
+                var weapon = default(UberStrikeItemWeaponView);
+
+                if (ShopManager.WeaponItems.TryGetValue(weaponId, out weapon))
+                    peer.IncrementShotsFired(weapon.ItemClass, weaponId);
+                else
+                    s_log.Debug($"Unable to find weapon with ID {weaponId}");
+
                 if (otherPeer.Actor.Cmid != shooterCmid)
                     otherPeer.Events.Game.SendEmitProjectile(shooterCmid, origin, direction, slot, projectileId, explode);
             }

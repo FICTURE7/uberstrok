@@ -51,7 +51,7 @@ namespace UberStrok.Realtime.Server.Game
 
             /* TODO: Allow user to set the tick rate. */
             /* When the tick rate is high, the client side, lag interpolation goes all woncky. */
-            _loop = new Loop(15);
+            _loop = new Loop(10);
             _actions = new GameRoomActions(this);
 
             _peers = new List<GamePeer>();
@@ -80,6 +80,7 @@ namespace UberStrok.Realtime.Server.Game
         public PowerUpManager PowerUps => _powerUpManager;
         public GameRoomActions Actions => _actions;
 
+        public event EventHandler MatchEnded;
         public event EventHandler<PlayerKilledEventArgs> PlayerKilled;
         public event EventHandler<PlayerRespawnedEventArgs> PlayerRespawned;
         public event EventHandler<PlayerJoinedEventArgs> PlayerJoined;
@@ -122,16 +123,17 @@ namespace UberStrok.Realtime.Server.Game
 
             Debug.Assert(peer.Room == null, "GamePeer is joining room, but its already in another room.");
 
+            peer.StatsPerLife = new List<StatsCollectionView>();
+            peer.TotalStats = new StatsCollectionView();
+            peer.CurrentLifeStats = new StatsCollectionView();
+            peer.WeaponStats = new Dictionary<int, WeaponStats>();
+
             var roomView = View;
             var actorView = new GameActorInfoView
             {
                 TeamID = TeamID.NONE,
 
                 Health = 100,
-
-                //TODO: Calculate armor points & armor capacity (but who cares about those).
-                ArmorPoints = 0,
-                ArmorPointCapacity = 0,
 
                 Deaths = 0,
                 Kills = 0,
@@ -158,6 +160,18 @@ namespace UberStrok.Realtime.Server.Game
             actorView.Gear[4] = peer.Loadout.UpperBody;
             actorView.Gear[5] = peer.Loadout.LowerBody;
             actorView.Gear[6] = peer.Loadout.Boots;
+
+            // Calculate armor capacity
+            foreach (var armor in actorView.Gear)
+            {
+                var gear = default(UberStrikeItemGearView);
+                if (ShopManager.GearItems.TryGetValue(armor, out gear))
+                    actorView.ArmorPointCapacity = (byte)Math.Min(200, actorView.ArmorPointCapacity + gear.ArmorPoints);
+                else
+                    s_log.Debug($"Could not find gear with ID {armor}.");
+            }
+            // Set armor on spawn to the max capacity
+            actorView.ArmorPoints = actorView.ArmorPointCapacity;
 
             /* Sets the weapons of the character. */
             actorView.Weapons[0] = peer.Loadout.MeleeWeapon;
@@ -226,16 +240,55 @@ namespace UberStrok.Realtime.Server.Game
             peer.Room = null;
         }
 
+        public bool hasMatchEnded = false;
+        public bool failsafe = true;
         public void StartLoop()
         {
             _loop.Start(
                 () => {
                     State.Update();
+
+                    // 10 seconds failsafe.
+                    if (failsafe)
+                    {
+                        EndTime = Environment.TickCount + 10 * 1000;
+                        failsafe = false;
+                    }
+
+                    // End match due to countdown.
+                    if (Environment.TickCount > EndTime
+                    && !hasMatchEnded)
+                    {
+                        OnMatchEnded(new EventArgs());
+                        hasMatchEnded = true;
+                    }
                 },
                 (Exception ex) => {
                     s_log.Error("Failed to tick game loop.", ex);
                 }
             );
+        }
+
+        protected virtual void OnMatchEnded(EventArgs e)
+        {
+            MatchEnded?.Invoke(this, e);
+            List<GamePeer> playersToRemove = new List<GamePeer>();
+
+            foreach (var i in _players)
+            {
+                foreach (var x in _players)
+                {
+                    if (x.Actor.Cmid == i.Actor.Cmid)
+                        continue;
+                    x.Events.Game.SendPlayerLeftGame(i.Actor.Cmid);
+                }
+                playersToRemove.Add(i);
+            }
+            foreach (var i in playersToRemove)
+            {
+                _players.Remove(i);
+            }
+            _view.ConnectedPlayers = Players.Count;
         }
 
         protected virtual void OnPlayerRespawned(PlayerRespawnedEventArgs args)
@@ -251,6 +304,26 @@ namespace UberStrok.Realtime.Server.Game
         protected virtual void OnPlayerKilled(PlayerKilledEventArgs args)
         {
             PlayerKilled?.Invoke(this, args);
+
+            foreach (var player in Players)
+            {
+                if (player.Actor.Cmid == args.AttackerCmid)
+                {
+                    bool flag = DateTime.Now.TimeOfDay < player.lastKillTime.Add(TimeSpan.FromSeconds(10));
+                    player.killCounter = ((!flag) ? 1 : (player.killCounter + 1));
+                    player.lastKillTime = DateTime.Now.TimeOfDay;
+                    if (player.killCounter > player.CurrentLifeStats.ConsecutiveSnipes)
+                        player.CurrentLifeStats.ConsecutiveSnipes = player.killCounter;
+                    if (player.killCounter > player.TotalStats.ConsecutiveSnipes)
+                        player.TotalStats.ConsecutiveSnipes = player.killCounter;
+                }
+                else if (player.Actor.Cmid == args.VictimCmid)
+                {
+                    player.TotalStats.Deaths++;
+                    player.StatsPerLife.Add(player.CurrentLifeStats);
+                    player.CurrentLifeStats = new StatsCollectionView();
+                }
+            }
         }
     }
 }

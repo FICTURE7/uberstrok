@@ -55,6 +55,7 @@
     <Compile Include="Views\CommActorInfoViewProxy.cs" />
     <Compile Include="Views\ConnectionAddressViewProxy.cs" />
     <Compile Include="Views\DamageEventViewProxy.cs" />
+    <Compile Include="Views\EndOfMatchDataViewProxy.cs" />
     <Compile Include="Views\GameActorInfoDeltaViewProxy.cs" />
     <Compile Include="Views\GameActorInfoViewProxy.cs" />
     <Compile Include="Views\GameRoomDataViewProxy.cs" />
@@ -81,6 +82,8 @@
     <Compile Include="Views\PlayerWeaponStatisticsViewProxy.cs" />
     <Compile Include="Views\PublicProfileViewProxy.cs" />
     <Compile Include="Views\ServerConnectionViewProxy.cs" />
+    <Compile Include="Views\StatsCollectionViewProxy.cs" />
+    <Compile Include="Views\StatsSummaryViewProxy.cs" />
     <Compile Include="Views\UberStrikeItemFunctionalViewProxy.cs" />
     <Compile Include="Views\UberStrikeItemGearViewProxy.cs" />
     <Compile Include="Views\UberStrikeItemQuickViewProxy.cs" />
