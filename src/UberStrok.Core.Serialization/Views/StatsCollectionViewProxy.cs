@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using UberStrok.Core.Views;
-using UberStrok.Core.Common;
+﻿using System.IO;
 
 namespace UberStrok.Core.Serialization.Views
 {
@@ -13,47 +6,47 @@ namespace UberStrok.Core.Serialization.Views
     {
         public static void Serialize(Stream stream, StatsCollectionView instance)
         {
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (var bytes = new MemoryStream())
             {
-                Int32Proxy.Serialize(memoryStream, instance.ArmorPickedUp);
-                Int32Proxy.Serialize(memoryStream, instance.CannonDamageDone);
-                Int32Proxy.Serialize(memoryStream, instance.CannonKills);
-                Int32Proxy.Serialize(memoryStream, instance.CannonShotsFired);
-                Int32Proxy.Serialize(memoryStream, instance.CannonShotsHit);
-                Int32Proxy.Serialize(memoryStream, instance.ConsecutiveSnipes);
-                Int32Proxy.Serialize(memoryStream, instance.DamageReceived);
-                Int32Proxy.Serialize(memoryStream, instance.Deaths);
-                Int32Proxy.Serialize(memoryStream, instance.Headshots);
-                Int32Proxy.Serialize(memoryStream, instance.HealthPickedUp);
-                Int32Proxy.Serialize(memoryStream, instance.LauncherDamageDone);
-                Int32Proxy.Serialize(memoryStream, instance.LauncherKills);
-                Int32Proxy.Serialize(memoryStream, instance.LauncherShotsFired);
-                Int32Proxy.Serialize(memoryStream, instance.LauncherShotsHit);
-                Int32Proxy.Serialize(memoryStream, instance.MachineGunDamageDone);
-                Int32Proxy.Serialize(memoryStream, instance.MachineGunKills);
-                Int32Proxy.Serialize(memoryStream, instance.MachineGunShotsFired);
-                Int32Proxy.Serialize(memoryStream, instance.MachineGunShotsHit);
-                Int32Proxy.Serialize(memoryStream, instance.MeleeDamageDone);
-                Int32Proxy.Serialize(memoryStream, instance.MeleeKills);
-                Int32Proxy.Serialize(memoryStream, instance.MeleeShotsFired);
-                Int32Proxy.Serialize(memoryStream, instance.MeleeShotsHit);
-                Int32Proxy.Serialize(memoryStream, instance.Nutshots);
-                Int32Proxy.Serialize(memoryStream, instance.Points);
-                Int32Proxy.Serialize(memoryStream, instance.ShotgunDamageDone);
-                Int32Proxy.Serialize(memoryStream, instance.ShotgunShotsFired);
-                Int32Proxy.Serialize(memoryStream, instance.ShotgunShotsHit);
-                Int32Proxy.Serialize(memoryStream, instance.ShotgunSplats);
-                Int32Proxy.Serialize(memoryStream, instance.SniperDamageDone);
-                Int32Proxy.Serialize(memoryStream, instance.SniperKills);
-                Int32Proxy.Serialize(memoryStream, instance.SniperShotsFired);
-                Int32Proxy.Serialize(memoryStream, instance.SniperShotsHit);
-                Int32Proxy.Serialize(memoryStream, instance.SplattergunDamageDone);
-                Int32Proxy.Serialize(memoryStream, instance.SplattergunKills);
-                Int32Proxy.Serialize(memoryStream, instance.SplattergunShotsFired);
-                Int32Proxy.Serialize(memoryStream, instance.SplattergunShotsHit);
-                Int32Proxy.Serialize(memoryStream, instance.Suicides);
-                Int32Proxy.Serialize(memoryStream, instance.Xp);
-                memoryStream.WriteTo(stream);
+                Int32Proxy.Serialize(bytes, instance.ArmorPickedUp);
+                Int32Proxy.Serialize(bytes, instance.CannonDamageDone);
+                Int32Proxy.Serialize(bytes, instance.CannonKills);
+                Int32Proxy.Serialize(bytes, instance.CannonShotsFired);
+                Int32Proxy.Serialize(bytes, instance.CannonShotsHit);
+                Int32Proxy.Serialize(bytes, instance.ConsecutiveSnipes);
+                Int32Proxy.Serialize(bytes, instance.DamageReceived);
+                Int32Proxy.Serialize(bytes, instance.Deaths);
+                Int32Proxy.Serialize(bytes, instance.Headshots);
+                Int32Proxy.Serialize(bytes, instance.HealthPickedUp);
+                Int32Proxy.Serialize(bytes, instance.LauncherDamageDone);
+                Int32Proxy.Serialize(bytes, instance.LauncherKills);
+                Int32Proxy.Serialize(bytes, instance.LauncherShotsFired);
+                Int32Proxy.Serialize(bytes, instance.LauncherShotsHit);
+                Int32Proxy.Serialize(bytes, instance.MachineGunDamageDone);
+                Int32Proxy.Serialize(bytes, instance.MachineGunKills);
+                Int32Proxy.Serialize(bytes, instance.MachineGunShotsFired);
+                Int32Proxy.Serialize(bytes, instance.MachineGunShotsHit);
+                Int32Proxy.Serialize(bytes, instance.MeleeDamageDone);
+                Int32Proxy.Serialize(bytes, instance.MeleeKills);
+                Int32Proxy.Serialize(bytes, instance.MeleeShotsFired);
+                Int32Proxy.Serialize(bytes, instance.MeleeShotsHit);
+                Int32Proxy.Serialize(bytes, instance.Nutshots);
+                Int32Proxy.Serialize(bytes, instance.Points);
+                Int32Proxy.Serialize(bytes, instance.ShotgunDamageDone);
+                Int32Proxy.Serialize(bytes, instance.ShotgunShotsFired);
+                Int32Proxy.Serialize(bytes, instance.ShotgunShotsHit);
+                Int32Proxy.Serialize(bytes, instance.ShotgunSplats);
+                Int32Proxy.Serialize(bytes, instance.SniperDamageDone);
+                Int32Proxy.Serialize(bytes, instance.SniperKills);
+                Int32Proxy.Serialize(bytes, instance.SniperShotsFired);
+                Int32Proxy.Serialize(bytes, instance.SniperShotsHit);
+                Int32Proxy.Serialize(bytes, instance.SplattergunDamageDone);
+                Int32Proxy.Serialize(bytes, instance.SplattergunKills);
+                Int32Proxy.Serialize(bytes, instance.SplattergunShotsFired);
+                Int32Proxy.Serialize(bytes, instance.SplattergunShotsHit);
+                Int32Proxy.Serialize(bytes, instance.Suicides);
+                Int32Proxy.Serialize(bytes, instance.Xp);
+                bytes.WriteTo(stream);
             }
         }
 

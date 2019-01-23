@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using UberStrok.Core.Views;
+﻿using System.IO;
 using UberStrok.Core.Common;
 
 namespace UberStrok.Core.Serialization.Views
@@ -13,53 +7,47 @@ namespace UberStrok.Core.Serialization.Views
     {
         public static void Serialize(Stream stream, StatsSummaryView instance)
         {
-            int num = 0;
-            using (MemoryStream memoryStream = new MemoryStream())
+            int mask = 0;
+            using (var bytes = new MemoryStream())
             {
                 if (instance.Achievements != null)
-                {
-                    DictionaryProxy<byte, ushort>.Serialize(memoryStream, instance.Achievements, new DictionaryProxy<byte, ushort>.Serializer<byte>(ByteProxy.Serialize), new DictionaryProxy<byte, ushort>.Serializer<ushort>(UInt16Proxy.Serialize));
-                }
+                    DictionaryProxy<byte, ushort>.Serialize(bytes, instance.Achievements, new DictionaryProxy<byte, ushort>.Serializer<byte>(ByteProxy.Serialize), new DictionaryProxy<byte, ushort>.Serializer<ushort>(UInt16Proxy.Serialize));
                 else
-                {
-                    num |= 1;
-                }
-                Int32Proxy.Serialize(memoryStream, instance.Cmid);
-                Int32Proxy.Serialize(memoryStream, instance.Deaths);
-                Int32Proxy.Serialize(memoryStream, instance.Kills);
-                Int32Proxy.Serialize(memoryStream, instance.Level);
+                    mask |= 1;
+
+                Int32Proxy.Serialize(bytes, instance.Cmid);
+                Int32Proxy.Serialize(bytes, instance.Deaths);
+                Int32Proxy.Serialize(bytes, instance.Kills);
+                Int32Proxy.Serialize(bytes, instance.Level);
+
                 if (instance.Name != null)
-                {
-                    StringProxy.Serialize(memoryStream, instance.Name);
-                }
+                    StringProxy.Serialize(bytes, instance.Name);
                 else
-                {
-                    num |= 2;
-                }
-                EnumProxy<TeamID>.Serialize(memoryStream, instance.Team);
-                Int32Proxy.Serialize(stream, ~num);
-                memoryStream.WriteTo(stream);
+                    mask |= 2;
+
+                EnumProxy<TeamID>.Serialize(bytes, instance.Team);
+                Int32Proxy.Serialize(stream, ~mask);
+                bytes.WriteTo(stream);
             }
         }
 
         public static StatsSummaryView Deserialize(Stream bytes)
         {
-            int num = Int32Proxy.Deserialize(bytes);
-            StatsSummaryView statsSummary = new StatsSummaryView();
-            if ((num & 1) != 0)
-            {
-                statsSummary.Achievements = DictionaryProxy<byte, ushort>.Deserialize(bytes, new DictionaryProxy<byte, ushort>.Deserializer<byte>(ByteProxy.Deserialize), new DictionaryProxy<byte, ushort>.Deserializer<ushort>(UInt16Proxy.Deserialize));
-            }
-            statsSummary.Cmid = Int32Proxy.Deserialize(bytes);
-            statsSummary.Deaths = Int32Proxy.Deserialize(bytes);
-            statsSummary.Kills = Int32Proxy.Deserialize(bytes);
-            statsSummary.Level = Int32Proxy.Deserialize(bytes);
-            if ((num & 2) != 0)
-            {
-                statsSummary.Name = StringProxy.Deserialize(bytes);
-            }
-            statsSummary.Team = EnumProxy<TeamID>.Deserialize(bytes);
-            return statsSummary;
+            int mask = Int32Proxy.Deserialize(bytes);
+            var view = new StatsSummaryView();
+            if ((mask & 1) != 0)
+                view.Achievements = DictionaryProxy<byte, ushort>.Deserialize(bytes, new DictionaryProxy<byte, ushort>.Deserializer<byte>(ByteProxy.Deserialize), new DictionaryProxy<byte, ushort>.Deserializer<ushort>(UInt16Proxy.Deserialize));
+
+            view.Cmid = Int32Proxy.Deserialize(bytes);
+            view.Deaths = Int32Proxy.Deserialize(bytes);
+            view.Kills = Int32Proxy.Deserialize(bytes);
+            view.Level = Int32Proxy.Deserialize(bytes);
+
+            if ((mask & 2) != 0)
+                view.Name = StringProxy.Deserialize(bytes);
+
+            view.Team = EnumProxy<TeamID>.Deserialize(bytes);
+            return view;
         }
     }
 }
