@@ -1,59 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace UberStrok
 {
     public abstract class Room : ICommandDispatcher, IEventDispatcher
     {
-        /* The room's ID */
-        private readonly int _roomId;
-        /* List of actors in this room instance */
+        /* Tick of the current room. */
+        private int _tick;
+        /* List of actors in this room. */
         private readonly List<Actor> _actors;
         /* Dictionary mapping event types to their on event method in this game state. */
         private readonly Dictionary<Type, MethodInfo> _onEventMethods;
 
-        protected Room(int id)
+        public IReadOnlyList<Actor> Actors => _actors.AsReadOnly();
+
+        protected Room()
         {
-            _roomId = id;
             _actors = new List<Actor>(16);
             _onEventMethods = Event.GetEvents(GetType());
         }
 
-        public int Id => _roomId;
-
-        public void Join(Actor actor)
+        internal void DoJoin(Actor actor)
         {
-            if (actor == null)
-                throw new ArgumentNullException(nameof(actor));
-
-            /* TODO: Check uniqueness of elements */
-            actor._currentRoom = this;
+            Debug.Assert(actor != null);
             _actors.Add(actor);
             OnJoin(actor);
         }
 
-        public bool Leave(Actor actor)
+        internal void DoLeave(Actor actor)
         {
-            if (actor == null)
-                throw new ArgumentNullException(nameof(actor));
-
-            /* Actor is not in this room. */
-            if (actor._currentRoom != this)
-                return false;
-
-            /* Check if actor is in the room's list */
-            if (!_actors.Contains(actor))
-            {
-                /* wtf? should never happen since _currentRoom was equal to this intance */
-                return false;
-            }
-
-            actor._currentRoom = null;
+            Debug.Assert(actor != null);
             var result = _actors.Remove(actor);
+            Debug.Assert(result);
             OnLeave(actor);
-            return result;
         }
+
+        public abstract void DoTick();
 
         protected virtual void OnJoin(Actor actor)
         {
@@ -65,19 +49,22 @@ namespace UberStrok
             /* Space */
         }
 
-        public void OnCommand(Command command)
+        public virtual void OnCommand(Command command)
         {
             if (command == null)
                 throw new ArgumentNullException(nameof(command));
 
-            /* Execute instantly cause its a Room. */
+            command._tick = _tick;
+            /* Default implementation of Room.OnCommand executes instantly. */
             command.DoExecute();
         }
 
-        public void OnEvent<TEvent>(TEvent @event) where TEvent : Event
+        public virtual void OnEvent<TEvent>(TEvent @event) where TEvent : Event
         {
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
+
+            /* TODO: Implement event dispatch. */
         }
     }
 }

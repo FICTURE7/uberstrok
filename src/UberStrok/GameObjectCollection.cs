@@ -6,6 +6,8 @@ namespace UberStrok
 {
     public class GameObjectCollection : IReadOnlyCollection<GameObject>
     {
+        /* TODO: Seperate enabled game objects and disabled game objects into seperate lists. */
+
         /* Game instance which owns this collection. */
         private readonly GameWorld _game;
         /* Dictionary mapping game object names to game object instances. */

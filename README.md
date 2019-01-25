@@ -1,11 +1,12 @@
 ## UberStrok
-An effort to write a shitty UberStrike back-end implementation intended for educational purposes.
+An effort to write a shitty UberStrike back-end implementation intended for educational purposes and nostalgia.
 
 #### Note
 This is the `master` branch where "development" takes place, check the other branches for "stable" builds.
 
 ### Setting Up
-Check [issue #9](https://github.com/FICTURE7/uberstrok/issues/9) & [#13](https://github.com/FICTURE7/uberstrok/issues/13) for some instructions.
+Check [issue #9](https://github.com/FICTURE7/uberstrok/issues/9) & [#13](https://github.com/FICTURE7/uberstrok/issues/13)
+for some instructions.
 
 ### FAQ
 
@@ -27,4 +28,4 @@ Its not a bug, its a feature, but if you're not happy with it, you can still cre
 about the feature, maybe I will polish it up. Or you could send a pull request with the polished feature.
 
 ### License
-MIT License.
+UberStrok licensed under the permissive MIT License and is not affiliated with CMUNE.

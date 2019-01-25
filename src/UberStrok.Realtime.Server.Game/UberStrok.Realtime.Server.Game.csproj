@@ -46,43 +46,10 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Events\PeerJoinedEvent.cs" />
-    <Compile Include="GameActor.cs" />
-    <Compile Include="Commands\JoinGameCommand.cs" />
-    <Compile Include="Commands\PowerUpPickedCommand.cs" />
-    <Compile Include="Commands\PowerUpRespawnTimesCommand.cs" />
-    <Compile Include="Core\BaseGamePeerOperationHandler.cs" />
-    <Compile Include="Core\GameRoomActions.cs" />
-    <Compile Include="Core\BaseGameRoomOperationHandler.cs" />
-    <Compile Include="CountdownPeerState.cs" />
-    <Compile Include="Core\OldGameActor.cs" />
-    <Compile Include="Core\GameActorInfo.cs" />
-    <Compile Include="Events\PlayerJoinedEvent.cs" />
-    <Compile Include="Events\PlayerLeftEvent.cs" />
     <Compile Include="GameApplication.cs" />
-    <Compile Include="EventArgs.cs" />
-    <Compile Include="GameLobbyRoom.cs" />
+    <Compile Include="GameRoom.cs" />
     <Compile Include="GameRoomManager.cs" />
-    <Compile Include="Core\GamePeer.cs" />
-    <Compile Include="Core\GamePeerEvents.cs" />
-    <Compile Include="Core\GamePeerOperationHandler.cs" />
-    <Compile Include="Core\BaseGameRoom.cs" />
-    <Compile Include="Core\GameRoomEvents.cs" />
-    <Compile Include="Core\BaseGameRoom.Handler.cs" />
-    <Compile Include="CountdownMatchState.cs" />
-    <Compile Include="KilledPeerState.cs" />
-    <Compile Include="OverviewPeerState.cs" />
-    <Compile Include="PeerState.cs" />
-    <Compile Include="Player.cs" />
-    <Compile Include="PlayerConnection.cs" />
-    <Compile Include="PlayingPeerState.cs" />
-    <Compile Include="PowerUpManager.cs" />
-    <Compile Include="RunningMatchState.cs" />
-    <Compile Include="WaitingForPlayersGameState.cs" />
-    <Compile Include="WaitingForPlayersMatchState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TeamDeathMatchGameRoom.cs" />
-    <Compile Include="WaitingForPlayersPeerState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UberStrok.Core.Common\UberStrok.Core.Common.csproj">
@@ -122,9 +89,6 @@
     <None Include="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MatchState.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

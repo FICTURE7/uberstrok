@@ -51,7 +51,6 @@
     <Compile Include="GameObject.cs" />
     <Compile Include="GameObjectCollection.cs" />
     <Compile Include="GameWorldTicker.cs" />
-    <Compile Include="IConnection.cs" />
     <Compile Include="IState.cs" />
     <Compile Include="Loop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

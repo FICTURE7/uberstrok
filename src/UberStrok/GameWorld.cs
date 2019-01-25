@@ -12,7 +12,6 @@ namespace UberStrok
         /* Current game state. */
         private GameWorldState _state;
 
-        /* TODO: Seperate enabled game objects and disabled game objects into seperate lists. */
         /* List of game objects in the game instance. */
         internal readonly GameObjectCollection _objects;
         /* Recorder to record commands received. */
@@ -48,8 +47,7 @@ namespace UberStrok
             if (_states.ContainsKey(type))
                 throw new InvalidOperationException("State already registered.");
 
-            var state = new TGameState();
-            state._game = this;
+            var state = new TGameState { _game = this };
             _states.Add(type, state);
 
             return state;
@@ -102,9 +100,8 @@ namespace UberStrok
         public void DoTick()
         {
             /* 
-                Dispatches the commands in the queue and
-                updates all objects in the game instance and
-                the current state.
+                Dispatches the commands in the queue and updates all objects in the game 
+                instance and the current state.
              */
             DoDispatch();
             DoUpdate();

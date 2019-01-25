@@ -11,8 +11,11 @@ namespace UberStrok
 
         protected abstract void OnUpdate();
 
-        /* wrapper */
+        /* Wrapper. */
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void DoUpdate() => OnUpdate();
+        internal void DoUpdate()
+        {
+            OnUpdate();
+        }
     }
 }

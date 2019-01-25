@@ -1,15 +1,27 @@
-﻿namespace UberStrok
+﻿using System;
+
+namespace UberStrok
 {
     public abstract class Actor
     {
-        /* Current room in which the actor is in */
-        internal Room _currentRoom;
+        /* Current room the Actor is in. */
+        internal Room _room;
 
-        protected Actor()
+        public Room Room => _room;
+
+        public void Join(Room room)
         {
-            /* Space */
+            _room = room ?? throw new ArgumentNullException(nameof(room));
+            _room.DoJoin(this);
         }
 
-        public Room Room => _currentRoom;
+        public void Leave()
+        {
+            _room.DoLeave(this);
+            _room = null;
+        }
+
+        public abstract void Send(Command command);
+        public abstract Command Receive();
     }
 }

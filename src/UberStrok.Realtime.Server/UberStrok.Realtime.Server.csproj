@@ -49,7 +49,6 @@
     <Compile Include="BaseOperationHandler.cs" />
     <Compile Include="BasePeer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IRoom.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UberStrok.Realtime\UberStrok.Realtime.csproj">

@@ -101,8 +101,8 @@ namespace UberStrok
             _state = LoopState.Stopped;
 
             /* 
-                Give the thread a chance to spin a couple of times to shut down
-                gracefully then abort if it does not.
+                Give the thread a chance to spin a couple of times to shut down gracefully
+                then abort if it does not.
              */
             if (!_thread.Join((int)Math.Ceiling(Interval * 3)))
                 _thread.Abort();

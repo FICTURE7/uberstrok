@@ -2,7 +2,6 @@
 using log4net.Config;
 using Photon.SocketServer;
 using System.IO;
-using UberStrok.Realtime.Server.Game.Events;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -10,33 +9,10 @@ namespace UberStrok.Realtime.Server.Game
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(GameApplication));
 
+        private GameRoomManager _games;
+
         public static new GameApplication Instance => (GameApplication)ApplicationBase.Instance;
-
-        /* Main/Lobby room. */
-        private GameLobbyRoom _lobby;
-        /* Game room manager. */
-        private GameRoomManager _rooms;
-
-        public GameLobbyRoom Lobby => _lobby;
-        public GameRoomManager Rooms => _rooms;
-
-        protected override PeerBase CreatePeer(InitRequest request)
-        {
-            Log.Info($"Accepted new connection at {request.RemoteIP}:{request.RemotePort}");
-
-            var peer = new GamePeer(request);
-            var actor = new GameActor();
-
-            /* Add the actor the players in the main lobby/room */
-            _lobby.Join(actor);
-            _lobby.OnEvent(new PeerJoinedEvent
-            {
-                Peer = peer,
-                Actor = actor
-            });
-
-            return peer;
-        }
+        public GameRoomManager Games => _games;
 
         protected override void Setup()
         {
@@ -49,14 +25,19 @@ namespace UberStrok.Realtime.Server.Game
             if (configFile.Exists)
                 XmlConfigurator.ConfigureAndWatch(configFile);
 
-            _lobby = new GameLobbyRoom();
-
+            _games = new GameRoomManager();
             Log.Info("Started GameServer...");
         }
 
         protected override void TearDown()
         {
-            Log.Info("Stopped CommServer...");
+            Log.Info("Stopped GameServer...");
+        }
+
+        protected override PeerBase CreatePeer(InitRequest request)
+        {
+            Log.Info($"Accepted new connection at {request.RemoteIP}:{request.RemotePort}");
+            return null;
         }
     }
 }

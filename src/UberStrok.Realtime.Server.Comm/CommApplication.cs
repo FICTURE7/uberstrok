@@ -7,30 +7,46 @@ namespace UberStrok.Realtime.Server.Comm
 {
     public class CommApplication : ApplicationBase
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CommApplication));
+        private static readonly ILog _log = LogManager.GetLogger(typeof(CommApplication));
 
-        protected override PeerBase CreatePeer(InitRequest initRequest)
-        {
-            Log.Info($"Accepted new connection at {initRequest.RemoteIP}:{initRequest.RemotePort}");
+        private LobbyRoomManager _lobbies;
 
-            return new CommPeer(initRequest);
-        }
+        public static new CommApplication Instance => (CommApplication)ApplicationBase.Instance;
+        public LobbyRoomManager Lobbies => _lobbies;
 
         protected override void Setup()
         {
-            // Add a the log path to the properties so can use them in log4net.config.
+            /* Add the log path to the properties so can use them in log4net.config. */
             GlobalContext.Properties["Photon:ApplicationLogPath"] = Path.Combine(ApplicationPath, "log");
-            // Configure log4net to use log4net.config file.
-            var configFile = new FileInfo(Path.Combine(BinaryPath, "log4net.config"));
+
+            /* Configure log4net to use the log4net.config file. */
+            var configFilePath = Path.Combine(BinaryPath, "log4net.config");
+            var configFile = new FileInfo(configFilePath);
             if (configFile.Exists)
                 XmlConfigurator.ConfigureAndWatch(configFile);
 
-            Log.Info("Started CommServer...");
+            _lobbies = new LobbyRoomManager();
+            _log.Info("Started CommServer...");
         }
 
         protected override void TearDown()
         {
-            Log.Info("Stopped CommServer...");
+            _log.Info("Stopped CommServer...");
+        }
+
+        protected override PeerBase CreatePeer(InitRequest request)
+        {
+            _log.Info($"Accepted new connection at {request.RemoteIP}:{request.RemotePort}");
+
+            /* Create CommPeer and CommActor instance. */
+            var peer = new CommPeer(request);
+            var actor = new CommActor(peer);
+
+            /* Find available lobby and make the actor join that lobby. */
+            var lobby = Lobbies.FindAvailable();
+            actor.Join(lobby);
+
+            return actor.Peer;
         }
     }
 }

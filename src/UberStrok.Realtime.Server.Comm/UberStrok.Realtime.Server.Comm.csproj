@@ -46,17 +46,14 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseCommPeerOperationHandler.cs" />
     <Compile Include="CommActor.cs" />
+    <Compile Include="Commands\AuthenticateRequestCommand.cs" />
+    <Compile Include="Commands\LobbyEnteredCommand.cs" />
     <Compile Include="CommApplication.cs" />
+    <Compile Include="CommCommand.cs" />
     <Compile Include="CommPeer.cs" />
-    <Compile Include="CommPeerEvents.cs" />
-    <Compile Include="CommPeerOperationHandler.cs" />
     <Compile Include="LobbyRoom.cs" />
-    <Compile Include="LobbyRoomEvents.cs" />
-    <Compile Include="LobbyManager.cs" />
-    <Compile Include="BaseLobbyRoomOperationHandler.cs" />
-    <Compile Include="LobbyRoomOperationHandler.cs" />
+    <Compile Include="LobbyRoomManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +86,12 @@
       <Project>{F9FA508B-417F-4863-B19D-B7CF3D771B0F}</Project>
       <Name>UberStrok.WebServices.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UberStrok\UberStrok.csproj">
+      <Project>{4c184928-3652-4cd0-ac86-6d69d4ef286c}</Project>
+      <Name>UberStrok</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>python "$(SolutionDir)\scripts\postbuild.py" "$(ProjectName)" "$(OutDir)"</PostBuildEvent>

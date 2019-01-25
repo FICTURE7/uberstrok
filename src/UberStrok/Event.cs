@@ -7,7 +7,10 @@ namespace UberStrok
     /* An empty abstract class, for the sake of strong typings. */
     public abstract class Event
     {
-        /* Maps object type to a dictionary which maps Event types to their methodinfo in the object type. */
+        /* 
+            Maps object type to a dictionary which maps Event types to their methodinfo in
+            the object type. 
+         */
         private static readonly Dictionary<Type, Dictionary<Type, MethodInfo>> _cache = new Dictionary<Type, Dictionary<Type, MethodInfo>>();
 
         internal static Dictionary<Type, MethodInfo> GetEvents(Type type)
@@ -24,9 +27,8 @@ namespace UberStrok
             foreach (var method in methods)
             {
                 /* 
-                    Look for methods which has the name "OnEvent,
-                    returns a void (returns no value) and has 1
-                    parameter whose type inherits from Event.
+                    Look for methods which has the name "OnEvent, returns a void 
+                    (returns no value) and has 1 parameter whose type inherits from Event.
                  */
                 if (method.Name != "OnEvent" || method.ReturnType != typeof(void))
                     continue;

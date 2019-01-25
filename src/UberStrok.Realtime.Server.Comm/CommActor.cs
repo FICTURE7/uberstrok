@@ -1,28 +1,31 @@
 ﻿using System;
-using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public class CommActor
+    public class CommActor : Actor
     {
-        public CommActor(CommPeer peer, CommActorInfoView view)
-        {
-            if (peer == null)
-                throw new ArgumentNullException(nameof(peer));
-            if (view == null)
-                throw new ArgumentNullException(nameof(view));
-
-            _peer = peer;
-            _view = view;
-        }
-
-        public int Cmid => _view.Cmid;
-        public string Name => _view.PlayerName;
+        /* Current room the actor is in. */
+        private readonly CommPeer _peer;
 
         public CommPeer Peer => _peer;
-        public CommActorInfoView View => _view;
+        public new LobbyRoom Room => (LobbyRoom)base.Room;
 
-        private readonly CommPeer _peer;
-        private readonly CommActorInfoView _view;
+        public CommActor(CommPeer peer)
+        {
+            _peer = peer ?? throw new ArgumentNullException(nameof(peer));
+        }
+
+        public override Command Receive()
+        {
+            return null;
+        }
+
+        public override void Send(Command command)
+        {
+            if (command == null)
+                throw new ArgumentNullException(nameof(command));
+
+            /* TODO: Encode and send through peer. */
+        }
     }
 }
