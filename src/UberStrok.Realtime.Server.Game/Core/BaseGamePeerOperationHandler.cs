@@ -17,6 +17,7 @@ namespace UberStrok.Realtime.Server.Game
         protected abstract void OnJoinRoom(GamePeer peer, int roomId, string password, string clientVersion, string authToken, string magicHash);
         protected abstract void OnLeaveRoom(GamePeer peer);
         protected abstract void OnUpdatePing(GamePeer peer, ushort ping);
+        protected abstract void OnUpdateLoadout(GamePeer peer);
 
         public override void OnOperationRequest(GamePeer peer, byte opCode, MemoryStream bytes)
         {
@@ -49,6 +50,10 @@ namespace UberStrok.Realtime.Server.Game
 
                 case IGamePeerOperationsType.UpdatePing:
                     UpdatePing(peer, bytes);
+                    break;
+
+                case IGamePeerOperationsType.UpdateLoadout:
+                    UpdateLoadout(peer, bytes);
                     break;
 
                 default:
@@ -105,6 +110,11 @@ namespace UberStrok.Realtime.Server.Game
             var ping = UInt16Proxy.Deserialize(bytes);
 
             OnUpdatePing(peer, ping);
+        }
+
+        private void UpdateLoadout(GamePeer peer, MemoryStream bytes)
+        {
+            OnUpdateLoadout(peer);
         }
     }
 }

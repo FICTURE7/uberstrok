@@ -145,6 +145,33 @@ namespace UberStrok.Realtime.Server.Game
             // Space
         }
 
+        protected override void OnUpdateLoadout(GamePeer peer)
+        {
+            /* Retrieve loadout from web services. */
+            var loadout = GetLoadoutFromAuthToken(peer.AuthToken);
+            var weapons = new List<int>
+            {
+                loadout.MeleeWeapon,
+                loadout.Weapon1,
+                loadout.Weapon2,
+                loadout.Weapon3
+            };
+            var gear = new List<int>
+            {
+                (int)loadout.Type,
+                loadout.Head,
+                loadout.Face,
+                loadout.Gloves,
+                loadout.UpperBody,
+                loadout.LowerBody,
+                loadout.Boots
+            };
+
+            peer.Actor.Info.Weapons = weapons;
+            peer.Actor.Info.Gear = gear;
+            peer.Loadout = loadout;
+        }
+
         private UberstrikeUserView GetMemberFromAuthToken(string authToken)
         {
             //TODO: Provide some base class for this kind of server-server communications.
