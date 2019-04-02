@@ -147,6 +147,8 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnUpdateLoadout(GamePeer peer)
         {
+            peer.WaitingForLoadout = true;
+
             /* Retrieve loadout from web services. */
             var loadout = GetLoadoutFromAuthToken(peer.AuthToken);
             var weapons = new List<int>
@@ -170,6 +172,8 @@ namespace UberStrok.Realtime.Server.Game
             peer.Actor.Info.Weapons = weapons;
             peer.Actor.Info.Gear = gear;
             peer.Loadout = loadout;
+
+            peer.WaitingForLoadout = false;
         }
 
         private UberstrikeUserView GetMemberFromAuthToken(string authToken)

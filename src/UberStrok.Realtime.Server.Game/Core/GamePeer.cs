@@ -27,11 +27,20 @@ namespace UberStrok.Realtime.Server.Game
             AddOperationHandler(new GamePeerOperationHandler());
         }
 
+        /* 
+         * For when the peer changes its loadout and the game server is waiting 
+         * for the web services to serve back.
+         */
+        public bool WaitingForLoadout { get; set; }
+
         public string AuthToken { get; set; }
         public ushort Ping { get; set; }
         public GameActor Actor { get; set; }
 
-        /* TODO: Not really sure if we need this. But might want to turn it into a HashSet. */
+        /* 
+         * TODO: Not really sure if we need this. But might want to turn it into
+         * a HashSet.
+         */
         public List<int> KnownActors { get; set; }
         public BaseGameRoom Room { get; set; }
         public LoadoutView Loadout { get; set; }
