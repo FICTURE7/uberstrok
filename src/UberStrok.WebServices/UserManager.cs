@@ -136,10 +136,16 @@ namespace UberStrok.WebServices
 
             lock (_sessions)
             {
-                foreach (var value in _sessions.Values)
+                foreach (var kv in _sessions)
                 {
+                    var value = kv.Value;
                     if (value.PublicProfile.Cmid == member.PublicProfile.Cmid)
-                        throw new Exception("A player with the same CMID is already logged in.");
+                    {
+                        /* Replace players with same CMID, not the neatest of fixes, but it works. */
+                        _sessions.Remove(kv.Key);
+                        s_log.Info($"Kicking player with CMID {value.PublicProfile.Cmid} cause of new login.");
+                        break;
+                    }
                 }
 
                 _sessions.Add(authToken, member);
