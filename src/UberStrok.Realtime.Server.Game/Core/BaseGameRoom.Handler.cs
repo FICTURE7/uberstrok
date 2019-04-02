@@ -166,7 +166,7 @@ namespace UberStrok.Realtime.Server.Game
             peer.Actor.Info.Health -= actualDamage;
 
             /* Check if the player is dead. */
-            if (peer.Actor.Info.Health < 0)
+            if (peer.Actor.Info.Health <= 0)
             {
                 peer.Actor.Info.PlayerState |= PlayerStates.Dead;
                 peer.Actor.Info.Deaths++;
@@ -229,7 +229,7 @@ namespace UberStrok.Realtime.Server.Game
                     player.Actor.Info.Health -= shortDamage;
 
                     /* Check if the player is dead. */
-                    if (player.Actor.Info.Health < 0)
+                    if (player.Actor.Info.Health <= 0)
                     {
                         player.Actor.Info.PlayerState |= PlayerStates.Dead;
                         player.Actor.Info.Deaths++;
