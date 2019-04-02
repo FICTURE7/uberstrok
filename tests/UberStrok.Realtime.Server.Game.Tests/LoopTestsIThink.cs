@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game.Tests
 {
