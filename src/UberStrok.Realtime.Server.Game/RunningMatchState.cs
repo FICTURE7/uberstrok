@@ -91,21 +91,6 @@ namespace UberStrok.Realtime.Server.Game
             foreach (var delta in deltas)
                 delta.Changes.Clear();
 
-            /* Check if players have done single shots. */
-            foreach (var player in Room.Players)
-            {
-                if (player.Actor.Info.ShootingTick > 0)
-                {
-                    player.Actor.Info.ShootingTick -= 1;
-
-                    if (player.Actor.Info.ShootingTick < 0)
-                    {
-                        player.Actor.Info.ShootingTick = 0;
-                        player.Actor.Info.PlayerState &= ~PlayerStates.Shooting;
-                    }
-                }
-            }
-
             _frame += (ushort)(UBZ_INTERVAL / Room.Loop.Interval);
         }
 

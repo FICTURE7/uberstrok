@@ -292,21 +292,14 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnSwitchWeapon(GamePeer peer, byte slot)
         {
-            /* Just incase. */
-            peer.Actor.Info.ShootingTick = 0;
             peer.Actor.Info.CurrentWeaponSlot = slot;
         }
 
         protected override void OnSingleBulletFire(GamePeer peer)
         {
-            /* 
-                Set player in shooting state for 200ms.
-                To allow client to respond to the change and play the animation.
-             */
-            var duration = Loop.ToTicks(TimeSpan.FromMilliseconds(200));
-
-            peer.Actor.Info.ShootingTick += duration;
-            peer.Actor.Info.PlayerState |= PlayerStates.Shooting;
+            /* Send single bullet fire to all peers. */
+            foreach (var otherPeer in Peers)
+                otherPeer.Events.Game.SendSingleBulletFire(peer.Actor.Cmid);
         }
 
         protected override void OnIsInSniperMode(GamePeer peer, bool on)

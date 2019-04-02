@@ -250,5 +250,14 @@ namespace UberStrok.Realtime.Server.Game
                 SendEvent((byte)IGameRoomEventsType.PlayerRespawned, bytes);
             }
         }
+
+        public void SendSingleBulletFire(int cmid)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, cmid);
+                SendEvent((byte)IGameRoomEventsType.SingleBulletFire, bytes);
+            }
+        }
     }
 }
