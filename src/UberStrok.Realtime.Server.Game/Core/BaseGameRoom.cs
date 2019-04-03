@@ -8,9 +8,11 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
+    public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>, IDisposable
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(BaseGameRoom));
+
+        private bool _disposed;
 
         private readonly GameRoomActions _actions;
         /* Loop thats going to do the heavy lifting. */
@@ -255,6 +257,22 @@ namespace UberStrok.Realtime.Server.Game
         protected virtual void OnPlayerKilled(PlayerKilledEventArgs args)
         {
             PlayerKilled?.Invoke(this, args);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+            
+            if (disposing)
+                _loop.Dispose();
+
+            _disposed = true;
         }
     }
 }

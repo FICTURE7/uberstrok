@@ -68,12 +68,24 @@ namespace UberStrok.Realtime.Server.Game
 
         public IEnumerator<BaseGameRoom> GetEnumerator()
         {
-            return _rooms.Values.GetEnumerator();
+            foreach (var kv in _rooms)
+            {
+                var room = kv.Value;
+
+                /* Filter out empty rooms. */
+                if (room.Peers.Count == 0)
+                {
+                    _rooms.TryRemove(kv.Key, out BaseGameRoom x);
+                    room.Dispose();
+                }
+                else
+                    yield return room;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _rooms.Values.GetEnumerator();
+            return GetEnumerator();
         }
     }
 }
