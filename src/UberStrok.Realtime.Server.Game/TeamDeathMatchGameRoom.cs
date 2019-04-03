@@ -33,6 +33,10 @@ namespace UberStrok.Realtime.Server.Game
         {
             base.OnPlayerKilled(args);
 
+            /* If player killed himself, don't update round score. */
+            if (args.AttackerCmid == args.VictimCmid)
+                return;
+
             foreach (var player in Players)
             {
                 if (player.Actor.Cmid != args.AttackerCmid)

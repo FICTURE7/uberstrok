@@ -75,6 +75,9 @@ namespace UberStrok.Realtime.Server.Game
             _state.Register(MatchState.Id.Running, new RunningMatchState(this));
 
             _state.Set(MatchState.Id.WaitingForPlayers);
+
+            /* Start the game loop. */
+            StartLoop();
         }
 
         public GameRoomDataView View => _view;
@@ -175,6 +178,7 @@ namespace UberStrok.Realtime.Server.Game
             lock (_peers)
             {
                 _peers.Add(peer);
+                /* TODO: Check for possible overflows. */
                 number = _nextPlayer++;
             }
 
@@ -233,12 +237,8 @@ namespace UberStrok.Realtime.Server.Game
         public void StartLoop()
         {
             _loop.Start(
-                () => {
-                    State.Update();
-                },
-                (Exception ex) => {
-                    s_log.Error("Failed to tick game loop.", ex);
-                }
+                () => State.Update(),
+                (ex) => s_log.Error("Failed to tick game loop.", ex)
             );
         }
 

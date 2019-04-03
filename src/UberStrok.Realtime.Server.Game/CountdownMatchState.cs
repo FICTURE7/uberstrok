@@ -31,9 +31,6 @@ namespace UberStrok.Realtime.Server.Game
              */
             foreach (var player in Room.Players)
                 PrepareAndSpawnPlayer(player);
-
-            /* Start the game loop. */
-            Room.StartLoop();
         }
 
         public override void OnResume()

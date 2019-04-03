@@ -256,6 +256,34 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        protected override void OnDirectDeath(GamePeer peer)
+        {
+            if ((peer.Actor.Info.PlayerState & PlayerStates.Dead) == PlayerStates.Dead)
+            {
+                s_log.Debug($"Player {peer.Actor.Cmid} DirectDeath k: {peer.Actor.Info.Kills} d: {peer.Actor.Info.Deaths}, but already dead");
+                return;
+            }
+
+            int damage = peer.Actor.Info.Health;
+            peer.Actor.Info.Health = 0;
+            peer.Actor.Info.PlayerState |= PlayerStates.Dead;
+            peer.Actor.Info.Deaths++;
+            peer.Actor.Info.Kills--;
+
+            peer.State.Set(PeerState.Id.Killed);
+            OnPlayerKilled(new PlayerKilledEventArgs
+            {
+                AttackerCmid = peer.Actor.Cmid,
+                VictimCmid = peer.Actor.Cmid,
+                ItemClass = UberStrikeItemClass.WeaponMelee,
+                Damage = (ushort)damage,
+                Part = BodyPart.Body,
+                Direction = Vector3.Zero
+            });
+
+            s_log.Debug($"Player {peer.Actor.Cmid} DirectDeath k: {peer.Actor.Info.Kills} d: {peer.Actor.Info.Deaths}");
+        }
+
         protected override void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
         {
             var shooterCmid = peer.Actor.Cmid;

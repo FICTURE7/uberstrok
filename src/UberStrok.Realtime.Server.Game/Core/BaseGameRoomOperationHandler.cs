@@ -18,6 +18,7 @@ namespace UberStrok.Realtime.Server.Game
         protected abstract void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3 force);
         protected abstract void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets);
         protected abstract void OnDirectDamage(GamePeer peer, ushort damage);
+        protected abstract void OnDirectDeath(GamePeer peer);
         protected abstract void OnSwitchWeapon(GamePeer peer, byte slot);
         protected abstract void OnSingleBulletFire(GamePeer peer);
         protected abstract void OnIsPaused(GamePeer peer, bool on);
@@ -65,6 +66,10 @@ namespace UberStrok.Realtime.Server.Game
 
                 case IGameRoomOperationsType.DirectDamage:
                     DirectDamage(peer, bytes);
+                    break;
+
+                case IGameRoomOperationsType.DirectDeath:
+                    DirectDeath(peer, bytes);
                     break;
 
                 case IGameRoomOperationsType.SwitchWeapon:
@@ -181,6 +186,11 @@ namespace UberStrok.Realtime.Server.Game
             var damage = UInt16Proxy.Deserialize(bytes);
 
             OnDirectDamage(peer, damage);
+        }
+
+        private void DirectDeath(GamePeer peer, MemoryStream bytes)
+        {
+            OnDirectDeath(peer);
         }
 
         private void SwitchWeapon(GamePeer peer, MemoryStream bytes)
