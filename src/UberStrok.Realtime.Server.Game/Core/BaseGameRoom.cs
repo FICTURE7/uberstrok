@@ -174,6 +174,11 @@ namespace UberStrok.Realtime.Server.Game
             actorView.Weapons[2] = peer.Loadout.Weapon2;
             actorView.Weapons[3] = peer.Loadout.Weapon3;
 
+            /* Set Quick items of the character. */
+            actorView.QuickItems[0] = peer.Loadout.QuickItem1;
+            actorView.QuickItems[0] = peer.Loadout.QuickItem2;
+            actorView.QuickItems[0] = peer.Loadout.QuickItem3;
+
             var number = 0;
             var actor = new GameActor(actorView);
 

@@ -165,9 +165,16 @@ namespace UberStrok.Realtime.Server.Game
                 loadout.LowerBody,
                 loadout.Boots
             };
+            var quickItems = new List<int>
+            {
+                loadout.QuickItem1,
+                loadout.QuickItem2,
+                loadout.QuickItem3
+            };
 
             peer.Actor.Info.Weapons = weapons;
             peer.Actor.Info.Gear = gear;
+            peer.Actor.Info.QuickItems = quickItems;
             peer.Loadout = loadout;
 
             peer.WaitingForLoadout = false;

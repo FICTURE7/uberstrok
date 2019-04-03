@@ -294,6 +294,16 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        protected override void OnEmitQuickItem(GamePeer peer, Vector3 origin, Vector3 direction, int itemId, byte playerNumber, int projectileId)
+        {
+            var emitterCmid = peer.Actor.Cmid;
+            foreach (var otherPeer in Peers)
+            {
+                if (otherPeer.Actor.Cmid != emitterCmid)
+                    otherPeer.Events.Game.SendEmitQuickItem(origin, direction, itemId, playerNumber, projectileId);
+            }
+        }
+
         protected override void OnRemoveProjectile(GamePeer peer, int projectileId, bool explode)
         {
             foreach (var otherPeer in Peers)

@@ -14,6 +14,7 @@ namespace UberStrok.Realtime.Server.Game
         protected abstract void OnPowerUpPicked(GamePeer peer, int pickupId, byte type, byte value);
         protected abstract void OnRemoveProjectile(GamePeer peer, int projectileId, bool explode);
         protected abstract void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode);
+        protected abstract void OnEmitQuickItem(GamePeer peer, Vector3 origin, Vector3 direction, int itemId, byte playerNumber, int projectileId);
         protected abstract void OnRespawnRequest(GamePeer peer);
         protected abstract void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3 force);
         protected abstract void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets);
@@ -50,6 +51,10 @@ namespace UberStrok.Realtime.Server.Game
 
                 case IGameRoomOperationsType.EmitProjectile:
                     EmitProjectile(peer, bytes);
+                    break;
+
+                case IGameRoomOperationsType.EmitQuickItem:
+                    EmitQuickItem(peer, bytes);
                     break;
 
                 case IGameRoomOperationsType.RespawnRequest:
@@ -155,6 +160,17 @@ namespace UberStrok.Realtime.Server.Game
             var explode = BooleanProxy.Deserialize(bytes);
 
             OnEmitProjectile(peer, origin, direction, slot, projectileId, explode);
+        }
+
+        private void EmitQuickItem(GamePeer peer, MemoryStream bytes)
+        {
+            var origin = Vector3Proxy.Deserialize(bytes);
+            var direction = Vector3Proxy.Deserialize(bytes);
+            var itemId = Int32Proxy.Deserialize(bytes);
+            var playerNumber = ByteProxy.Deserialize(bytes);
+            var projectileId = Int32Proxy.Deserialize(bytes);
+
+            OnEmitQuickItem(peer, origin, direction, itemId, playerNumber, projectileId);
         }
 
         private void RespawnRequest(GamePeer peer, MemoryStream bytes)
