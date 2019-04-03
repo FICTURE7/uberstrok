@@ -11,8 +11,14 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static ILog s_log = LogManager.GetLogger(nameof(RunningMatchState));
 
-        /* Current tick we're in. */
-        private ushort _frame = 0;
+        /* 
+         * Current tick we're in.
+         * 
+         * NOTE: _frame starts at 6 because the client resets the lag 
+         * interpolator's base values, fixing jittery movement on the first
+         * life of the initiating clients.
+         */
+        private ushort _frame = 6;
 
         public RunningMatchState(BaseGameRoom room) : base(room)
         {
