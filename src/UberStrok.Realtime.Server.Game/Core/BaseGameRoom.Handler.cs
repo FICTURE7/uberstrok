@@ -127,6 +127,11 @@ namespace UberStrok.Realtime.Server.Game
                     /* Check if the player is dead. */
                     if (player.Actor.Info.Health <= 0)
                     {
+                        player.Events.Game.SendDamageEvent(player.Actor.Damages);
+                        player.Flush();
+
+                        player.Actor.Damages.Clear();
+
                         player.Actor.Info.PlayerState |= PlayerStates.Dead;
                         player.Actor.Info.Deaths++;
                         peer.Actor.Info.Kills++;
@@ -231,6 +236,11 @@ namespace UberStrok.Realtime.Server.Game
                     /* Check if the player is dead. */
                     if (player.Actor.Info.Health <= 0)
                     {
+                        player.Events.Game.SendDamageEvent(player.Actor.Damages);
+                        player.Flush();
+
+                        player.Actor.Damages.Clear();
+
                         player.Actor.Info.PlayerState |= PlayerStates.Dead;
                         player.Actor.Info.Deaths++;
                         peer.Actor.Info.Kills++;
