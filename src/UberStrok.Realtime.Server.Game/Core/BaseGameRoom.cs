@@ -57,7 +57,7 @@ namespace UberStrok.Realtime.Server.Game
              * When the tick rate is high, the client side, lag interpolation goes all woncky,
              * UberStrike had a tick rate of 10 ticks per second.
              */
-            _loop = new Loop(10);
+            _loop = new Loop(64);
             _actions = new GameRoomActions(this);
 
             _peers = new List<GamePeer>();

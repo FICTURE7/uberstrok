@@ -14,11 +14,11 @@ namespace UberStrok.Realtime.Server.Game
         /* 
          * Current tick we're in.
          * 
-         * NOTE: _frame starts at 6 because the client resets the lag 
-         * interpolator's base values, fixing jittery movement on the first
-         * life of the initiating clients.
+         * NOTE: _frame starts at 5 because the client resets the lag 
+         * interpolator's base values.
          */
-        private ushort _frame = 6;
+        private ushort _frame = 5;
+        private double _frameTime = 0f;
 
         public RunningMatchState(BaseGameRoom room) : base(room)
         {
@@ -59,17 +59,36 @@ namespace UberStrok.Realtime.Server.Game
 
         public override void OnUpdate()
         {
-            /* Expected interval between ticks by the client (10tick/s). */
-            const int UBZ_INTERVAL = 100;
+            /* 
+             * Expected interval between ticks by the client is 100ms (10tick/s),
+             * and since the implementation of Loop is a fixed timestamp 
+             * implementation that tries to catch up with sleep lag, we use 
+             * Loop.DeltaTime to calculate real time elapsed to send player 
+             * positions at regular intervals. That is intervals of around 100ms.
+             *
+             * Lag extrapolation starts when the packets arrive at around 150ms
+             * late.
+             */
+            const int UBZ_INTERVAL = 105;
+
+            _frameTime += Room.Loop.DeltaTime.TotalMilliseconds;
+
+            bool updatePositions = _frameTime >= UBZ_INTERVAL;
+            if (updatePositions)
+            {
+                _frameTime %= UBZ_INTERVAL;
+                _frame++;
+            }
 
             /* Tick the power-up manager. */
             Room.PowerUps.Update();
 
             var deltas = new List<GameActorInfoDeltaView>(Room.Peers.Count);
-            var position = new List<PlayerMovement>(Room.Players.Count);
+            var position = updatePositions ? new List<PlayerMovement>(Room.Players.Count) : null;
             foreach (var player in Room.Players)
             {
-                position.Add(player.Actor.Movement);
+                if (updatePositions)
+                    position.Add(player.Actor.Movement);
 
                 /* If the player has any damage events, we sent them. */
                 if (player.Actor.Damages.Count > 0)
@@ -94,14 +113,18 @@ namespace UberStrok.Realtime.Server.Game
             foreach (var otherPeer in Room.Peers)
             {
                 otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
-                otherPeer.Events.Game.SendAllPlayerPositions(position, _frame);
+                if (updatePositions)
+                    otherPeer.Events.Game.SendAllPlayerPositions(position, _frame);
             }
 
             /* Wipe the delta changes. */
             foreach (var delta in deltas)
                 delta.Changes.Clear();
 
-            _frame += (ushort)(UBZ_INTERVAL / Room.Loop.Interval);
+            /*
+            if (updatePositions)
+                _frame++;
+                */
         }
 
         private void OnPlayerKilled(object sender, PlayerKilledEventArgs e)
