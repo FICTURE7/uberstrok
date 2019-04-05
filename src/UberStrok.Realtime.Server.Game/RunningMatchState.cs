@@ -69,7 +69,7 @@ namespace UberStrok.Realtime.Server.Game
              * Lag extrapolation starts when the packets arrive at around 150ms
              * late.
              */
-            const int UBZ_INTERVAL = 105;
+            const int UBZ_INTERVAL = 125;
 
             _frameTime += Room.Loop.DeltaTime.TotalMilliseconds;
 
@@ -120,11 +120,6 @@ namespace UberStrok.Realtime.Server.Game
             /* Wipe the delta changes. */
             foreach (var delta in deltas)
                 delta.Changes.Clear();
-
-            /*
-            if (updatePositions)
-                _frame++;
-                */
         }
 
         private void OnPlayerKilled(object sender, PlayerKilledEventArgs e)
