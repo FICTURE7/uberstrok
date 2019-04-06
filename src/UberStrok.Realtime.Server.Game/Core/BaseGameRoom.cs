@@ -160,7 +160,7 @@ namespace UberStrok.Realtime.Server.Game
 
             /* Set the gears of the character. */
             /* Holo */
-            actorView.Gear[0] = (int)peer.Loadout.Type;
+            actorView.Gear[0] = peer.Loadout.Webbing;
             actorView.Gear[1] = peer.Loadout.Head;
             actorView.Gear[2] = peer.Loadout.Face;
             actorView.Gear[3] = peer.Loadout.Gloves;
@@ -255,30 +255,38 @@ namespace UberStrok.Realtime.Server.Game
 
             var byteAngle = Conversions.Angle2Byte(angle);
 
-            /* If not self-damage, register hit. */
+            /* Check if self-damage. */
             if (victim.Actor.Cmid != attacker.Actor.Cmid)
             {
                 victim.Actor.Damages.Add(byteAngle, damage, part, 0, 0);
                 victim.Actor.Info.Health -= damage;
+            }
+            else
+            {
+                victim.Actor.Info.Health -= (short)(damage / 2);
+            }
 
-                /* Check if the player is dead. */
-                if (victim.Actor.Info.Health <= 0)
+            /* Check if the player is dead. */
+            if (victim.Actor.Info.Health <= 0)
+            {
+                if (victim.Actor.Damages.Count > 0)
                 {
                     /* 
-                     * Force a push of damage events to the victim peer, so he gets
-                     * the feedback of where he was hit from aka red hit marker HUD.
+                     * Force a push of damage events to the victim peer, so he
+                     * gets the feedback of where he was hit from aka red hit
+                     * marker HUD.
                      */
                     victim.Events.Game.SendDamageEvent(victim.Actor.Damages);
                     victim.Flush();
                     victim.Actor.Damages.Clear();
-
-                    victim.Actor.Info.PlayerState |= PlayerStates.Dead;
-                    victim.Actor.Info.Deaths++;
-                    attacker.Actor.Info.Kills++;
-
-                    victim.State.Set(PeerState.Id.Killed);
-                    return true;
                 }
+
+                victim.Actor.Info.PlayerState |= PlayerStates.Dead;
+                victim.Actor.Info.Deaths++;
+                attacker.Actor.Info.Kills++;
+
+                victim.State.Set(PeerState.Id.Killed);
+                return true;
             }
 
             return false;
@@ -303,12 +311,12 @@ namespace UberStrok.Realtime.Server.Game
         {
             Dispose(true);
         }
-        
+
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed)
                 return;
-            
+
             if (disposing)
                 _loop.Dispose();
 

@@ -157,7 +157,7 @@ namespace UberStrok.Realtime.Server.Game
             };
             var gear = new List<int>
             {
-                (int)loadout.Type,
+                loadout.Webbing,
                 loadout.Head,
                 loadout.Face,
                 loadout.Gloves,
