@@ -38,11 +38,14 @@ namespace UberStrok.Core
             if (tickRateSeconds < 0)
                 throw new ArgumentOutOfRangeException(nameof(tickRateSeconds), "Tick rate cannot be less than 0.");
 
+            CatchUp = false;
+
             _pauseWaitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
             _thread = new Thread(Work) { Name = "GameLoop-thread" };
             _interval = 1000d / tickRateSeconds;
         }
 
+        public bool CatchUp { get; set; }
         public double Interval => _interval;
         public DateTime Time => _time;
         public TimeSpan DeltaTime => _deltaTime;
@@ -131,7 +134,7 @@ namespace UberStrok.Core
                     DoUpdate();
 
                     /* Catch up if we've lagged more than the a tick interval. */
-                    while (_lag >= interval)
+                    while (_lag >= interval && CatchUp)
                     {
                         DoTime();
                         DoUpdate();
