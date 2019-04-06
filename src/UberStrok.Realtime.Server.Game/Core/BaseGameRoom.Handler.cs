@@ -76,97 +76,98 @@ namespace UberStrok.Realtime.Server.Game
             });
         }
 
-        protected override void OnExplosionDamage(GamePeer peer, int target, byte slot, byte distance, Vector3 force)
+        protected override void OnExplosionDamage(GamePeer peer, int targetCmid, byte slot, byte distance, Vector3 force)
         {
-            var weaponId = peer.Actor.Info.Weapons[slot];
+            GamePeer attacker = peer;
+            int weaponId = attacker.Actor.Info.CurrentWeaponID;
 
-            foreach (var player in Players)
+            foreach (var victim in Players)
             {
-                if (player.Actor.Cmid != target)
+                if (victim.Actor.Cmid != targetCmid)
                     continue;
 
-                var weapon = default(UberStrikeItemWeaponView);
-                if (ShopManager.WeaponItems.TryGetValue(weaponId, out weapon))
+                if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
                 {
-                    float damage = weapon.DamagePerProjectile;
-                    float radius = weapon.SplashRadius / 100f;
-                    float damageExplosion = damage * (radius - distance) / radius;
-
-                    s_log.Debug($"Calculated: {damageExplosion} damage explosive {damage}, {radius}, {distance}, {force}");
-
-                    /* Calculate the direction of the hit. */
-                    var shortDamage = (short)damageExplosion;
-
-                    var victimPos = player.Actor.Movement.Position;
-                    var attackerPos = peer.Actor.Movement.Position;
-
-                    var direction = attackerPos - victimPos;
-                    var back = new Vector3(0, 0, -1);
-
-                    var angle = Vector3.Angle(direction, back);
-                    if (direction.x < 0)
-                        angle = 360 - angle;
-
-                    var byteAngle = Conversions.Angle2Byte(angle);
-
-                    /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
-                    /* TODO: Calculate armor absorption. */
-
-                    /* Don't mess with rocket jumps. */
-                    if (player.Actor.Cmid != peer.Actor.Cmid)
-                    {
-                        player.Actor.Info.Health -= shortDamage;
-                        player.Actor.Damages.Add(byteAngle, shortDamage, BodyPart.Body, 0, 0);
-                    }
-                    else
-                    {
-                        shortDamage /= 2;
-                        player.Actor.Info.Health -= shortDamage;
-                    }
-
-                    /* Check if the player is dead. */
-                    if (player.Actor.Info.Health <= 0)
-                    {
-                        player.Events.Game.SendDamageEvent(player.Actor.Damages);
-                        player.Flush();
-
-                        player.Actor.Damages.Clear();
-
-                        player.Actor.Info.PlayerState |= PlayerStates.Dead;
-                        player.Actor.Info.Deaths++;
-                        peer.Actor.Info.Kills++;
-
-                        player.State.Set(PeerState.Id.Killed);
-                        OnPlayerKilled(new PlayerKilledEventArgs
-                        {
-                            AttackerCmid = peer.Actor.Cmid,
-                            VictimCmid = player.Actor.Cmid,
-                            ItemClass = weapon.ItemClass,
-                            Damage = (ushort)shortDamage,
-                            Part = BodyPart.Body,
-                            Direction = -direction
-                        });
-                    }
-                    else
-                    {
-                        player.Events.Game.SendPlayerHit(force);
-                    }
+                    s_log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
+                    attacker.Disconnect();
+                    return;
                 }
-                else
+
+                /* Calculate damage amount. */
+                float damage = weapon.DamagePerProjectile;
+                float radius = weapon.SplashRadius / 100f;
+                float damageExplosion = damage * (radius - distance) / radius;
+                short shortDamage = (short)damageExplosion;
+
+                if (DoDamage(shortDamage, BodyPart.Body, victim, attacker, out Vector3 direction))
                 {
-                    s_log.Debug($"Unable to find weapon with ID {weaponId}");
+                    OnPlayerKilled(new PlayerKilledEventArgs
+                    {
+                        AttackerCmid = attacker.Actor.Cmid,
+                        VictimCmid = victim.Actor.Cmid,
+                        ItemClass = weapon.ItemClass,
+                        Damage = (ushort)shortDamage,
+                        Part = BodyPart.Body,
+                        Direction = -direction
+                    });
                 }
-                return;
+            }
+        }
+
+        protected override void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets)
+        {
+            GamePeer attacker = peer;
+            int weaponId = attacker.Actor.Info.CurrentWeaponID;
+
+            foreach (var victim in Players)
+            {
+                if (victim.Actor.Cmid != target)
+                    continue;
+
+                if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
+                {
+                    s_log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
+                    attacker.Disconnect();
+                    return;
+                }
+
+                /* TODO: Clamp value. */
+                int damage = weapon.DamagePerProjectile * bullets;
+
+                /* Calculate the critical hit damage. */
+                BodyPart part = (BodyPart)bodyPart;
+                int bonus = weapon.CriticalStrikeBonus;
+                if (bonus > 0)
+                {
+                    if (part == BodyPart.Head || part == BodyPart.Nuts)
+                        damage = (int)Math.Round(damage + (damage * (bonus / 100f)));
+                }
+
+                var shortDamage = (short)damage;
+                if (DoDamage(shortDamage, part, victim, attacker, out Vector3 direction))
+                {
+                    OnPlayerKilled(new PlayerKilledEventArgs
+                    {
+                        AttackerCmid = attacker.Actor.Cmid,
+                        VictimCmid = victim.Actor.Cmid,
+                        ItemClass = weapon.ItemClass,
+                        Damage = (ushort)shortDamage,
+                        Part = part,
+                        Direction = -(direction.Normalized * weapon.DamageKnockback)
+                    });
+                }
             }
         }
 
         protected override void OnDirectDamage(GamePeer peer, ushort damage)
         {
             var actualDamage = (short)damage;
-            s_log.Debug($"Damage: {damage}");
-            /* THEY SHEATING */
             if (damage < 0)
+            {
+                s_log.Warn($"Negative damage: {damage}. Disconnecting.");
+                peer.Disconnect();
                 return;
+            }
 
             peer.Actor.Info.Health -= actualDamage;
 
@@ -184,85 +185,8 @@ namespace UberStrok.Realtime.Server.Game
                     ItemClass = UberStrikeItemClass.WeaponMachinegun,
                     Damage = (ushort)actualDamage,
                     Part = BodyPart.Body,
-                    Direction = new Vector3()
+                    Direction = Vector3.Zero
                 });
-            }
-        }
-
-        protected override void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets)
-        {
-            var weaponId = peer.Actor.Info.CurrentWeaponID;
-
-            foreach (var player in Players)
-            {
-                if (player.Actor.Cmid != target)
-                    continue;
-
-                var weapon = default(UberStrikeItemWeaponView);
-                if (ShopManager.WeaponItems.TryGetValue(weaponId, out weapon))
-                {
-                    /* TODO: Clamp value. */
-                    var damage = (weapon.DamagePerProjectile * bullets);
-
-                    /* Calculate the critical hit damage. */
-                    var part = (BodyPart)bodyPart;
-                    var bonus = weapon.CriticalStrikeBonus;
-                    if (bonus > 0)
-                    {
-                        if (part == BodyPart.Head || part == BodyPart.Nuts)
-                            damage = (int)Math.Round(damage + (damage * (bonus / 100f)));
-                    }
-
-                    /* Calculate the direction of the hit. */
-                    var shortDamage = (short)damage;
-
-                    var victimPos = player.Actor.Movement.Position;
-                    var attackerPos = peer.Actor.Movement.Position;
-
-                    var direction = attackerPos - victimPos;
-                    var back = new Vector3(0, 0, -1);
-
-                    var angle = Vector3.Angle(direction, back);
-                    if (direction.x < 0)
-                        angle = 360 - angle;
-
-                    var byteAngle = Conversions.Angle2Byte(angle);
-
-                    /* TODO: Find out the damage effect type (slow down -> needler) & stuffs. */
-                    /* TODO: Calculate armor absorption. */
-                    player.Actor.Damages.Add(byteAngle, shortDamage, part, 0, 0);
-                    player.Actor.Info.Health -= shortDamage;
-
-                    /* Check if the player is dead. */
-                    if (player.Actor.Info.Health <= 0)
-                    {
-                        player.Events.Game.SendDamageEvent(player.Actor.Damages);
-                        player.Flush();
-
-                        player.Actor.Damages.Clear();
-
-                        player.Actor.Info.PlayerState |= PlayerStates.Dead;
-                        player.Actor.Info.Deaths++;
-                        peer.Actor.Info.Kills++;
-
-                        player.State.Set(PeerState.Id.Killed);
-                        OnPlayerKilled(new PlayerKilledEventArgs
-                        {
-                            AttackerCmid = peer.Actor.Cmid,
-                            VictimCmid = player.Actor.Cmid,
-                            ItemClass = weapon.ItemClass,
-                            Damage = (ushort)shortDamage,
-                            Part = part,
-                            Direction = -(direction.Normalized * weapon.DamageKnockback)
-                        });
-                    }
-                }
-                else
-                {
-                    s_log.Debug($"Unable to find weapon with ID {weaponId}");
-                }
-
-                return;
             }
         }
 

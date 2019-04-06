@@ -216,13 +216,6 @@ namespace UberStrok.Realtime.Server.Game
             Debug.Assert(peer.Room == this, "GamePeer is leaving room, but its not leaving the correct room.");
 
             /* Let other peers know that the peer has left the room. */
-            /*
-            foreach (var otherPeer in Peers)
-            {
-                otherPeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
-                otherPeer.KnownActors.Remove(peer.Actor.Cmid);
-            }
-            */
             Actions.PlayerLeft(peer);
 
             lock (_peers)
@@ -247,6 +240,48 @@ namespace UberStrok.Realtime.Server.Game
                 () => State.Update(),
                 (ex) => s_log.Error("Failed to tick game loop.", ex)
             );
+        }
+
+        private bool DoDamage(short damage, BodyPart part, GamePeer victim, GamePeer attacker, out Vector3 direction)
+        {
+            /* Calculate the direction of the hit. */
+            var victimPos = victim.Actor.Movement.Position;
+            var attackerPos = attacker.Actor.Movement.Position;
+            direction = attackerPos - victimPos;
+
+            var angle = Vector3.Angle(direction, new Vector3(0, 0, -1));
+            if (direction.x < 0)
+                angle = 360 - angle;
+
+            var byteAngle = Conversions.Angle2Byte(angle);
+
+            /* If not self-damage, register hit. */
+            if (victim.Actor.Cmid != attacker.Actor.Cmid)
+            {
+                victim.Actor.Damages.Add(byteAngle, damage, part, 0, 0);
+                victim.Actor.Info.Health -= damage;
+
+                /* Check if the player is dead. */
+                if (victim.Actor.Info.Health <= 0)
+                {
+                    /* 
+                     * Force a push of damage events to the victim peer, so he gets
+                     * the feedback of where he was hit from aka red hit marker HUD.
+                     */
+                    victim.Events.Game.SendDamageEvent(victim.Actor.Damages);
+                    victim.Flush();
+                    victim.Actor.Damages.Clear();
+
+                    victim.Actor.Info.PlayerState |= PlayerStates.Dead;
+                    victim.Actor.Info.Deaths++;
+                    attacker.Actor.Info.Kills++;
+
+                    victim.State.Set(PeerState.Id.Killed);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         protected virtual void OnPlayerRespawned(PlayerRespawnedEventArgs args)
