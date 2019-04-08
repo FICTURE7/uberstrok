@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.Diagnostics;
+using UberStrok.Core.Common;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -74,6 +75,11 @@ namespace UberStrok.Realtime.Server.Game
 
         private void PrepareAndSpawnPlayer(GamePeer player)
         {
+            player.Actor.Info.Health = 100;
+            player.Actor.Info.Kills = 0;
+            player.Actor.Info.Deaths = 0;
+            player.Actor.Info.PlayerState &= ~PlayerStates.Dead;
+
             var point = Room.SpawnManager.Get(player.Actor.Team);
             var movement = player.Actor.Movement;
             movement.Position = point.Position;

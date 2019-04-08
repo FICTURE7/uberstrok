@@ -35,11 +35,7 @@ namespace UberStrok.Realtime.Server.Game
             Room.EndTime = Environment.TickCount + Room.View.TimeLimit * 1000;
 
             foreach (var player in Room.Players)
-            {
-                player.Actor.Info.Kills = 0;
-                player.Actor.Info.Deaths = 0;
                 player.State.Set(PeerState.Id.Playing);
-            }
 
             /* TODO: Increment round number only when the round is over. */
             Room.RoundNumber++;
