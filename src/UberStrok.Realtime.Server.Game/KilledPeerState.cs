@@ -18,7 +18,7 @@ namespace UberStrok.Realtime.Server.Game
             var now = DateTime.UtcNow;
 
             /* TODO: Allow user to set the countdown timer duration in a config or something. */
-            _countdown = 3 * 1000;
+            _countdown = 5 * 1000;
             _countdownEndTime = now.AddSeconds(_countdown);
         }
 
