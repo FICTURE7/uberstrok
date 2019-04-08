@@ -36,16 +36,6 @@ namespace UberStrok.Realtime.Server.Game
 
                 Peer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
             }
-
-            /* Sync the power ups to the server side. */
-
-            /*
-            if (Room.PowerUps.IsLoaded)
-            {
-                Peer.Events.Game.SendSetPowerUpState(Room.PowerUps.Respawning);
-                s_log.Debug($"Respawning pick-ups: {string.Join(", ", Room.PowerUps.Respawning)}");
-            }
-            */
         }
 
         public override void OnResume()

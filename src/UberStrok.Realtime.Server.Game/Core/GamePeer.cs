@@ -12,6 +12,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public GamePeer(InitRequest initRequest) : base(initRequest)
         {
+            KnownActors = new HashSet<int>();
             _events = new GamePeerEvents(this);
 
             _state = new StateMachine<PeerState.Id>();
@@ -22,7 +23,6 @@ namespace UberStrok.Realtime.Server.Game
             _state.Register(PeerState.Id.Playing, new PlayingPeerState(this));
             _state.Register(PeerState.Id.Killed, new KilledPeerState(this));
 
-            KnownActors = new List<int>(16);
             /* Could make GamePeerOperationHandler a singleton but what ever. */
             AddOperationHandler(new GamePeerOperationHandler());
         }
@@ -33,15 +33,12 @@ namespace UberStrok.Realtime.Server.Game
          */
         public bool WaitingForLoadout { get; set; }
 
+        public HashSet<int> KnownActors { get; set; }
+
         public string AuthToken { get; set; }
         public ushort Ping { get; set; }
         public GameActor Actor { get; set; }
 
-        /* 
-         * TODO: Not really sure if we need this. But might want to turn it into
-         * a HashSet.
-         */
-        public List<int> KnownActors { get; set; }
         public BaseGameRoom Room { get; set; }
         public LoadoutView Loadout { get; set; }
         public UberstrikeUserView Member { get; set; }
