@@ -79,7 +79,7 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnExplosionDamage(GamePeer peer, int targetCmid, byte slot, byte distance, Vector3 force)
         {
             GamePeer attacker = peer;
-            int weaponId = attacker.Actor.Info.CurrentWeaponID;
+            int weaponId = attacker.Actor.Info.Weapons[slot];
 
             foreach (var victim in Players)
             {
