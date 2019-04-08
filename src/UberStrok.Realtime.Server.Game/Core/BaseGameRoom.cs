@@ -244,6 +244,8 @@ namespace UberStrok.Realtime.Server.Game
 
         private bool DoDamage(short damage, BodyPart part, GamePeer victim, GamePeer attacker, out Vector3 direction)
         {
+            bool selfDamage = victim.Actor.Cmid == attacker.Actor.Cmid;
+
             /* Calculate the direction of the hit. */
             var victimPos = victim.Actor.Movement.Position;
             var attackerPos = attacker.Actor.Movement.Position;
@@ -255,8 +257,8 @@ namespace UberStrok.Realtime.Server.Game
 
             var byteAngle = Conversions.Angle2Byte(angle);
 
-            /* Check if self-damage. */
-            if (victim.Actor.Cmid != attacker.Actor.Cmid)
+            /* Check if not self-damage. */
+            if (!selfDamage)
             {
                 victim.Actor.Damages.Add(byteAngle, damage, part, 0, 0);
                 victim.Actor.Info.Health -= damage;
@@ -282,8 +284,12 @@ namespace UberStrok.Realtime.Server.Game
                 }
 
                 victim.Actor.Info.PlayerState |= PlayerStates.Dead;
+
                 victim.Actor.Info.Deaths++;
-                attacker.Actor.Info.Kills++;
+                if (selfDamage)
+                    attacker.Actor.Info.Kills--;
+                else
+                    attacker.Actor.Info.Kills++;
 
                 victim.State.Set(PeerState.Id.Killed);
                 return true;
