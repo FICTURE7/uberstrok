@@ -131,6 +131,26 @@ namespace UberStrok.Realtime.Server.Game
 
             Debug.Assert(peer.Room == null, "GamePeer is joining room, but its already in another room.");
 
+            /* 
+             * If a peer with the same cmid is somehow in the room, disconnect him.
+             * Avoiding a dead-lock by calling Leave outside the lock.
+             */
+            var peerAlreadyConnected = default(GamePeer);
+            lock (_peers)
+            {
+                foreach (var otherPeer in _peers)
+                {
+                    if (otherPeer.Actor.Cmid == peer.Member.CmuneMemberView.PublicProfile.Cmid)
+                    {
+                        peerAlreadyConnected = otherPeer;
+                        break;
+                    }
+                }
+            }
+
+            if (peerAlreadyConnected != null)
+                Leave(peerAlreadyConnected);
+
             var roomView = View;
             var actorView = new GameActorInfoView
             {
