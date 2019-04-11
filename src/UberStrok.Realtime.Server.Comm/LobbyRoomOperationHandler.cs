@@ -8,12 +8,7 @@ namespace UberStrok.Realtime.Server.Comm
 {
     public class LobbyRoomOperationHandler : BaseLobbyRoomOperationHandler
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CommPeerOperationHandler).Name);
-
-        protected override void OnChatMessageToAll(CommPeer peer, string message)
-        {
-            LobbyManager.Instance.ChatToAll(peer.Actor, message);
-        }
+        private static readonly ILog Log = LogManager.GetLogger(nameof(LobbyRoomOperationHandler));
 
         public override void OnDisconnect(CommPeer peer, DisconnectReason reasonCode, string reasonDetail)
         {
@@ -22,6 +17,11 @@ namespace UberStrok.Realtime.Server.Comm
             // Remove the peer from the lobby list & update all peer's CommActor list.
             LobbyManager.Instance.Remove(peer.Actor.Cmid);
             LobbyManager.Instance.UpdateList();
+        }
+
+        protected override void OnChatMessageToAll(CommPeer peer, string message)
+        {
+            LobbyManager.Instance.ChatToAll(peer.Actor, message);
         }
 
         protected override void OnFullPlayerListUpdate(CommPeer peer)
@@ -116,7 +116,8 @@ namespace UberStrok.Realtime.Server.Comm
 
         protected override void OnSpeedhackDetectionNew(CommPeer peer, List<float> timeDifferences)
         {
-            throw new NotImplementedException();
+            if (IsSpeedHacking(timeDifferences))
+                peer.Events.SendDisconnectAndDisablePhoton(null);
         }
 
         protected override void OnPlayersReported(CommPeer peer, List<int> cmids, int type, string details, string logs)
@@ -147,6 +148,24 @@ namespace UberStrok.Realtime.Server.Comm
         protected override void OnUpdateContacts(CommPeer peer)
         {
             throw new NotImplementedException();
+        }
+
+        private bool IsSpeedHacking(List<float> td)
+        {
+            float mean = 0;
+            for (int i = 0; i < td.Count; i++)
+                mean += td[i];
+
+            mean /= td.Count;
+            if (mean > 2f)
+                return true;
+
+            float variance = 0;
+            for (int i = 0; i < td.Count; i++)
+                variance += (float)Math.Pow(td[i] - mean, 2);
+
+            variance /= td.Count - 1;
+            return mean > 1.1f && variance <= 0.05f;
         }
     }
 }
