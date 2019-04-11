@@ -17,20 +17,22 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnJoinGame(GamePeer peer, TeamID team)
         {
             /* 
-                When the client joins a game it resets its match state to 'none'.               
-
-                Update the actor's team + other data and register the peer in the player list.
-                Update the number of connected players while we're at it.
+             * When the client joins a game it resets its match state to 'none'.               
+             *
+             * Update the actor's team + other data and register the peer in the player list.
+             * Update the number of connected players while we're at it.
              */
             peer.Actor.Team = team;
             peer.Actor.Info.Health = 100;
+            peer.Actor.Info.ArmorPoints = 0;
+            peer.Actor.Info.ArmorPointCapacity = 0;
             peer.Actor.Info.Ping = (ushort)(peer.RoundTripTime / 2);
             peer.Actor.Info.PlayerState = PlayerStates.Ready;
 
-            lock (_peers)
+            lock (Sync)
             {
                 _players.Add(peer);
-                _view.ConnectedPlayers = Players.Count;
+                View.ConnectedPlayers = Players.Count;
             }
 
             OnPlayerJoined(new PlayerJoinedEventArgs
@@ -55,8 +57,8 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes)
         {
             /* We care only about the first operation sent. */
-            if (!_powerUpManager.IsLoaded)
-                _powerUpManager.Load(respawnTimes);
+            if (!PowerUps.IsLoaded)
+                PowerUps.Load(respawnTimes);
         }
 
         protected override void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations)
@@ -64,16 +66,13 @@ namespace UberStrok.Realtime.Server.Game
             Debug.Assert(positions.Count == rotations.Count, "Number of spawn positions given and number of rotations given is not equal.");
 
             /* We care only about the first operation sent for that team ID. */
-            if (!_spawnManager.IsLoaded(team))
-                _spawnManager.Load(team, positions, rotations);
+            if (!SpawnManager.IsLoaded(team))
+                SpawnManager.Load(team, positions, rotations);
         }
 
         protected override void OnRespawnRequest(GamePeer peer)
         {
-            OnPlayerRespawned(new PlayerRespawnedEventArgs
-            {
-                Player = peer
-            });
+            OnPlayerRespawned(new PlayerRespawnedEventArgs { Player = peer });
         }
 
         protected override void OnExplosionDamage(GamePeer peer, int targetCmid, byte slot, byte distance, Vector3 force)
@@ -81,23 +80,23 @@ namespace UberStrok.Realtime.Server.Game
             GamePeer attacker = peer;
             int weaponId = attacker.Actor.Info.Weapons[slot];
 
+            if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
+            {
+                s_log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
+                attacker.Disconnect();
+                return;
+            }
+
+            /* Calculate damage amount. */
+            float damage = weapon.DamagePerProjectile;
+            float radius = weapon.SplashRadius / 100f;
+            float damageExplosion = damage * (radius - distance) / radius;
+            short shortDamage = (short)damageExplosion;
+
             foreach (var victim in Players)
             {
                 if (victim.Actor.Cmid != targetCmid)
                     continue;
-
-                if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
-                {
-                    s_log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
-                    attacker.Disconnect();
-                    return;
-                }
-
-                /* Calculate damage amount. */
-                float damage = weapon.DamagePerProjectile;
-                float radius = weapon.SplashRadius / 100f;
-                float damageExplosion = damage * (radius - distance) / radius;
-                short shortDamage = (short)damageExplosion;
 
                 if (DoDamage(shortDamage, BodyPart.Body, victim, attacker, out Vector3 direction))
                 {
@@ -119,31 +118,29 @@ namespace UberStrok.Realtime.Server.Game
             GamePeer attacker = peer;
             int weaponId = attacker.Actor.Info.CurrentWeaponID;
 
+
+            if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
+            {
+                s_log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
+                attacker.Disconnect();
+                return;
+            }
+
+            /* TODO: Clamp value. */
+            int damage = weapon.DamagePerProjectile * bullets;
+
+            /* Calculate the critical hit damage. */
+            var part = (BodyPart)bodyPart;
+            int bonus = weapon.CriticalStrikeBonus;
+            if (bonus > 0 && (part == BodyPart.Head || part == BodyPart.Nuts))
+                damage = (int)Math.Round(damage + (damage * (bonus / 100f)));
+            var shortDamage = (short)damage;
+
             foreach (var victim in Players)
             {
                 if (victim.Actor.Cmid != target)
                     continue;
 
-                if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
-                {
-                    s_log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
-                    attacker.Disconnect();
-                    return;
-                }
-
-                /* TODO: Clamp value. */
-                int damage = weapon.DamagePerProjectile * bullets;
-
-                /* Calculate the critical hit damage. */
-                BodyPart part = (BodyPart)bodyPart;
-                int bonus = weapon.CriticalStrikeBonus;
-                if (bonus > 0)
-                {
-                    if (part == BodyPart.Head || part == BodyPart.Nuts)
-                        damage = (int)Math.Round(damage + (damage * (bonus / 100f)));
-                }
-
-                var shortDamage = (short)damage;
                 if (DoDamage(shortDamage, part, victim, attacker, out Vector3 direction))
                 {
                     OnPlayerKilled(new PlayerKilledEventArgs
