@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using UberStrok.Core.Views;
 
@@ -25,13 +24,20 @@ namespace UberStrok.WebServices.Db
             if (!LoadSteamIds())
             {
                 _steamId2Cmid = new Dictionary<string, int>();
-
                 // Create the file if it does not exists.
                 SaveSteamIds();
+            }
+
+            if (!LoadSteamBans())
+            {
+                _steamBans = new HashSet<string>();
+                // Create the file if it does not exists.
+                SaveSteamBans();
             }
         }
 
         private Dictionary<string, int> _steamId2Cmid; // SteamID -> CMID
+        private HashSet<string> _steamBans;
         private readonly ProfileDb _profilesDb;
         private readonly WalletDb _walletsDb;
         private readonly InventoryDb _inventoriesDb;
@@ -58,6 +64,23 @@ namespace UberStrok.WebServices.Db
             // Save steam Ids after we done linking them.
             SaveSteamIds();
             return true;
+        }
+
+        public bool IsBanned(string steamId)
+        {
+            if (steamId == null)
+                throw new ArgumentNullException(nameof(steamId));
+
+            return _steamBans.Contains(steamId);
+        }
+
+        public void Ban(string steamId)
+        {
+            if (steamId == null)
+                throw new ArgumentNullException(nameof(steamId));
+
+            if (_steamBans.Add(steamId))
+                SaveSteamBans();
         }
 
         public MemberView LoadMember(string steamId)
@@ -108,6 +131,21 @@ namespace UberStrok.WebServices.Db
             File.WriteAllText("data/_nextcmid", cmid.ToString());
         }
 
+        private bool LoadSteamBans()
+        {
+            _steamBans = Utils.DeserializeJsonAt<HashSet<string>>("data/steam_bans.json");
+            return _steamBans != null;
+        }
+
+        private void SaveSteamBans()
+        {
+            if (_steamBans == null)
+                _steamBans = new HashSet<string>();
+
+            var json = JsonConvert.SerializeObject(_steamBans);
+            File.WriteAllText("data/steam_bans.json", json);
+        }
+
         private bool LoadSteamIds()
         {
             _steamId2Cmid = Utils.DeserializeJsonAt<Dictionary<string, int>>("data/steam_id.json");
@@ -116,8 +154,6 @@ namespace UberStrok.WebServices.Db
 
         private void SaveSteamIds()
         {
-            Debug.Assert(_steamId2Cmid != null);
-
             if (_steamId2Cmid == null)
                 _steamId2Cmid = new Dictionary<string, int>();
 

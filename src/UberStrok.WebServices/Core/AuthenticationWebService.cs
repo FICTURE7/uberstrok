@@ -52,6 +52,7 @@ namespace UberStrok.WebServices.Core
 
         public override MemberAuthenticationResultView OnLoginSteam(string steamId, string authToken, string machineId)
         {
+            var banned = false;
             // Figure out if the account has been linked.
             var linked = true;
             // Figure out if the account existed. true -> existed otherwise false.
@@ -81,10 +82,13 @@ namespace UberStrok.WebServices.Core
                 }
             }
 #endif
+            banned = Context.Users.Db.IsBanned(steamId);
 
             var result = MemberAuthenticationResult.Ok;
             if (!linked)
                 result = MemberAuthenticationResult.InvalidEsns;
+            else if (banned)
+                result = MemberAuthenticationResult.IsBanned;
 
             // Use the PublicProfile.EmailAddrsessStatus to figure out if its an incomplete account,
             // because why not.
