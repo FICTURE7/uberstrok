@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using UberStrok.Core.Serialization;
 
 namespace UberStrok.Realtime.Server.Comm
@@ -27,6 +28,9 @@ namespace UberStrok.Realtime.Server.Comm
                 case ICommPeerOperationsType.SendHeartbeatResponse:
                     SendHeartbeatResponse(peer, bytes);
                     break;
+
+                default:
+                    throw new NotSupportedException();
             }
         }
 
