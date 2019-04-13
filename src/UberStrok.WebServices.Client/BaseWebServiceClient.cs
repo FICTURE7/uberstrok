@@ -8,7 +8,11 @@ namespace UberStrok.WebServices.Client
     {
         private readonly TChannel _channel;
 
-        private static readonly BasicHttpBinding s_binding = new BasicHttpBinding();
+        private static readonly BasicHttpBinding s_binding = new BasicHttpBinding
+        {
+            MaxBufferSize = ushort.MaxValue * 4,
+            MaxReceivedMessageSize = ushort.MaxValue * 4
+        };
         private static readonly ChannelFactory<TChannel> s_factory = new ChannelFactory<TChannel>(s_binding);
 
         protected BaseWebServiceClient(string endPoint, string service)
