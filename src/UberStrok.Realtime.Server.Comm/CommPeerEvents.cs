@@ -7,9 +7,11 @@ namespace UberStrok.Realtime.Server.Comm
 {
     public class CommPeerEvents : BaseEventSender
     {
+        public LobbyRoomEvents Lobby { get; }
+
         public CommPeerEvents(BasePeer peer) : base(peer)
         {
-            // Space
+            Lobby = new LobbyRoomEvents(peer);
         }
 
         public void SendDisconnectAndDisablePhoton(string message)

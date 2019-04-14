@@ -1,9 +1,11 @@
 ﻿using log4net;
+using System;
 using System.Collections.Generic;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Comm
 {
+    [Obsolete]
     public class LobbyManager
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(LobbyManager));
@@ -31,7 +33,7 @@ namespace UberStrok.Realtime.Server.Comm
                     views.Add(actor.View);
 
                 foreach (var actor in Actors)
-                    actor.Peer.Lobby.Events.SendFullPlayerListUpdate(views);
+                    actor.Peer.Events.Lobby.SendFullPlayerListUpdate(views);
             }
         }
 
@@ -43,7 +45,7 @@ namespace UberStrok.Realtime.Server.Comm
                 {
                     // Don't send back the message sent by the actor to itself.
                     if (a.Cmid != actor.Cmid)
-                        a.Peer.Lobby.Events.SendLobbyChatMessage(actor.Cmid, actor.Name, message);
+                        a.Peer.Events.Lobby.SendLobbyChatMessage(actor.Cmid, actor.Name, message);
                 }
             }
         }

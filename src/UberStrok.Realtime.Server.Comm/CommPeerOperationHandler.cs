@@ -20,18 +20,7 @@ namespace UberStrok.Realtime.Server.Comm
         {
             Log.Info($"Received AuthenticationRequest! {authToken}:{magicHash}");
 
-            // Parse the auth token to retrieve the web server address.
-            // TODO: Make the WebServer send its external IP instead to avoid issues
-            // with custom service base strings.
-            var bytes = Convert.FromBase64String(authToken);
-            var data = Encoding.UTF8.GetString(bytes);
-
-            var webServer = data.Substring(0, data.IndexOf("#####"));
-
-            // Retrieve user data from the web server.
-            var client = new UserWebServiceClient(webServer);
-            var member = client.GetMember(authToken);
-
+            var member = GetMemberFromAuthToken(authToken);
             var view = new CommActorInfoView
             {
                 AccessLevel = member.CmuneMemberView.PublicProfile.AccessLevel,
@@ -39,18 +28,32 @@ namespace UberStrok.Realtime.Server.Comm
                 Cmid = member.CmuneMemberView.PublicProfile.Cmid,
                 PlayerName = member.CmuneMemberView.PublicProfile.Name,
             };
-            var actor = new CommActor(peer, view);
 
-            peer.Actor = actor;
-            // Add user to the lobby room's actors.
-            LobbyManager.Instance.Add(actor);
-            // Update all peers' actor list including this peer.
-            LobbyManager.Instance.UpdateList();
+            peer.Actor = new CommActor(peer, view);
+
+            /* Make peer join the global lobby room. */
+            CommApplication.Instance.Rooms.Global.Join(peer);
         }
 
         public override void OnSendHeartbeatResponse(CommPeer peer, string authToken, string responseHash)
         {
             // Space
+        }
+
+        private UberstrikeUserView GetMemberFromAuthToken(string authToken)
+        {
+            //TODO: Provide some base class for this kind of server-server communications.
+            var bytes = Convert.FromBase64String(authToken);
+            var data = Encoding.UTF8.GetString(bytes);
+
+            var webServer = data.Substring(0, data.IndexOf("#####"));
+
+            Log.Debug($"Retrieving user data {authToken} from the web server {webServer}");
+
+            // Retrieve user data from the web server.
+            var client = new UserWebServiceClient(webServer);
+            var member = client.GetMember(authToken);
+            return member;
         }
     }
 }

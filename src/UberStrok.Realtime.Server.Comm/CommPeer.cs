@@ -7,22 +7,14 @@ namespace UberStrok.Realtime.Server.Comm
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CommPeer));
 
-        public CommPeer(InitRequest initRequest) : base(initRequest)
-        {
-            // LobbyRoom adds a LobbyRoomOperationHandler to this CommPeer on
-            // initialization.
-            _lobby = new LobbyRoom(this);
-            _events = new CommPeerEvents(this);
+        public LobbyRoom Room { get; set; }
+        public CommActor Actor { get; set; }
+        public CommPeerEvents Events { get; }
 
+        public CommPeer(InitRequest request) : base(request)
+        {
+            Events = new CommPeerEvents(this);
             AddOperationHandler(new CommPeerOperationHandler());
         }
-
-        public CommActor Actor { get; set; }
-
-        public CommPeerEvents Events => _events;
-        public LobbyRoom Lobby => _lobby;
-
-        private readonly LobbyRoom _lobby;
-        private readonly CommPeerEvents _events;
     }
 }

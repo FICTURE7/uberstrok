@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using log4net;
 using PhotonHostRuntimeInterfaces;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public class LobbyRoomOperationHandler : BaseLobbyRoomOperationHandler
+    public partial class LobbyRoom
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(LobbyRoomOperationHandler));
-
         public override void OnDisconnect(CommPeer peer, DisconnectReason reasonCode, string reasonDetail)
         {
             Log.Info($"{peer.Actor.Cmid} Disconnected {reasonCode} -> {reasonDetail}");
-
-            // Remove the peer from the lobby list & update all peer's CommActor list.
-            LobbyManager.Instance.Remove(peer.Actor.Cmid);
-            LobbyManager.Instance.UpdateList();
+            Leave(peer);
         }
 
         protected override void OnChatMessageToAll(CommPeer peer, string message)
         {
-            LobbyManager.Instance.ChatToAll(peer.Actor, message);
+            lock (Sync)
+            {
+                foreach (var otherPeer in Peers)
+                {
+                    if (otherPeer.Actor.Cmid != peer.Actor.Cmid)
+                        otherPeer.Events.Lobby.SendLobbyChatMessage(peer.Actor.Cmid, peer.Actor.Name, message);
+                }
+            }
         }
 
         protected override void OnFullPlayerListUpdate(CommPeer peer)
@@ -148,24 +149,6 @@ namespace UberStrok.Realtime.Server.Comm
         protected override void OnUpdateContacts(CommPeer peer)
         {
             throw new NotImplementedException();
-        }
-
-        private bool IsSpeedHacking(List<float> td)
-        {
-            float mean = 0;
-            for (int i = 0; i < td.Count; i++)
-                mean += td[i];
-
-            mean /= td.Count;
-            if (mean > 2f)
-                return true;
-
-            float variance = 0;
-            for (int i = 0; i < td.Count; i++)
-                variance += (float)Math.Pow(td[i] - mean, 2);
-
-            variance /= td.Count - 1;
-            return mean > 1.1f && variance <= 0.05f;
         }
     }
 }

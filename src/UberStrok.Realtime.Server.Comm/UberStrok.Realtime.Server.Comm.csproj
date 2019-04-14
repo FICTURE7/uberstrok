@@ -46,7 +46,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseCommPeerOperationHandler.cs" />
+    <Compile Include="Core\BaseCommPeerOperationHandler.cs" />
     <Compile Include="CommActor.cs" />
     <Compile Include="CommApplication.cs" />
     <Compile Include="CommPeer.cs" />
@@ -55,8 +55,9 @@
     <Compile Include="LobbyRoom.cs" />
     <Compile Include="LobbyRoomEvents.cs" />
     <Compile Include="LobbyManager.cs" />
-    <Compile Include="BaseLobbyRoomOperationHandler.cs" />
-    <Compile Include="LobbyRoomOperationHandler.cs" />
+    <Compile Include="Core\BaseLobbyRoomOperationHandler.cs" />
+    <Compile Include="LobbyRoomManager.cs" />
+    <Compile Include="LobbyRoom.Handler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

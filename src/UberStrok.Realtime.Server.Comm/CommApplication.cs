@@ -9,12 +9,8 @@ namespace UberStrok.Realtime.Server.Comm
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CommApplication));
 
-        protected override PeerBase CreatePeer(InitRequest initRequest)
-        {
-            Log.Info($"Accepted new connection at {initRequest.RemoteIP}:{initRequest.RemotePort}");
-
-            return new CommPeer(initRequest);
-        }
+        public static new CommApplication Instance => (CommApplication)ApplicationBase.Instance;
+        public LobbyRoomManager Rooms { get; private set; }
 
         protected override void Setup()
         {
@@ -25,12 +21,19 @@ namespace UberStrok.Realtime.Server.Comm
             if (configFile.Exists)
                 XmlConfigurator.ConfigureAndWatch(configFile);
 
+            Rooms = new LobbyRoomManager();
             Log.Info("Started CommServer...");
         }
 
         protected override void TearDown()
         {
             Log.Info("Stopped CommServer...");
+        }
+
+        protected override PeerBase CreatePeer(InitRequest initRequest)
+        {
+            Log.Info($"Accepted new connection at {initRequest.RemoteIP}:{initRequest.RemotePort}");
+            return new CommPeer(initRequest);
         }
     }
 }
