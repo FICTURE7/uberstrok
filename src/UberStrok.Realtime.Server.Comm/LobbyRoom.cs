@@ -53,6 +53,7 @@ namespace UberStrok.Realtime.Server.Comm
 
             Log.Debug($"CommPeer left the room {peer.Actor.Cmid}");
 
+            peer.RemoveOperationHandler(Id);
             UpdateList();
             /* TODO: Tell the web servers to close the user's session or something. */
         }

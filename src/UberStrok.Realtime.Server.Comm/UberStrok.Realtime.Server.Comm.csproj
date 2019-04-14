@@ -54,7 +54,6 @@
     <Compile Include="CommPeerOperationHandler.cs" />
     <Compile Include="LobbyRoom.cs" />
     <Compile Include="LobbyRoomEvents.cs" />
-    <Compile Include="LobbyManager.cs" />
     <Compile Include="Core\BaseLobbyRoomOperationHandler.cs" />
     <Compile Include="LobbyRoomManager.cs" />
     <Compile Include="LobbyRoom.Handler.cs" />

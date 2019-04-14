@@ -7,7 +7,7 @@ namespace UberStrok.Realtime.Server.Comm
 {
     public class CommApplication : ApplicationBase
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CommApplication));
+        private static readonly ILog Log = LogManager.GetLogger(nameof(CommApplication));
 
         public static new CommApplication Instance => (CommApplication)ApplicationBase.Instance;
         public LobbyRoomManager Rooms { get; private set; }
