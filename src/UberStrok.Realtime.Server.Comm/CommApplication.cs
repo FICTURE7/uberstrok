@@ -14,9 +14,9 @@ namespace UberStrok.Realtime.Server.Comm
 
         protected override void Setup()
         {
-            // Add a the log path to the properties so can use them in log4net.config.
+            /* Add a the log path to the properties so can use them in log4net.config. */
             GlobalContext.Properties["Photon:ApplicationLogPath"] = Path.Combine(ApplicationPath, "log");
-            // Configure log4net to use log4net.config file.
+            /* Configure log4net to use log4net.config file. */
             var configFile = new FileInfo(Path.Combine(BinaryPath, "log4net.config"));
             if (configFile.Exists)
                 XmlConfigurator.ConfigureAndWatch(configFile);

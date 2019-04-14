@@ -9,7 +9,7 @@ namespace UberStrok.Realtime.Server.Comm
 {
     public class CommPeerOperationHandler : BaseCommPeerOperationHandler
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CommPeerOperationHandler));
+        private static readonly ILog Log = LogManager.GetLogger(nameof(CommPeerOperationHandler));
 
         public CommPeerOperationHandler()
         {
