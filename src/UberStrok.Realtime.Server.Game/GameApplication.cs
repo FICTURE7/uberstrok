@@ -50,7 +50,7 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void TearDown()
         {
-            s_log.Info("Stopped CommServer...");
+            s_log.Info("Stopped GameServer...");
         }
     }
 }
