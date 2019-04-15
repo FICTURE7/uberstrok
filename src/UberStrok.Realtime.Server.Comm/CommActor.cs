@@ -1,4 +1,5 @@
 ﻿using System;
+using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Comm
@@ -10,6 +11,7 @@ namespace UberStrok.Realtime.Server.Comm
 
         public int Cmid => View.Cmid;
         public string Name => View.PlayerName;
+        public MemberAccessLevel AccessLevel => View.AccessLevel;
 
         public CommActor(CommPeer peer, CommActorInfoView view)
         {

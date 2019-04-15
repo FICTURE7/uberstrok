@@ -2,14 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using UberStrok.Core;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public partial class LobbyRoom : BaseLobbyRoomOperationHandler, IRoom<CommPeer>
+    public partial class LobbyRoom : BaseLobbyRoomOperationHandler, IRoom<CommPeer>, IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(LobbyRoom));
 
+        private bool _disposed;
+        private readonly Loop _loop;
         private readonly List<CommPeer> _peers;
 
         public object Sync { get; }
@@ -17,10 +20,14 @@ namespace UberStrok.Realtime.Server.Comm
 
         public LobbyRoom()
         {
+            _loop = new Loop(5);
             _peers = new List<CommPeer>();
 
             Sync = new object();
             Peers = _peers.AsReadOnly();
+
+            /* Start lobby room loop. */
+            _loop.Start(OnTick, OnTickError);
         }
 
         public void Join(CommPeer peer)
@@ -39,7 +46,6 @@ namespace UberStrok.Realtime.Server.Comm
 
             peer.Events.SendLobbyEntered();
             peer.AddOperationHandler(this);
-
             UpdateList();
         }
 
@@ -56,6 +62,29 @@ namespace UberStrok.Realtime.Server.Comm
             peer.RemoveOperationHandler(Id);
             UpdateList();
             /* TODO: Tell the web servers to close the user's session or something. */
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _loop.Dispose();
+            _disposed = true;
+        }
+
+        private void OnTick()
+        {
+            lock (Sync)
+            {
+                foreach (var peer in Peers)
+                    peer.Update();
+            }
+        }
+
+        private void OnTickError(Exception ex)
+        {
+            Log.Error("Failed to tick.", ex);
         }
 
         /* Update all peer's player list in the lobby. */
