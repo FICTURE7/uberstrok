@@ -9,20 +9,15 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeerOperationHandler : BaseGamePeerOperationHandler
     {
-        /* Be GC friendly a little bit. By allocating it once. */
-        private readonly static PhotonServerLoadView s_loadView;
-        private readonly static ILog s_log;
+        private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeerOperationHandler));
 
-        static GamePeerOperationHandler()
+        /* Be GC friendly a little bit. By allocating it once. */
+        private readonly static PhotonServerLoadView _loadView = new PhotonServerLoadView
         {
-            s_log = LogManager.GetLogger(nameof(GamePeerOperationHandler));
-            s_loadView = new PhotonServerLoadView
-            {
-                /* TODO: Implement some configs or somethings. */
-                MaxPlayerCount = 100,
-                State = PhotonServerLoadView.Status.Alive,
-            };
-        }
+            /* TODO: Implement some configs or somethings. */
+            MaxPlayerCount = 100,
+            State = PhotonServerLoadView.Status.Alive,
+        };
 
         protected override void OnGetGameListUpdates(GamePeer peer)
         {
@@ -35,22 +30,21 @@ namespace UberStrok.Realtime.Server.Game
                 rooms.Add(room.View);
 
             peer.Events.SendGameListUpdate(rooms, new List<int>());
-
-            s_log.Debug($"OnGetGameListUpdates: Room Count -> {rooms.Count}");
+            Log.Debug($"OnGetGameListUpdates: Room Count = {rooms.Count}");
         }
 
         protected override void OnGetServerLoad(GamePeer peer)
         {
             /* UberStrike does not care about this value, it uses its client side value. */
-            s_loadView.Latency = peer.RoundTripTime / 2;
-            s_loadView.PeersConnected = GameApplication.Instance.PlayerCount;
+            _loadView.Latency = peer.RoundTripTime / 2;
+            _loadView.PeersConnected = GameApplication.Instance.PlayerCount;
             /* UberStrike also does not care about this value, it uses PeersConnected. */
-            s_loadView.PlayersConnected = GameApplication.Instance.PlayerCount;
-            s_loadView.RoomsCreated = GameApplication.Instance.Rooms.Count;
-            s_loadView.TimeStamp = DateTime.UtcNow;
+            _loadView.PlayersConnected = GameApplication.Instance.PlayerCount;
+            _loadView.RoomsCreated = GameApplication.Instance.Rooms.Count;
+            _loadView.TimeStamp = DateTime.UtcNow;
 
-            peer.Events.SendServerLoadData(s_loadView);
-            s_log.Debug($"OnGetServerLoad: Load -> {s_loadView.PeersConnected}/{s_loadView.MaxPlayerCount} Rooms: {s_loadView.RoomsCreated}");
+            peer.Events.SendServerLoadData(_loadView);
+            Log.Debug($"OnGetServerLoad: Load -> {_loadView.PeersConnected}/{_loadView.MaxPlayerCount} Rooms: {_loadView.RoomsCreated}");
         }
 
         protected override void OnCreateRoom(GamePeer peer, GameRoomDataView roomData, string password, string clientVersion, string authToken, string magicHash)
@@ -59,8 +53,12 @@ namespace UberStrok.Realtime.Server.Game
             if (clientVersion != "4.7.1")
                 peer.Disconnect();
 
-            peer.AuthToken = authToken;
-            peer.Member = GetMemberFromAuthToken(authToken);
+            if (!peer.Authenticate(authToken, magicHash))
+            {
+                peer.DoError();
+                return;
+            }
+
             peer.Loadout = GetLoadoutFromAuthToken(authToken);
 
             var room = default(BaseGameRoom);
@@ -75,7 +73,7 @@ namespace UberStrok.Realtime.Server.Game
             catch (NotSupportedException)
             {
                 peer.Events.SendRoomEnterFailed(string.Empty, 0, "UberStrok does not support the selected game mode.");
-                s_log.Debug($"OnCreateRoom: Client tried to create a game mode which is not supported.");
+                Log.Debug($"OnCreateRoom: Client tried to create a game mode which is not supported.");
                 return;
             }
             catch (Exception ex)
@@ -87,12 +85,12 @@ namespace UberStrok.Realtime.Server.Game
 #endif
 
                 peer.Events.SendRoomEnterFailed(string.Empty, 0, message);
-                s_log.Error($"OnCreateRoom: Unable to create game room.", ex);
+                Log.Error($"OnCreateRoom: Unable to create game room.", ex);
                 return;
             }
 
             room.Join(peer);
-            s_log.Debug($"OnCreateRoom: Created new room: {room.Number} and made the client to join it.");
+            Log.Debug($"OnCreateRoom: Created new room: {room.Number} and made the client to join it.");
         }
 
         protected override void OnJoinRoom(GamePeer peer, int roomId, string password, string clientVersion, string authToken, string magicHash)
@@ -101,14 +99,18 @@ namespace UberStrok.Realtime.Server.Game
             if (clientVersion != "4.7.1")
                 peer.Disconnect();
 
-            peer.AuthToken = authToken;
-            peer.Member = GetMemberFromAuthToken(authToken);
+            if (!peer.Authenticate(authToken, magicHash))
+            {
+                peer.DoError();
+                return;
+            }
+
             peer.Loadout = GetLoadoutFromAuthToken(authToken);
 
             var room = GameApplication.Instance.Rooms.Get(roomId);
             if (room != null)
             {
-                s_log.Debug($"OnJoinRoom: Room: {roomId} IsPasswordProcted: {room.View.IsPasswordProtected}");
+                Log.Debug($"OnJoinRoom: Room: {roomId} IsPasswordProcted: {room.View.IsPasswordProtected}");
 
                 /* Request password if the room is password protected & check password.*/
                 if (room.View.IsPasswordProtected && password != room.Password)
@@ -119,7 +121,7 @@ namespace UberStrok.Realtime.Server.Game
             else
             {
                 peer.Events.SendRoomEnterFailed(string.Empty, 0, "Room does not exist anymore.");
-                s_log.Warn($"OnJoinRoom: Client wanted to join a room, but Rooms.Get returned null.");
+                Log.Warn($"OnJoinRoom: Client wanted to join a room, but Rooms.Get returned null.");
             }
         }
 
@@ -128,7 +130,7 @@ namespace UberStrok.Realtime.Server.Game
             if (peer.Room != null)
                 peer.Room.Leave(peer);
             else
-                s_log.Error("A client tried to a leave a game room even though it was not in a room."); /* wtf fam? */
+                Log.Error("A client tried to a leave a game room even though it was not in a room."); /* wtf fam? */
         }
 
         protected override void OnUpdatePing(GamePeer peer, ushort ping)
@@ -180,38 +182,15 @@ namespace UberStrok.Realtime.Server.Game
             peer.WaitingForLoadout = false;
         }
 
-        private UberstrikeUserView GetMemberFromAuthToken(string authToken)
+        private static LoadoutView GetLoadoutFromAuthToken(string authToken)
         {
-            //TODO: Provide some base class for this kind of server-server communications.
-
             var bytes = Convert.FromBase64String(authToken);
             var data = Encoding.UTF8.GetString(bytes);
-
             var webServer = data.Substring(0, data.IndexOf("#####"));
 
-            s_log.Debug($"Retrieving user data {authToken} from the web server {webServer}");
-
-            // Retrieve user data from the web server.
-            var client = new UserWebServiceClient(webServer);
-            var member = client.GetMember(authToken);
-            return member;
-        }
-
-        private LoadoutView GetLoadoutFromAuthToken(string authToken)
-        {
-            //TODO: Provide some base class for this kind of server-server communications.
-
-            var bytes = Convert.FromBase64String(authToken);
-            var data = Encoding.UTF8.GetString(bytes);
-
-            var webServer = data.Substring(0, data.IndexOf("#####"));
-
-            s_log.Debug($"Retrieving loadout data {authToken} from the web server {webServer}");
-
-            // Retrieve loadout data from the web server.
-            var client = new UserWebServiceClient(webServer);
-            var loadout = client.GetLoadout(authToken);
-            return loadout;
+            Log.Debug($"Retrieving loadout data {authToken} from the web server {webServer}");
+            /* Retrieve loadout data from the web server. */
+            return new UserWebServiceClient(webServer).GetLoadout(authToken);
         }
     }
 }

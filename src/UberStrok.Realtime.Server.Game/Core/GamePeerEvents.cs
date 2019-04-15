@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using log4net;
+using System.Collections.Generic;
 using System.IO;
 using UberStrok.Core.Serialization;
 using UberStrok.Core.Serialization.Views;
@@ -8,6 +9,8 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeerEvents : BaseEventSender
     {
+        private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeerEvents));
+
         public GamePeerEvents(GamePeer peer) : base(peer)
         {
             _game = new GameRoomEvents(peer);
@@ -71,6 +74,26 @@ namespace UberStrok.Realtime.Server.Game
                 StringProxy.Serialize(bytes, message);
 
                 SendEvent((byte)IGamePeerEventsType.RoomEnterFailed, bytes);
+            }
+        }
+
+        public void SendHeartbeatChallenge(string challengeHash)
+        {
+            Log.Info("Heartbeat info!");
+            using (var bytes = new MemoryStream())
+            {
+                StringProxy.Serialize(bytes, challengeHash);
+                SendEvent((byte)IGamePeerEventsType.HeartbeatChallenge, bytes);
+            }
+        }
+
+        public void SendDisconnectAndDisablePhoton(string message)
+        {
+            Log.Info("Kicking!");
+            using (var bytes = new MemoryStream())
+            {
+                StringProxy.Serialize(bytes, message);
+                SendEvent((byte)IGamePeerEventsType.DisconnectAndDisablePhoton, bytes);
             }
         }
     }

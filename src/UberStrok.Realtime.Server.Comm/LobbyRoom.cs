@@ -78,7 +78,10 @@ namespace UberStrok.Realtime.Server.Comm
             lock (Sync)
             {
                 foreach (var peer in Peers)
-                    peer.Update();
+                {
+                    if (peer.HasError) peer.Disconnect();
+                    else peer.Update();
+                }
             }
         }
 

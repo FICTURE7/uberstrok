@@ -1,4 +1,5 @@
-﻿using Photon.SocketServer;
+﻿using log4net;
+using Photon.SocketServer;
 using System.Collections.Generic;
 using UberStrok.Core;
 using UberStrok.Core.Views;
@@ -7,10 +8,13 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeer : BasePeer
     {
+        private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeer));
+
         private readonly GamePeerEvents _events;
         private readonly StateMachine<PeerState.Id> _state;
 
-        public GamePeer(InitRequest initRequest) : base(initRequest)
+        public GamePeer(InitRequest request)
+            : base(GameApplication.Instance.Configuration.CompositeHashBytes, GameApplication.Instance.Configuration.JunkHashBytes, request)
         {
             KnownActors = new HashSet<int>();
             _events = new GamePeerEvents(this);
@@ -23,7 +27,6 @@ namespace UberStrok.Realtime.Server.Game
             _state.Register(PeerState.Id.Playing, new PlayingPeerState(this));
             _state.Register(PeerState.Id.Killed, new KilledPeerState(this));
 
-            /* Could make GamePeerOperationHandler a singleton but what ever. */
             AddOperationHandler(new GamePeerOperationHandler());
         }
 
@@ -35,7 +38,6 @@ namespace UberStrok.Realtime.Server.Game
 
         public HashSet<int> KnownActors { get; set; }
 
-        public string AuthToken { get; set; }
         public ushort Ping { get; set; }
         public GameActor Actor { get; set; }
 
@@ -45,5 +47,22 @@ namespace UberStrok.Realtime.Server.Game
 
         public GamePeerEvents Events => _events;
         public StateMachine<PeerState.Id> State => _state;
+
+        public override void DoHeartbeat(string hash)
+        {
+            base.DoHeartbeat(hash);
+            Events.SendHeartbeatChallenge(hash);
+        }
+
+        public override void DoError(string message = "An error occured that forced UberStrike to halt.")
+        {
+            base.DoError(message);
+            Events.SendDisconnectAndDisablePhoton(message);
+        }
+
+        protected override void OnAuthenticate(UberstrikeUserView userView)
+        {
+            Member = userView;
+        }
     }
 }

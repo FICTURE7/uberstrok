@@ -39,7 +39,7 @@ namespace UberStrok.Realtime.Server.Game
         public Loop Loop { get; }
         public ShopManager ShopManager { get; }
         public SpawnManager SpawnManager { get; }
-        
+
         public int RoundNumber { get; set; }
         /* Time in system ticks when the round ends.*/
         public int EndTime { get; set; }
@@ -234,7 +234,19 @@ namespace UberStrok.Realtime.Server.Game
         public void StartLoop()
         {
             Loop.Start(
-                () => State.Update(),
+                () => 
+                {
+                    lock (Sync)
+                    {
+                        foreach (var peer in Peers)
+                        {
+                            if (peer.HasError) peer.Disconnect();
+                            else peer.Update();
+                        }
+                    }
+
+                    State.Update();
+                },
                 (ex) => s_log.Error("Failed to tick game loop.", ex)
             );
         }

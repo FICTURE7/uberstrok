@@ -118,7 +118,7 @@ namespace UberStrok.Realtime.Server.Comm
         protected override void OnSpeedhackDetectionNew(CommPeer peer, List<float> timeDifferences)
         {
             if (IsSpeedHacking(timeDifferences))
-                peer.Events.SendDisconnectAndDisablePhoton();
+                peer.DoError();
         }
 
         protected override void OnPlayersReported(CommPeer peer, List<int> cmids, int type, string details, string logs)

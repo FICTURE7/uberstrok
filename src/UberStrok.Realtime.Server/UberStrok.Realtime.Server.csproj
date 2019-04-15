@@ -52,9 +52,21 @@
     <Compile Include="IRoom.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\UberStrok.Core.Common\UberStrok.Core.Common.csproj">
+      <Project>{F6AA8827-1031-4753-BE08-B0D7F3A98C75}</Project>
+      <Name>UberStrok.Core.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UberStrok.Core.Views\UberStrok.Core.Views.csproj">
+      <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
+      <Name>UberStrok.Core.Views</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UberStrok.Realtime\UberStrok.Realtime.csproj">
       <Project>{8582768E-780F-4E5A-AD26-07A14893A1B3}</Project>
       <Name>UberStrok.Realtime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UberStrok.WebServices.Client\UberStrok.WebServices.Client.csproj">
+      <Project>{F9FA508B-417F-4863-B19D-B7CF3D771B0F}</Project>
+      <Name>UberStrok.WebServices.Client</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

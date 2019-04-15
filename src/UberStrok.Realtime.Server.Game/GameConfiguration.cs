@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 
-namespace UberStrok.Realtime.Server.Comm
+namespace UberStrok.Realtime.Server.Game
 {
-    public class CommConfiguration
+    public class GameConfiguration
     {
-        public static readonly CommConfiguration Default = new CommConfiguration
+        public static readonly GameConfiguration Default = new GameConfiguration
         {
             CompositeHash = null,
             JunkHash = null

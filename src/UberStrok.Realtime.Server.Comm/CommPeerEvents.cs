@@ -14,7 +14,7 @@ namespace UberStrok.Realtime.Server.Comm
             Lobby = new LobbyRoomEvents(peer);
         }
 
-        public void SendDisconnectAndDisablePhoton(string message = "An error occured that forced UberStrike to halt.")
+        public void SendDisconnectAndDisablePhoton(string message)
         {
             using (var bytes = new MemoryStream())
             {
