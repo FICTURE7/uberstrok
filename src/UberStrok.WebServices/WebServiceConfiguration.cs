@@ -7,6 +7,7 @@ namespace UberStrok.WebServices
     {
         public static readonly WebServiceConfiguration Default = new WebServiceConfiguration
         {
+            Locked = false,
             ServiceBase = "http://localhost/2.0",
             Wallet = new WalletConfiguration
             {
@@ -22,6 +23,9 @@ namespace UberStrok.WebServices
                 }
             }
         };
+
+        [JsonProperty("locked")]
+        public bool Locked { get; set; }
 
         [JsonProperty("service_base")]
         public string ServiceBase { get; set; }

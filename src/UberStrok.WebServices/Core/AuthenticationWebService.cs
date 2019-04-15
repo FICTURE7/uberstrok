@@ -17,6 +17,15 @@ namespace UberStrok.WebServices.Core
 
         public override AccountCompletionResultView OnCompleteAccount(int cmid, string name, ChannelType channelType, string locale, string machineId)
         {
+            if (Context.Configuration.Locked)
+            {
+                return new AccountCompletionResultView(
+                    5,
+                    null,
+                    null
+                );
+            }
+
             var member = Context.Users.GetMember(cmid);
             if (member == null)
             {
