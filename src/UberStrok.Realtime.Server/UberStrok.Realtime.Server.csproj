@@ -45,6 +45,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application.cs" />
     <Compile Include="EventSender.cs" />
     <Compile Include="OperationHandler.cs" />
     <Compile Include="OperationHandlerCollection.cs" />
