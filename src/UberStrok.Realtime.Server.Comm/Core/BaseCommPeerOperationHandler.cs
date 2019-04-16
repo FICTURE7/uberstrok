@@ -4,14 +4,14 @@ using UberStrok.Core.Serialization;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public abstract class BaseCommPeerOperationHandler : BaseOperationHandler<CommPeer>
+    public abstract class BaseCommPeerOperationHandler : OperationHandler<CommPeer>
     {
         protected BaseCommPeerOperationHandler()
         {
             // Space
         }
 
-        public override int Id => 1;
+        public override byte Id => 1;
 
         public abstract void OnAuthenticationRequest(CommPeer peer, string authToken, string magicHash);
         public abstract void OnSendHeartbeatResponse(CommPeer peer, string authToken, string responseHash);

@@ -8,15 +8,14 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 using UberStrok.WebServices.Client;
 
 namespace UberStrok.Realtime.Server
 {
-    public class BasePeer : ClientPeer
+    public class Peer : ClientPeer
     {
-        private readonly static ILog Log = LogManager.GetLogger(nameof(BasePeer));
+        private readonly static ILog Log = LogManager.GetLogger(nameof(Peer));
 
         private static readonly Random _random = new Random();
         private static readonly SHA256 _hash = SHA256.Create();
@@ -35,17 +34,17 @@ namespace UberStrok.Realtime.Server
 
         private readonly byte[] _junkHash;
         private readonly byte[] _compositeHash;
-        private readonly ConcurrentDictionary<int, BaseOperationHandler> _opHandlers;
 
-        public string AuthToken { get; protected set; }
         public bool HasError { get; protected set; }
+        public string AuthToken { get; protected set; }
+        public OperationHandlerCollection Handlers { get; }
 
-        public BasePeer(InitRequest request) : this(null, null, request)
+        public Peer(InitRequest request) : this(null, null, request)
         {
             /* Space */
         }
 
-        public BasePeer(byte[] compositeHash, byte[] junkHash, InitRequest request) : base(request)
+        public Peer(byte[] compositeHash, byte[] junkHash, InitRequest request) : base(request)
         {
             if (compositeHash != null && compositeHash.Length != 64)
                 throw new ArgumentException(nameof(compositeHash));
@@ -62,33 +61,18 @@ namespace UberStrok.Realtime.Server
             if (request.ApplicationId != RealtimeVersion.Current)
                 Disconnect();
 
-            _opHandlers = new ConcurrentDictionary<int, BaseOperationHandler>();
-        }
-
-        /* TODO: Move those handler add/rm operations to another object (OperationHandlerCollection). */
-        public void AddOperationHandler(BaseOperationHandler handler)
-        {
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
-
-            if (!_opHandlers.TryAdd(handler.Id, handler))
-                throw new ArgumentException("Already contains a handler with the same handler ID.");
-        }
-
-        public void RemoveOperationHandler(int handlerId)
-        {
-            _opHandlers.TryRemove(handlerId, out BaseOperationHandler handler);
+            Handlers = new OperationHandlerCollection();
         }
 
         public void Update()
         {
             if (_challengeState == ChallengeState.Failed)
-                DoError();
+                SendError();
             if (_challengeState == ChallengeState.Waiting && DateTime.UtcNow >= _challengeExpireTime)
                 Disconnect();
 
             if (_challengeState != ChallengeState.Waiting && _junkHash != null && DateTime.UtcNow >= _challengeNextTime)
-                Challenge();
+                Heartbeat();
         }
 
         public bool Authenticate(string authToken, string magicHash)
@@ -116,15 +100,19 @@ namespace UberStrok.Realtime.Server
                 var magicHashBytes = _hash.ComputeHash(bytes);
                 var reMagicHash = BytesToHexString(magicHashBytes);
 
-                Log.Info($"MagicHash: {magicHash} == {reMagicHash}");
                 if (reMagicHash != magicHash)
+                {
+                    Log.Error($"MagicHash: {magicHash} != {reMagicHash}");
                     return false;
+                }
+
+                Log.Info($"MagicHash: {magicHash} == {reMagicHash}");
             }
 #endif
             return true;
         }
 
-        private void Challenge()
+        private void Heartbeat()
         {
             Debug.Assert(_junkHash != null);
 
@@ -141,37 +129,42 @@ namespace UberStrok.Realtime.Server
             _challengeExpireTime = DateTime.UtcNow.AddSeconds(5);
             _challengeState = ChallengeState.Waiting;
 
-            Log.Info($"Challenge(): {hash} -> {_expectedChallengeHash}");
-            DoHeartbeat(hash);
+            Log.Info($"Challenge({hash}) -> {_expectedChallengeHash}");
+            SendHeartbeat(hash);
         }
 
-        public bool ChallengeCheck(string responseHash)
+        public bool HeartbeatCheck(string responseHash)
         {
             if (responseHash == null)
                 throw new ArgumentNullException(nameof(responseHash));
 
             if (_expectedChallengeHash == null)
-                return false; /* Should not happen. */
+            {
+                Log.Error("Expected challenge hash was null while checking.");
+                return false;
+            }
 
             if (_expectedChallengeHash == responseHash)
             {
+                Log.Info($"Challenge: {_expectedChallengeHash} == {responseHash}");
                 _expectedChallengeHash = null;
                 _challengeNextTime = DateTime.UtcNow.AddSeconds(5);
                 _challengeState = ChallengeState.Success;
                 return true;
             }
 
+            Log.Error($"Challenge: {_expectedChallengeHash} != {responseHash}");
             _expectedChallengeHash = null;
             _challengeState = ChallengeState.Failed;
             return false;
         }
 
-        public virtual void DoHeartbeat(string hash)
+        public virtual void SendHeartbeat(string hash)
         {
             /* Space */
         }
 
-        public virtual void DoError(string message = "An error occured that forced UberStrike to halt.")
+        public virtual void SendError(string message = "An error occured that forced UberStrike to halt.")
         {
             HasError = true;
         }
@@ -183,12 +176,12 @@ namespace UberStrok.Realtime.Server
 
         protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
         {
-            foreach (var opHandler in _opHandlers.Values)
+            foreach (var handler in Handlers)
             {
-                try { opHandler.OnDisconnect(this, reasonCode, reasonDetail); }
+                try { handler.OnDisconnect(this, reasonCode, reasonDetail); }
                 catch (Exception ex)
                 {
-                    Log.Error($"Error while handling disconnection of peer -> {opHandler.GetType().Name}", ex);
+                    Log.Error($"Error while handling disconnection of peer -> {handler.GetType().Name}", ex);
                 }
             }
         }
@@ -212,7 +205,8 @@ namespace UberStrok.Realtime.Server
             }
 
             var handlerId = operationRequest.Parameters.Keys.First();
-            if (!_opHandlers.TryGetValue(handlerId, out BaseOperationHandler handler))
+            var handler = Handlers[handlerId];
+            if (handler == null)
             {
                 Log.Warn($"Unable to handle operation request -> not implemented operation handler: {handlerId}");
                 return;

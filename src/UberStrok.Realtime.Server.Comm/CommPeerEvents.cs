@@ -5,11 +5,11 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public class CommPeerEvents : BaseEventSender
+    public class CommPeerEvents : EventSender
     {
         public LobbyRoomEvents Lobby { get; }
 
-        public CommPeerEvents(BasePeer peer) : base(peer)
+        public CommPeerEvents(Peer peer) : base(peer)
         {
             Lobby = new LobbyRoomEvents(peer);
         }

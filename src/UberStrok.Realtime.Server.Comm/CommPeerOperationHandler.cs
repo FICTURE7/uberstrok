@@ -11,14 +11,9 @@ namespace UberStrok.Realtime.Server.Comm
         {
             if (!peer.Authenticate(authToken, magicHash))
             {
-                peer.DoError();
+                peer.SendError();
                 return;
             }
-
-            /*
-            if (CommApplication.Instance.Configuration.JunkHash != null)
-                peer.Challenge();
-            */
 
             CommApplication.Instance.Rooms.Global.Join(peer);
         }
@@ -27,14 +22,13 @@ namespace UberStrok.Realtime.Server.Comm
         {
             try
             {
-                Log.Info($"Checking challenge {responseHash}.");
-                if (!peer.ChallengeCheck(responseHash))
-                    peer.DoError();
+                if (!peer.HeartbeatCheck(responseHash))
+                    peer.SendError();
             }
             catch (Exception ex)
             {
-                Log.Error("Failed to check challenge.", ex);
-                peer.DoError();
+                Log.Error("Exception while checking heartbeat", ex);
+                peer.SendError();
             }
         }
     }

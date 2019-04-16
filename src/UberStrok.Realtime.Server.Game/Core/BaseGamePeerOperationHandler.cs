@@ -6,9 +6,9 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public abstract class BaseGamePeerOperationHandler : BaseOperationHandler<GamePeer>
+    public abstract class BaseGamePeerOperationHandler : OperationHandler<GamePeer>
     {
-        public sealed override int Id => 1;
+        public sealed override byte Id => 1;
 
         protected abstract void OnUpdateKeyState(GamePeer peer, byte state);
         protected abstract void OnGetGameListUpdates(GamePeer peer);

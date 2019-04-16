@@ -7,9 +7,10 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public abstract class BaseLobbyRoomOperationHandler : BaseOperationHandler<CommPeer>
+    public abstract class BaseLobbyRoomOperationHandler : OperationHandler<CommPeer>
     {
-        public override int Id => 0;
+        public override byte Id => 0;
+
         protected abstract void OnFullPlayerListUpdate(CommPeer peer);
         protected abstract void OnUpdatePlayerRoom(CommPeer peer, GameRoomView room);
         protected abstract void OnResetPlayerRoom(CommPeer peer);

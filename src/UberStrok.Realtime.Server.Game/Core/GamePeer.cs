@@ -6,7 +6,7 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GamePeer : BasePeer
+    public class GamePeer : Peer
     {
         private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeer));
 
@@ -27,7 +27,7 @@ namespace UberStrok.Realtime.Server.Game
             _state.Register(PeerState.Id.Playing, new PlayingPeerState(this));
             _state.Register(PeerState.Id.Killed, new KilledPeerState(this));
 
-            AddOperationHandler(new GamePeerOperationHandler());
+            Handlers.Add(new GamePeerOperationHandler());
         }
 
         /* 
@@ -48,15 +48,15 @@ namespace UberStrok.Realtime.Server.Game
         public GamePeerEvents Events => _events;
         public StateMachine<PeerState.Id> State => _state;
 
-        public override void DoHeartbeat(string hash)
+        public override void SendHeartbeat(string hash)
         {
-            base.DoHeartbeat(hash);
+            base.SendHeartbeat(hash);
             Events.SendHeartbeatChallenge(hash);
         }
 
-        public override void DoError(string message = "An error occured that forced UberStrike to halt.")
+        public override void SendError(string message = "An error occured that forced UberStrike to halt.")
         {
-            base.DoError(message);
+            base.SendError(message);
             Events.SendDisconnectAndDisablePhoton(message);
         }
 

@@ -6,9 +6,9 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public class LobbyRoomEvents : BaseEventSender
+    public class LobbyRoomEvents : EventSender
     {
-        public LobbyRoomEvents(BasePeer peer) : base(peer)
+        public LobbyRoomEvents(Peer peer) : base(peer)
         {
             // Space
         }

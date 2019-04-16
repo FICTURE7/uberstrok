@@ -189,7 +189,7 @@ namespace UberStrok.Realtime.Server.Game
             peer.Room = this;
             peer.Actor = actor;
             peer.Actor.Number = number;
-            peer.AddOperationHandler(this);
+            peer.Handlers.Add(this);
 
             /* 
              * This prepares the client for the game room and sets the client
@@ -225,7 +225,7 @@ namespace UberStrok.Realtime.Server.Game
 
             /* Set peer state to none, and clean up. */
             peer.State.Set(PeerState.Id.None);
-            peer.RemoveOperationHandler(Id);
+            peer.Handlers.Remove(Id);
             peer.KnownActors.Clear();
             peer.Actor = null;
             peer.Room = null;

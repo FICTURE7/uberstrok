@@ -55,7 +55,7 @@ namespace UberStrok.Realtime.Server.Game
 
             if (!peer.Authenticate(authToken, magicHash))
             {
-                peer.DoError();
+                peer.SendError();
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace UberStrok.Realtime.Server.Game
 
             if (!peer.Authenticate(authToken, magicHash))
             {
-                peer.DoError();
+                peer.SendError();
                 return;
             }
 

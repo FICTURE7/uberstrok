@@ -7,7 +7,7 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GamePeerEvents : BaseEventSender
+    public class GamePeerEvents : EventSender
     {
         private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeerEvents));
 

@@ -5,7 +5,7 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Comm
 {
-    public class CommPeer : BasePeer
+    public class CommPeer : Peer
     {
         private static readonly ILog Log = LogManager.GetLogger(nameof(CommPeer));
 
@@ -17,18 +17,18 @@ namespace UberStrok.Realtime.Server.Comm
             : base(CommApplication.Instance.Configuration.CompositeHashBytes, CommApplication.Instance.Configuration.JunkHashBytes, request)
         {
             Events = new CommPeerEvents(this);
-            AddOperationHandler(new CommPeerOperationHandler());
+            Handlers.Add(new CommPeerOperationHandler());
         }
 
-        public override void DoHeartbeat(string hash)
+        public override void SendHeartbeat(string hash)
         {
-            base.DoHeartbeat(hash);
+            base.SendHeartbeat(hash);
             Events.SendHeartbeatChallenge(hash);
         }
 
-        public override void DoError(string message = "An error occured that forced UberStrike to halt.")
+        public override void SendError(string message = "An error occured that forced UberStrike to halt.")
         {
-            base.DoError(message);
+            base.SendError(message);
             Events.SendDisconnectAndDisablePhoton(message);
         }
 
