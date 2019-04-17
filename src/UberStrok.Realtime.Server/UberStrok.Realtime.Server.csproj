@@ -33,6 +33,9 @@
     <Reference Include="log4net">
       <HintPath>..\..\photon\lib\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Photon.SocketServer">
       <HintPath>..\..\photon\lib\Photon.SocketServer.dll</HintPath>
     </Reference>
@@ -46,10 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="ApplicationConfiguration.cs" />
     <Compile Include="EventSender.cs" />
     <Compile Include="OperationHandler.cs" />
     <Compile Include="OperationHandlerCollection.cs" />
     <Compile Include="Peer.cs" />
+    <Compile Include="PeerConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IRoom.cs" />
   </ItemGroup>
@@ -70,6 +75,9 @@
       <Project>{F9FA508B-417F-4863-B19D-B7CF3D771B0F}</Project>
       <Name>UberStrok.WebServices.Client</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -34,9 +34,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\photon\lib\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Photon.SocketServer">
       <HintPath>..\..\photon\lib\Photon.SocketServer.dll</HintPath>
     </Reference>
@@ -57,7 +54,6 @@
     <Compile Include="Core\GameActorInfo.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="EventArgs.cs" />
-    <Compile Include="GameConfiguration.cs" />
     <Compile Include="GameRoomManager.cs" />
     <Compile Include="Core\GamePeer.cs" />
     <Compile Include="Core\GamePeerEvents.cs" />
@@ -111,7 +107,6 @@
     <None Include="log4net.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MatchState.cs" />

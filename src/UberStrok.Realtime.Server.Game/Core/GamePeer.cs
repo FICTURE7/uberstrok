@@ -1,5 +1,4 @@
-﻿using log4net;
-using Photon.SocketServer;
+﻿using Photon.SocketServer;
 using System.Collections.Generic;
 using UberStrok.Core;
 using UberStrok.Core.Views;
@@ -8,28 +7,6 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeer : Peer
     {
-        private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeer));
-
-        private readonly GamePeerEvents _events;
-        private readonly StateMachine<PeerState.Id> _state;
-
-        public GamePeer(InitRequest request)
-            : base(GameApplication.Instance.Configuration.CompositeHashBytes, GameApplication.Instance.Configuration.JunkHashBytes, request)
-        {
-            KnownActors = new HashSet<int>();
-            _events = new GamePeerEvents(this);
-
-            _state = new StateMachine<PeerState.Id>();
-            _state.Register(PeerState.Id.None, null);
-            _state.Register(PeerState.Id.Overview, new OverviewPeerState(this));
-            _state.Register(PeerState.Id.WaitingForPlayers, new WaitingForPlayersPeerState(this));
-            _state.Register(PeerState.Id.Countdown, new CountdownPeerState(this));
-            _state.Register(PeerState.Id.Playing, new PlayingPeerState(this));
-            _state.Register(PeerState.Id.Killed, new KilledPeerState(this));
-
-            Handlers.Add(new GamePeerOperationHandler());
-        }
-
         /* 
          * For when the peer changes its loadout and the game server is waiting 
          * for the web services to serve back.
@@ -45,8 +22,24 @@ namespace UberStrok.Realtime.Server.Game
         public LoadoutView Loadout { get; set; }
         public UberstrikeUserView Member { get; set; }
 
-        public GamePeerEvents Events => _events;
-        public StateMachine<PeerState.Id> State => _state;
+        public GamePeerEvents Events { get; }
+        public StateMachine<PeerState.Id> State { get; }
+
+        public GamePeer(InitRequest initRequest) : base(initRequest)
+        {
+            KnownActors = new HashSet<int>();
+            Events = new GamePeerEvents(this);
+
+            State = new StateMachine<PeerState.Id>();
+            State.Register(PeerState.Id.None, null);
+            State.Register(PeerState.Id.Overview, new OverviewPeerState(this));
+            State.Register(PeerState.Id.WaitingForPlayers, new WaitingForPlayersPeerState(this));
+            State.Register(PeerState.Id.Countdown, new CountdownPeerState(this));
+            State.Register(PeerState.Id.Playing, new PlayingPeerState(this));
+            State.Register(PeerState.Id.Killed, new KilledPeerState(this));
+
+            Handlers.Add(new GamePeerOperationHandler());
+        }
 
         public override void SendHeartbeat(string hash)
         {

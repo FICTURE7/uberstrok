@@ -19,7 +19,6 @@ namespace UberStrok.Realtime.Server
 {
     public class Peer : ClientPeer
     {
-
         private static readonly Random _random = new Random();
 
         private enum HeartbeatState
@@ -37,7 +36,7 @@ namespace UberStrok.Realtime.Server
         private DateTime _heartbeatExpireTime;
         private HeartbeatState _heartbeatState;
 
-        private ILog Log { get; }
+        protected ILog Log { get; }
 
         public int HeartbeatTimeout { get; set; }
         public int HeartbeatInterval { get; set; }
@@ -46,11 +45,29 @@ namespace UberStrok.Realtime.Server
         public string AuthToken { get; protected set; }
         public OperationHandlerCollection Handlers { get; }
 
-        public Peer(InitRequest request) : this(null, null, request)
+        public Peer(InitRequest request) : base(request)
         {
-            /* Space */
+            if (!(request.UserData is PeerConfiguration config))
+                throw new ArgumentException("InitRequest.UserData was not a PeerConfiguration instance", nameof(request));
+
+            /* Check the client version. */
+            if (request.ApplicationId != RealtimeVersion.Current)
+                throw new ArgumentException("InitRequest had an invalid application ID", nameof(request));
+
+            HeartbeatTimeout = config.HeartbeatTimeout;
+            HeartbeatInterval = config.HeartbeatInterval;
+
+            _junkHash = config.JunkBytes;
+            _compositeHash = config.CompositeBytes;
+
+            Log = LogManager.GetLogger(GetType().Name);
+            Handlers = new OperationHandlerCollection();
+
+            if (_junkHash != null)
+                _heartbeatNextTime = DateTime.UtcNow.AddSeconds(HeartbeatInterval);
         }
 
+        [Obsolete]
         public Peer(byte[] compositeHash, byte[] junkHash, InitRequest request) : base(request)
         {
             HeartbeatTimeout = 5;

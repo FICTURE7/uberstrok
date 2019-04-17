@@ -1,12 +1,14 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 
-namespace UberStrok.Realtime.Server.Game
+namespace UberStrok.Realtime.Server
 {
-    public class GameConfiguration
+    public class ApplicationConfiguration
     {
-        public static readonly GameConfiguration Default = new GameConfiguration
+        public static readonly ApplicationConfiguration Default = new ApplicationConfiguration
         {
+            HeartbeatTimeout = 5,
+            HeartbeatInterval = 5,
             CompositeHash = null,
             JunkHash = null
         };
@@ -14,11 +16,16 @@ namespace UberStrok.Realtime.Server.Game
         private byte[] _compositeHashBytes;
         private byte[] _junkHashBytes;
 
+        [JsonProperty("heartbeat_timeout")]
+        public int HeartbeatTimeout { get; private set; }
+        [JsonProperty("heartbeat_interval")]
+        public int HeartbeatInterval { get; private set; }
         [JsonProperty("composite_hash")]
-        public string CompositeHash { get; set; }
+        public string CompositeHash { get; private set; }
         [JsonProperty("junk_hash")]
-        public string JunkHash { get; set; }
+        public string JunkHash { get; private set; }
 
+        [JsonIgnore]
         public byte[] CompositeHashBytes
         {
             get
@@ -30,6 +37,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        [JsonIgnore]
         public byte[] JunkHashBytes
         {
             get
