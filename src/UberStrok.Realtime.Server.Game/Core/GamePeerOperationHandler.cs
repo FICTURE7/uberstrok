@@ -53,13 +53,19 @@ namespace UberStrok.Realtime.Server.Game
             if (clientVersion != "4.7.1")
                 peer.Disconnect();
 
-            if (!peer.Authenticate(authToken, magicHash))
+            try
             {
-                peer.SendError();
-                return;
+                if (!peer.Authenticate(authToken, magicHash))
+                {
+                    peer.SendError();
+                    return;
+                }
             }
-
-            peer.Loadout = GetLoadoutFromAuthToken(authToken);
+            catch
+            {
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to authenticate user. Try restarting UberStrike.");
+                throw;
+            }
 
             var room = default(BaseGameRoom);
             try
@@ -99,13 +105,19 @@ namespace UberStrok.Realtime.Server.Game
             if (clientVersion != "4.7.1")
                 peer.Disconnect();
 
-            if (!peer.Authenticate(authToken, magicHash))
+            try
             {
-                peer.SendError();
-                return;
+                if (!peer.Authenticate(authToken, magicHash))
+                {
+                    peer.SendError();
+                    return;
+                }
             }
-
-            peer.Loadout = GetLoadoutFromAuthToken(authToken);
+            catch
+            {
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to authenticate user. Try restarting UberStrike.");
+                throw;
+            }
 
             var room = GameApplication.Instance.Rooms.Get(roomId);
             if (room != null)
@@ -146,51 +158,7 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnUpdateLoadout(GamePeer peer)
         {
-            peer.WaitingForLoadout = true;
-
-            /* Retrieve loadout from web services. */
-            var loadout = GetLoadoutFromAuthToken(peer.AuthToken);
-            var weapons = new List<int>
-            {
-                loadout.MeleeWeapon,
-                loadout.Weapon1,
-                loadout.Weapon2,
-                loadout.Weapon3
-            };
-            var gear = new List<int>
-            {
-                loadout.Webbing,
-                loadout.Head,
-                loadout.Face,
-                loadout.Gloves,
-                loadout.UpperBody,
-                loadout.LowerBody,
-                loadout.Boots
-            };
-            var quickItems = new List<int>
-            {
-                loadout.QuickItem1,
-                loadout.QuickItem2,
-                loadout.QuickItem3
-            };
-
-            peer.Actor.Info.Weapons = weapons;
-            peer.Actor.Info.Gear = gear;
-            peer.Actor.Info.QuickItems = quickItems;
-            peer.Loadout = loadout;
-
-            peer.WaitingForLoadout = false;
-        }
-
-        private static LoadoutView GetLoadoutFromAuthToken(string authToken)
-        {
-            var bytes = Convert.FromBase64String(authToken);
-            var data = Encoding.UTF8.GetString(bytes);
-            var webServer = data.Substring(0, data.IndexOf("#####"));
-
-            Log.Debug($"Retrieving loadout data {authToken} from the web server {webServer}");
-            /* Retrieve loadout data from the web server. */
-            return new UserWebServiceClient(webServer).GetLoadout(authToken);
+            peer.UpdateLoadout();
         }
     }
 }

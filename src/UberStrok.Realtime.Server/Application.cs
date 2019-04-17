@@ -64,10 +64,11 @@ namespace UberStrok.Realtime.Server
 
             _peerConfiguration = new PeerConfiguration
             {
+                WebServices = Configuration.WebServices,
                 HeartbeatTimeout = Configuration.HeartbeatTimeout,
                 HeartbeatInterval = Configuration.HeartbeatInterval,
-                CompositeBytes = Configuration.CompositeHashBytes,
-                JunkBytes = Configuration.JunkHashBytes
+                CompositeHashBytes = Configuration.CompositeHashBytes,
+                JunkHashBytes = Configuration.JunkHashBytes
             };
         }
 

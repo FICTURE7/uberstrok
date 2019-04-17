@@ -28,6 +28,7 @@ namespace UberStrok.Realtime.Server
             Failed
         }
 
+        private readonly string _webServices;
         private readonly byte[] _junkHash;
         private readonly byte[] _compositeHash;
 
@@ -57,8 +58,9 @@ namespace UberStrok.Realtime.Server
             HeartbeatTimeout = config.HeartbeatTimeout;
             HeartbeatInterval = config.HeartbeatInterval;
 
-            _junkHash = config.JunkBytes;
-            _compositeHash = config.CompositeBytes;
+            _webServices = config.WebServices;
+            _junkHash = config.JunkHashBytes;
+            _compositeHash = config.CompositeHashBytes;
 
             Log = LogManager.GetLogger(GetType().Name);
             Handlers = new OperationHandlerCollection();
@@ -121,10 +123,11 @@ namespace UberStrok.Realtime.Server
             if (magicHash == null)
                 throw new ArgumentNullException(nameof(magicHash));
 
-            Log.Info($"Authenticating {authToken}:{magicHash} at {RemoteIP}:{RemotePort}");
-            var userView = GetMember(authToken);
-
             AuthToken = authToken;
+
+            Log.Info($"Authenticating {authToken}:{magicHash} at {RemoteIP}:{RemotePort}");
+            var userView = GetMember();
+
             OnAuthenticate(userView);
 
 #if !DEBUG
@@ -286,15 +289,18 @@ namespace UberStrok.Realtime.Server
             return BytesToHexString(buffer);
         }
 
-        private static UberstrikeUserView GetMember(string authToken)
+        protected UberstrikeUserView GetMember()
         {
-            /* TODO: Provide some base class for this kind of server-server communications. */
-            var bytes = Convert.FromBase64String(authToken);
-            var data = Encoding.UTF8.GetString(bytes);
-            var webServer = data.Substring(0, data.IndexOf("#####"));
-
+            Log.Info($"Retrieving Member from {_webServices}");
             /* Retrieve user data from the web server. */
-            return new UserWebServiceClient(webServer).GetMember(authToken);
+            return new UserWebServiceClient(_webServices).GetMember(AuthToken);
+        }
+
+        protected LoadoutView GetLoadout()
+        {
+            Log.Info($"Retrieving Loadout from {_webServices}");
+            /* Retrieve loadout data from the web server. */
+            return new UserWebServiceClient(_webServices).GetLoadout(AuthToken);
         }
     }
 }

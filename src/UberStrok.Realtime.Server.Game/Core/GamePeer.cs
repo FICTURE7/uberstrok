@@ -53,9 +53,48 @@ namespace UberStrok.Realtime.Server.Game
             Events.SendDisconnectAndDisablePhoton(message);
         }
 
+        public void UpdateLoadout()
+        {
+            WaitingForLoadout = true;
+
+            /* Retrieve loadout from web services. */
+            var loadout = GetLoadout();
+            var weapons = new List<int>
+            {
+                loadout.MeleeWeapon,
+                loadout.Weapon1,
+                loadout.Weapon2,
+                loadout.Weapon3
+            };
+            var gear = new List<int>
+            {
+                loadout.Webbing,
+                loadout.Head,
+                loadout.Face,
+                loadout.Gloves,
+                loadout.UpperBody,
+                loadout.LowerBody,
+                loadout.Boots
+            };
+            var quickItems = new List<int>
+            {
+                loadout.QuickItem1,
+                loadout.QuickItem2,
+                loadout.QuickItem3
+            };
+
+            Actor.Info.Weapons = weapons;
+            Actor.Info.Gear = gear;
+            Actor.Info.QuickItems = quickItems;
+            Loadout = loadout;
+
+            WaitingForLoadout = false;
+        }
+
         protected override void OnAuthenticate(UberstrikeUserView userView)
         {
             Member = userView;
+            Loadout = GetLoadout();
         }
     }
 }

@@ -7,6 +7,7 @@ namespace UberStrok.Realtime.Server
     {
         public static readonly ApplicationConfiguration Default = new ApplicationConfiguration
         {
+            WebServices = "http://localhost/2.0/",
             HeartbeatTimeout = 5,
             HeartbeatInterval = 5,
             CompositeHash = null,
@@ -16,10 +17,15 @@ namespace UberStrok.Realtime.Server
         private byte[] _compositeHashBytes;
         private byte[] _junkHashBytes;
 
+        [JsonRequired]
+        [JsonProperty("webservices")]
+        public string WebServices { get; private set; }
+
         [JsonProperty("heartbeat_timeout")]
         public int HeartbeatTimeout { get; private set; }
         [JsonProperty("heartbeat_interval")]
         public int HeartbeatInterval { get; private set; }
+
         [JsonProperty("composite_hash")]
         public string CompositeHash { get; private set; }
         [JsonProperty("junk_hash")]
