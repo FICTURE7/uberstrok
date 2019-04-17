@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UberStrok.WebServices", "src\UberStrok.WebServices\UberStrok.WebServices.csproj", "{033FDB2F-09EF-4BF0-AB73-6E622703E1C0}"
 EndProject
@@ -163,5 +163,8 @@ Global
 		{FDFC1237-143F-4919-8318-4926901F4639} = {2AC22AED-CEB7-415D-A591-5137D9CB9BCF}
 		{550D6A90-016A-4283-A102-CBF46B043D37} = {CEACCD26-CB32-46CF-8AEA-E3020185AA47}
 		{32C19193-C316-4E15-92BD-1030485FAFC1} = {61BF1225-0BEF-40D8-A70B-9A69CDB6D379}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0A7BA424-A650-44CB-A10B-96A4785B646C}
 	EndGlobalSection
 EndGlobal

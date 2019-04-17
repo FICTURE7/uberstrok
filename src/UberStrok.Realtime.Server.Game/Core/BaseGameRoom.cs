@@ -318,6 +318,11 @@ namespace UberStrok.Realtime.Server.Game
             PlayerJoined?.Invoke(this, args);
         }
 
+        protected virtual void OnPlayerLeft(PlayerLeftEventArgs args)
+        {
+            PlayerLeft?.Invoke(this, args);
+        }
+
         protected virtual void OnPlayerKilled(PlayerKilledEventArgs args)
         {
             PlayerKilled?.Invoke(this, args);

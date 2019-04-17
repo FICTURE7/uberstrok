@@ -30,7 +30,17 @@
         "IsBlueBox": false,
         "MaxPlayer": 32,
         "Settings": {
-            "1": { },
+            "1": { 
+                "KillsMin": 1,
+                "KillsMax": 200,
+                "KillsCurrent": 100,
+                "PlayersMin": 2,
+                "PlayersMax": 32,
+                "PlayersCurrent": 10,
+                "TimeMin": 60,
+                "TimeMax": 600,
+                "TimeCurrent": 300
+            },
             "2": {
                 "KillsMin": 1,
                 "KillsMax": 200,
