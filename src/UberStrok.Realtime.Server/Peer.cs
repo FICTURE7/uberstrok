@@ -17,7 +17,7 @@ using UberStrok.WebServices.Client;
 
 namespace UberStrok.Realtime.Server
 {
-    public class Peer : ClientPeer
+    public abstract class Peer : ClientPeer
     {
         private static readonly Random _random = new Random();
 
@@ -28,11 +28,7 @@ namespace UberStrok.Realtime.Server
             Failed
         }
 
-        private readonly string _webServices;
-        private readonly byte[] _junkHash;
-        private readonly byte[] _compositeHash;
-
-        private string _expectedHeartbeat;
+        private string _heartbeat;
         private DateTime _heartbeatNextTime;
         private DateTime _heartbeatExpireTime;
         private HeartbeatState _heartbeatState;
@@ -46,6 +42,8 @@ namespace UberStrok.Realtime.Server
         public string AuthToken { get; protected set; }
         public OperationHandlerCollection Handlers { get; }
 
+        private PeerConfiguration Configuration { get; }
+
         public Peer(InitRequest request) : base(request)
         {
             if (!(request.UserData is PeerConfiguration config))
@@ -55,44 +53,14 @@ namespace UberStrok.Realtime.Server
             if (request.ApplicationId != RealtimeVersion.Current)
                 throw new ArgumentException("InitRequest had an invalid application ID", nameof(request));
 
+            Configuration = config;
             HeartbeatTimeout = config.HeartbeatTimeout;
             HeartbeatInterval = config.HeartbeatInterval;
 
-            _webServices = config.WebServices;
-            _junkHash = config.JunkHashBytes;
-            _compositeHash = config.CompositeHashBytes;
-
             Log = LogManager.GetLogger(GetType().Name);
             Handlers = new OperationHandlerCollection();
 
-            if (_junkHash != null)
-                _heartbeatNextTime = DateTime.UtcNow.AddSeconds(HeartbeatInterval);
-        }
-
-        [Obsolete]
-        public Peer(byte[] compositeHash, byte[] junkHash, InitRequest request) : base(request)
-        {
-            HeartbeatTimeout = 5;
-            HeartbeatInterval = 5;
-
-            if (compositeHash != null && compositeHash.Length != 64)
-                throw new ArgumentException(nameof(compositeHash));
-            if (junkHash != null && junkHash.Length != 64)
-                throw new ArgumentException(nameof(junkHash));
-
-            /* Check the client version. */
-            if (request.ApplicationId != RealtimeVersion.Current)
-            {
-                Disconnect();
-                return;
-            }
-
-            _junkHash = junkHash;
-            _compositeHash = compositeHash;
-            Log = LogManager.GetLogger(GetType().Name);
-            Handlers = new OperationHandlerCollection();
-
-            if (_junkHash != null)
+            if (Configuration.JunkHashes.Count > 0)
                 _heartbeatNextTime = DateTime.UtcNow.AddSeconds(HeartbeatInterval);
         }
 
@@ -101,16 +69,16 @@ namespace UberStrok.Realtime.Server
             switch (_heartbeatState)
             {
                 case HeartbeatState.Ok:
-                    if (_junkHash != null && DateTime.UtcNow >= _heartbeatNextTime)
+                    if (Configuration.JunkHashes.Count > 0 && DateTime.UtcNow >= _heartbeatNextTime)
                         Heartbeat();
                     break;
                 case HeartbeatState.Waiting:
-                    Debug.Assert(_junkHash != null);
+                    Debug.Assert(Configuration.JunkHashes.Count > 0);
                     if (DateTime.UtcNow >= _heartbeatExpireTime)
                         Disconnect();
                     break;
                 case HeartbeatState.Failed:
-                    Debug.Assert(_junkHash != null);
+                    Debug.Assert(Configuration.JunkHashes.Count > 0);
                     SendError();
                     break;
             }
@@ -118,50 +86,50 @@ namespace UberStrok.Realtime.Server
 
         public bool Authenticate(string authToken, string magicHash)
         {
-            if (authToken == null)
-                throw new ArgumentNullException(nameof(authToken));
+            AuthToken = authToken ?? throw new ArgumentNullException(nameof(authToken));
             if (magicHash == null)
                 throw new ArgumentNullException(nameof(magicHash));
 
-            AuthToken = authToken;
-
             Log.Info($"Authenticating {authToken}:{magicHash} at {RemoteIP}:{RemotePort}");
-            var userView = GetMember();
 
+            var userView = GetMember();
             OnAuthenticate(userView);
 
 #if !DEBUG
             bool isAdmin = userView.CmuneMemberView.PublicProfile.AccessLevel != MemberAccessLevel.Admin;
-            if (_compositeHash != null && isAdmin)
+            if (Configuration.CompositeHashes.Count > 0 && isAdmin)
             {
                 var authTokenBytes = Encoding.ASCII.GetBytes(authToken);
-                var reMagicHash = HashBytes(_compositeHash, authTokenBytes);
-                if (reMagicHash != magicHash)
+                for (int i = 0; i < Configuration.CompositeHashes.Count; i++)
                 {
+                    var compositeHash = Configuration.CompositeHashes[i];
+                    var reMagicHash = HashBytes(compositeHash, authTokenBytes);
+                    if (reMagicHash == magicHash)
+                    {
+                        Log.Debug($"MagicHash: {magicHash} == {reMagicHash}");
+                        return true;
+                    }
+
                     Log.Error($"MagicHash: {magicHash} != {reMagicHash}");
-                    return false;
                 }
 
-                Log.Info($"MagicHash: {magicHash} == {reMagicHash}");
+                return false;
             }
 #endif
             return true;
         }
 
-        private void Heartbeat()
+        public void Heartbeat()
         {
-            Debug.Assert(_junkHash != null);
+            if (Configuration.JunkHashes.Count == 0)
+                return;
 
-            var hash = GenerateHeartbeatHash();
-            var hashBytes = Encoding.ASCII.GetBytes(hash);
-
-            _expectedHeartbeat = HashBytes(_junkHash, hashBytes);
-
+            _heartbeat = GenerateHeartbeat();
             _heartbeatExpireTime = DateTime.UtcNow.AddSeconds(HeartbeatTimeout);
             _heartbeatState = HeartbeatState.Waiting;
 
-            Log.Info($"Heartbeat({hash}) -> {_expectedHeartbeat}");
-            SendHeartbeat(hash);
+            Log.Debug($"Heartbeat({_heartbeat})");
+            SendHeartbeat(_heartbeat);
         }
 
         public bool HeartbeatCheck(string responseHash)
@@ -169,31 +137,38 @@ namespace UberStrok.Realtime.Server
             if (responseHash == null)
                 throw new ArgumentNullException(nameof(responseHash));
 
-            if (_expectedHeartbeat == null)
+            Log.Debug($"HeartbeatCheck({responseHash})");
+            if (_heartbeat == null)
             {
-                Log.Error("Expected challenge hash was null while checking.");
+                Log.Error("Heartbeat was null while checking.");
                 return false;
             }
 
-            if (_expectedHeartbeat == responseHash)
+            for (int i = 0; i < Configuration.JunkHashes.Count; i++)
             {
-                Log.Info($"Heartbeat: {_expectedHeartbeat} == {responseHash}");
-                _expectedHeartbeat = null;
-                _heartbeatNextTime = DateTime.UtcNow.AddSeconds(HeartbeatInterval);
-                _heartbeatState = HeartbeatState.Ok;
-                return true;
+                var junkBytes = Configuration.JunkHashes[i];
+                var heartbeatBytes = Encoding.ASCII.GetBytes(_heartbeat);
+                var expectedHeartbeat = HashBytes(junkBytes, heartbeatBytes);
+
+                if (expectedHeartbeat == responseHash)
+                {
+                    Log.Debug($"Heartbeat: {expectedHeartbeat} == {responseHash}");
+
+                    _heartbeat = null;
+                    _heartbeatNextTime = DateTime.UtcNow.AddSeconds(HeartbeatInterval);
+                    _heartbeatState = HeartbeatState.Ok;
+                    return true;
+                }
+
+                Log.Error($"Heartbeat: {expectedHeartbeat} != {responseHash}");
             }
 
-            Log.Error($"Heartbeat: {_expectedHeartbeat} != {responseHash}");
-            _expectedHeartbeat = null;
+            _heartbeat = null;
             _heartbeatState = HeartbeatState.Failed;
             return false;
         }
 
-        public virtual void SendHeartbeat(string hash)
-        {
-            /* Space */
-        }
+        public abstract void SendHeartbeat(string hash);
 
         public virtual void SendError(string message = "An error occured that forced UberStrike to halt.")
         {
@@ -282,7 +257,7 @@ namespace UberStrok.Realtime.Server
             return builder.ToString();
         }
 
-        private static string GenerateHeartbeatHash()
+        private static string GenerateHeartbeat()
         {
             var buffer = new byte[32];
             _random.NextBytes(buffer);
@@ -291,16 +266,16 @@ namespace UberStrok.Realtime.Server
 
         protected UberstrikeUserView GetMember()
         {
-            Log.Info($"Retrieving Member from {_webServices}");
+            Log.Debug($"Retrieving Member from {Configuration.WebServices}");
             /* Retrieve user data from the web server. */
-            return new UserWebServiceClient(_webServices).GetMember(AuthToken);
+            return new UserWebServiceClient(Configuration.WebServices).GetMember(AuthToken);
         }
 
         protected LoadoutView GetLoadout()
         {
-            Log.Info($"Retrieving Loadout from {_webServices}");
+            Log.Debug($"Retrieving Loadout from {Configuration.WebServices}");
             /* Retrieve loadout data from the web server. */
-            return new UserWebServiceClient(_webServices).GetLoadout(AuthToken);
+            return new UserWebServiceClient(Configuration.WebServices).GetLoadout(AuthToken);
         }
     }
 }

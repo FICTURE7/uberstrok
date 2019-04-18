@@ -11,10 +11,9 @@ namespace UberStrok.Realtime.Server
     {
         public static new Application Instance => (Application)ApplicationBase.Instance;
 
-        private PeerConfiguration _peerConfiguration;
-
         protected ILog Log { get; }
         public ApplicationConfiguration Configuration { get; private set; }
+        private PeerConfiguration PeerConfiguration { get; set; }
 
         protected Application()
         {
@@ -48,28 +47,33 @@ namespace UberStrok.Realtime.Server
             }
             else
             {
-                var json = File.ReadAllText(path);
-                Configuration = JsonConvert.DeserializeObject<ApplicationConfiguration>(json);
+                try
+                {
+                    var json = File.ReadAllText(path);
+                    Configuration = JsonConvert.DeserializeObject<ApplicationConfiguration>(json);
+                    Configuration.Check();
 
-                if (Configuration.CompositeHash != null && Configuration.CompositeHash.Length != 64)
-                    throw new FormatException("Composite hash was incorrectly configured");
-                if (Configuration.JunkHash != null && Configuration.JunkHash.Length != 64)
-                    throw new FormatException("Junk hash was incorrectly configured");
-
-                if (Configuration.HeartbeatTimeout <= 0 || Configuration.HeartbeatInterval <= 0)
-                    throw new FormatException("HeartbeatTimeout and HeartbeatInterval must be specified and be greater than 0");
-
-                Log.Info($"uberstrok.realtime.server.json CompositeHash: {Configuration.CompositeHash} JunkHash: {Configuration.JunkHash}.");
+                    Log.Info("uberstrok.realtime.server.json loaded ->");
+                    Log.Info($"\tCompositeHashes({Configuration.CompositeHashBytes.Count})");
+                    Log.Info($"\tJunkHashes({Configuration.JunkHashBytes.Count})");
+                    Log.Info($"\tHeartbeatTimeout = {Configuration.HeartbeatTimeout}");
+                    Log.Info($"\tHeartbeatInterval = {Configuration.HeartbeatInterval}");
+                }
+                catch (Exception ex)
+                {
+                    Log.Fatal("Failed to load or parse uberstrok.realtime.server.json", ex);
+                    throw;
+                }
             }
 
-            _peerConfiguration = new PeerConfiguration
-            {
-                WebServices = Configuration.WebServices,
-                HeartbeatTimeout = Configuration.HeartbeatTimeout,
-                HeartbeatInterval = Configuration.HeartbeatInterval,
-                CompositeHashBytes = Configuration.CompositeHashBytes,
-                JunkHashBytes = Configuration.JunkHashBytes
-            };
+            PeerConfiguration = new PeerConfiguration
+            (
+                Configuration.WebServices,
+                Configuration.HeartbeatTimeout,
+                Configuration.HeartbeatInterval,
+                Configuration.CompositeHashBytes,
+                Configuration.JunkHashBytes
+            );
         }
 
         protected sealed override void Setup()
@@ -92,8 +96,8 @@ namespace UberStrok.Realtime.Server
         protected sealed override PeerBase CreatePeer(InitRequest initRequest)
         {
             Log.Info($"Accepted new connection at {initRequest.RemoteIP}:{initRequest.RemotePort}.");
-            initRequest.UserData = _peerConfiguration;
 
+            initRequest.UserData = PeerConfiguration;
             return OnCreatePeer(initRequest);
         }
 

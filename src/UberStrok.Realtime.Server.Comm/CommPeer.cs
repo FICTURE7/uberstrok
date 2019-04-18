@@ -18,7 +18,6 @@ namespace UberStrok.Realtime.Server.Comm
 
         public override void SendHeartbeat(string hash)
         {
-            base.SendHeartbeat(hash);
             Events.SendHeartbeatChallenge(hash);
         }
 

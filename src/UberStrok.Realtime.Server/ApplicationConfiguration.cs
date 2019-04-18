@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace UberStrok.Realtime.Server
@@ -10,12 +12,16 @@ namespace UberStrok.Realtime.Server
             WebServices = "http://localhost/2.0/",
             HeartbeatTimeout = 5,
             HeartbeatInterval = 5,
-            CompositeHash = null,
-            JunkHash = null
+            _compositeHashes = new List<string>(),
+            _junkHashes = new List<string>()
         };
 
-        private byte[] _compositeHashBytes;
-        private byte[] _junkHashBytes;
+        [JsonRequired]
+        [JsonProperty("composite_hash")]
+        private List<string> _compositeHashes;
+        [JsonRequired]
+        [JsonProperty("junk_hash")]
+        private List<string> _junkHashes;
 
         [JsonRequired]
         [JsonProperty("webservices")]
@@ -26,32 +32,41 @@ namespace UberStrok.Realtime.Server
         [JsonProperty("heartbeat_interval")]
         public int HeartbeatInterval { get; private set; }
 
-        [JsonProperty("composite_hash")]
-        public string CompositeHash { get; private set; }
-        [JsonProperty("junk_hash")]
-        public string JunkHash { get; private set; }
-
         [JsonIgnore]
-        public byte[] CompositeHashBytes
-        {
-            get
-            {
-                if (_compositeHashBytes == null && CompositeHash != null)
-                    _compositeHashBytes = Encoding.ASCII.GetBytes(CompositeHash);
+        public List<byte[]> CompositeHashBytes { get; } = new List<byte[]>();
+        [JsonIgnore]
+        public List<byte[]> JunkHashBytes { get; } = new List<byte[]>();
 
-                return _compositeHashBytes;
-            }
+        public void Check()
+        {
+            if (HeartbeatInterval < 0 || HeartbeatTimeout < 0)
+                throw new FormatException("HeartbeatInterval and HeartbeatTimeout cannot be less than 0.");
+
+            if (HeartbeatInterval == 0)
+                HeartbeatInterval = 5;
+            if (HeartbeatTimeout == 0)
+                HeartbeatTimeout = 5;
+
+            CheckHashes(_compositeHashes, CompositeHashBytes);
+            CheckHashes(_junkHashes, JunkHashBytes);
         }
 
-        [JsonIgnore]
-        public byte[] JunkHashBytes
+        private void CheckHashes(List<string> hashes, List<byte[]> hashBytes)
         {
-            get
-            {
-                if (_junkHashBytes== null && JunkHash != null)
-                    _junkHashBytes = Encoding.ASCII.GetBytes(JunkHash);
+            const string VALID_CHARS = "0123456789abcdef";
 
-                return _junkHashBytes;
+            foreach (var hash in hashes)
+            {
+                if (hash.Length != 64)
+                    throw new FormatException("Hash must be 64 character long");
+
+                foreach (var c in hash)
+                {
+                    if (!VALID_CHARS.Contains(c.ToString()))
+                        throw new FormatException("Hash contains invalid characters");
+                }
+
+                hashBytes.Add(Encoding.ASCII.GetBytes(hash));
             }
         }
     }

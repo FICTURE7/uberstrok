@@ -79,7 +79,6 @@ namespace UberStrok.Realtime.Server.Game
 
         public void SendHeartbeatChallenge(string challengeHash)
         {
-            Log.Info("Heartbeat info!");
             using (var bytes = new MemoryStream())
             {
                 StringProxy.Serialize(bytes, challengeHash);
@@ -89,7 +88,6 @@ namespace UberStrok.Realtime.Server.Game
 
         public void SendDisconnectAndDisablePhoton(string message)
         {
-            Log.Info("Kicking!");
             using (var bytes = new MemoryStream())
             {
                 StringProxy.Serialize(bytes, message);
