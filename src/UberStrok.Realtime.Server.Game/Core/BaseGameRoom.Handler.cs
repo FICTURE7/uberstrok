@@ -41,7 +41,7 @@ namespace UberStrok.Realtime.Server.Game
                 Team = team
             });
 
-            s_log.Info($"Joining team -> CMID:{peer.Actor.Cmid}:{team}:{peer.Actor.Number}");
+            Log.Info($"Joining team -> CMID:{peer.Actor.Cmid}:{team}:{peer.Actor.Number}");
         }
 
         protected override void OnChatMessage(GamePeer peer, string message, byte context)
@@ -82,7 +82,7 @@ namespace UberStrok.Realtime.Server.Game
 
             if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
             {
-                s_log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
+                Log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
                 attacker.Disconnect();
                 return;
             }
@@ -98,12 +98,12 @@ namespace UberStrok.Realtime.Server.Game
                 if (victim.Actor.Cmid != targetCmid)
                     continue;
 
-                if (DoDamage(shortDamage, BodyPart.Body, victim, attacker, out Vector3 direction))
+                if (DoDamage(victim, attacker, shortDamage, BodyPart.Body, out Vector3 direction))
                 {
                     OnPlayerKilled(new PlayerKilledEventArgs
                     {
-                        AttackerCmid = attacker.Actor.Cmid,
-                        VictimCmid = victim.Actor.Cmid,
+                        Attacker = attacker,
+                        Victim = victim,
                         ItemClass = weapon.ItemClass,
                         Damage = (ushort)shortDamage,
                         Part = BodyPart.Body,
@@ -121,7 +121,7 @@ namespace UberStrok.Realtime.Server.Game
 
             if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
             {
-                s_log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
+                Log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
                 attacker.Disconnect();
                 return;
             }
@@ -141,12 +141,12 @@ namespace UberStrok.Realtime.Server.Game
                 if (victim.Actor.Cmid != target)
                     continue;
 
-                if (DoDamage(shortDamage, part, victim, attacker, out Vector3 direction))
+                if (DoDamage(victim, attacker, shortDamage, part, out Vector3 direction))
                 {
                     OnPlayerKilled(new PlayerKilledEventArgs
                     {
-                        AttackerCmid = attacker.Actor.Cmid,
-                        VictimCmid = victim.Actor.Cmid,
+                        Attacker = attacker,
+                        Victim = victim,
                         ItemClass = weapon.ItemClass,
                         Damage = (ushort)shortDamage,
                         Part = part,
@@ -161,7 +161,7 @@ namespace UberStrok.Realtime.Server.Game
             var actualDamage = (short)damage;
             if (damage < 0)
             {
-                s_log.Warn($"Negative damage: {damage}. Disconnecting.");
+                Log.Warn($"Negative damage: {damage}. Disconnecting.");
                 peer.Disconnect();
                 return;
             }
@@ -177,8 +177,8 @@ namespace UberStrok.Realtime.Server.Game
                 peer.State.Set(PeerState.Id.Killed);
                 OnPlayerKilled(new PlayerKilledEventArgs
                 {
-                    AttackerCmid = peer.Actor.Cmid,
-                    VictimCmid = peer.Actor.Cmid,
+                    Attacker = peer,
+                    Victim = peer,
                     ItemClass = UberStrikeItemClass.WeaponMachinegun,
                     Damage = (ushort)actualDamage,
                     Part = BodyPart.Body,
@@ -191,7 +191,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             if ((peer.Actor.Info.PlayerState & PlayerStates.Dead) == PlayerStates.Dead)
             {
-                s_log.Debug($"Player {peer.Actor.Cmid} DirectDeath k: {peer.Actor.Info.Kills} d: {peer.Actor.Info.Deaths}, but already dead");
+                Log.Debug($"Player {peer.Actor.Cmid} DirectDeath k: {peer.Actor.Info.Kills} d: {peer.Actor.Info.Deaths}, but already dead");
                 return;
             }
 
@@ -204,15 +204,15 @@ namespace UberStrok.Realtime.Server.Game
             peer.State.Set(PeerState.Id.Killed);
             OnPlayerKilled(new PlayerKilledEventArgs
             {
-                AttackerCmid = peer.Actor.Cmid,
-                VictimCmid = peer.Actor.Cmid,
+                Attacker = peer,
+                Victim = peer,
                 ItemClass = UberStrikeItemClass.WeaponMelee,
                 Damage = (ushort)damage,
                 Part = BodyPart.Body,
                 Direction = Vector3.Zero
             });
 
-            s_log.Debug($"Player {peer.Actor.Cmid} DirectDeath k: {peer.Actor.Info.Kills} d: {peer.Actor.Info.Deaths}");
+            Log.Debug($"Player {peer.Actor.Cmid} DirectDeath k: {peer.Actor.Info.Kills} d: {peer.Actor.Info.Deaths}");
         }
 
         protected override void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)

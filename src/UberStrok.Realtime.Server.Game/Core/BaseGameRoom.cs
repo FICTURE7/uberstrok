@@ -10,8 +10,6 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract partial class BaseGameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>, IDisposable
     {
-        private readonly static ILog s_log = LogManager.GetLogger(nameof(BaseGameRoom));
-
         private bool _disposed;
         private byte _nextPlayer;
         private string _password;
@@ -20,6 +18,8 @@ namespace UberStrok.Realtime.Server.Game
         private readonly List<GamePeer> _peers;
         /* List of peers connected & playing. */
         private readonly List<GamePeer> _players;
+
+        protected ILog Log { get; }
 
         /* Object to synchronize access to the room. */
         public object Sync { get; }
@@ -69,6 +69,8 @@ namespace UberStrok.Realtime.Server.Game
         {
             View = data ?? throw new ArgumentNullException(nameof(data));
             View.ConnectedPlayers = 0;
+
+            Log = LogManager.GetLogger(GetType().Name);
 
             _peers = new List<GamePeer>();
             _players = new List<GamePeer>();
@@ -247,12 +249,17 @@ namespace UberStrok.Realtime.Server.Game
 
                     State.Update();
                 },
-                (ex) => s_log.Error("Failed to tick game loop.", ex)
+                (ex) => Log.Error("Failed to tick game loop.", ex)
             );
         }
 
+        protected virtual bool CanDamage(GamePeer victim, GamePeer attacker)
+        {
+            return true;
+        }
+
         /* Does damage and returns true if victim is dead; otherwise false. */
-        private bool DoDamage(short damage, BodyPart part, GamePeer victim, GamePeer attacker, out Vector3 direction)
+        protected bool DoDamage(GamePeer victim, GamePeer attacker, short damage, BodyPart part, out Vector3 direction)
         {
             bool selfDamage = victim.Actor.Cmid == attacker.Actor.Cmid;
 
@@ -260,6 +267,10 @@ namespace UberStrok.Realtime.Server.Game
             var victimPos = victim.Actor.Movement.Position;
             var attackerPos = attacker.Actor.Movement.Position;
             direction = attackerPos - victimPos;
+
+            /* Check if we can apply the damage on the players. */
+            if (!CanDamage(victim, attacker))
+                return false;
 
             var angle = Vector3.Angle(direction, new Vector3(0, 0, -1));
             if (direction.x < 0)

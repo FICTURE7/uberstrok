@@ -21,8 +21,8 @@ namespace UberStrok.Realtime.Server.Game
 
     public class PlayerKilledEventArgs : EventArgs
     {
-        public int VictimCmid { get; set; }
-        public int AttackerCmid { get; set; }
+        public GamePeer Victim { get; set; }
+        public GamePeer Attacker { get; set; }
         public UberStrikeItemClass ItemClass { get; set; }
         public ushort Damage { get; set; }
         public BodyPart Part { get; set; }

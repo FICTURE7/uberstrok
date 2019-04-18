@@ -122,7 +122,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             /* Let all peers know that the player has died. */
             foreach (var otherPeer in Room.Peers)
-                otherPeer.Events.Game.SendPlayerKilled(e.AttackerCmid, e.VictimCmid, e.ItemClass, e.Damage, e.Part, e.Direction);
+                otherPeer.Events.Game.SendPlayerKilled(e.Attacker.Actor.Cmid, e.Victim.Actor.Cmid, e.ItemClass, e.Damage, e.Part, e.Direction);
         }
 
         private void OnPlayerRespawned(object sender, PlayerRespawnedEventArgs e)
