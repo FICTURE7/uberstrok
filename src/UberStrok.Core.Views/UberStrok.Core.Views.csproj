@@ -43,6 +43,7 @@
     <Compile Include="CommActorInfoView.cs" />
     <Compile Include="ConnectionAddressView.cs" />
     <Compile Include="DamageEventView.cs" />
+    <Compile Include="EndOfMatchDataView.cs" />
     <Compile Include="GameActorInfoDeltaView.cs" />
     <Compile Include="GameActorInfoView.cs" />
     <Compile Include="GameRoomDataView.cs" />
@@ -67,6 +68,8 @@
     <Compile Include="PublicProfileView.cs" />
     <Compile Include="RoomDataView.cs" />
     <Compile Include="ServerConnectionView.cs" />
+    <Compile Include="StatsCollectionView.cs" />
+    <Compile Include="StatsSummaryView.cs" />
     <Compile Include="UberStrikeItemFunctionalView.cs" />
     <Compile Include="UberStrikeItemGearView.cs" />
     <Compile Include="UberStrikeItemQuickView.cs" />

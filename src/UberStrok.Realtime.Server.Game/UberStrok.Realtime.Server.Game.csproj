@@ -52,6 +52,7 @@
     <Compile Include="CountdownPeerState.cs" />
     <Compile Include="Core\GameActor.cs" />
     <Compile Include="Core\GameActorInfo.cs" />
+    <Compile Include="DeathMatchGameRoom.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="GameRoomManager.cs" />

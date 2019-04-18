@@ -48,6 +48,9 @@ namespace UberStrok.Realtime.Server.Game
             var room = default(BaseGameRoom);
             switch (data.GameMode)
             {
+                case GameModeType.DeathMatch:
+                    room = new DeathMatchGameRoom(data);
+                    break;
                 case GameModeType.TeamDeathMatch:
                     room = new TeamDeathMatchGameRoom(data);
                     break;
