@@ -95,8 +95,16 @@ namespace UberStrok.Realtime.Server.Game
                 return;
             }
 
-            room.Join(peer);
-            Log.Debug($"OnCreateRoom: Created new room: {room.Number} and made the client to join it.");
+            try
+            {
+                room.Join(peer);
+                Log.Debug($"OnCreateRoom: Created new room: {room.Number} and made the client to join it.");
+            }
+            catch (Exception ex)
+            {
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
+                Log.Error("OnCreateRoom: Unable to join game room.", ex);
+            }
         }
 
         protected override void OnJoinRoom(GamePeer peer, int roomId, string password, string clientVersion, string authToken, string magicHash)
@@ -128,7 +136,17 @@ namespace UberStrok.Realtime.Server.Game
                 if (room.View.IsPasswordProtected && password != room.Password)
                     peer.Events.SendRequestPasswordForRoom(room.View.Server.ConnectionString, room.Number);
                 else
-                    room.Join(peer);
+                {
+                    try
+                    {
+                        room.Join(peer);
+                    }
+                    catch (Exception ex)
+                    {
+                        peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
+                        Log.Error("OnJoinRoom: Unable to join game room.", ex);
+                    }
+                }
             }
             else
             {
