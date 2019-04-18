@@ -41,11 +41,12 @@ namespace UberStrok.Core
         public SpawnPoint Get(TeamID team)
         {
             /* Slightly less random spawns. */
-            if (_spawnCount % 5 == 0)
+            if (_spawnCount % _spawnPoints.Count == 0)
                 _index = _rand.Next(_spawnPoints.Count);
             else
                 _index++;
 
+            _spawnCount++;
             return _spawnPoints[team][_index];
         }
     }
