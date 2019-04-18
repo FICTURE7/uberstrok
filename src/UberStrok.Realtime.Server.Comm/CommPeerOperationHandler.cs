@@ -9,10 +9,19 @@ namespace UberStrok.Realtime.Server.Comm
 
         public override void OnAuthenticationRequest(CommPeer peer, string authToken, string magicHash)
         {
-            if (!peer.Authenticate(authToken, magicHash))
-                peer.SendError();
-            else
-                CommApplication.Instance.Rooms.Global.Join(peer);
+            try
+            {
+                if (!peer.Authenticate(authToken, magicHash))
+                    peer.SendError();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Failed to authenticate user.", ex);
+                peer.Disconnect();
+                throw;
+            }
+
+            CommApplication.Instance.Rooms.Global.Join(peer);
         }
 
         public override void OnSendHeartbeatResponse(CommPeer peer, string authToken, string responseHash)
