@@ -13,6 +13,11 @@ namespace UberStrok.Realtime.Server.Game
                 throw new ArgumentException("GameRoomDataView is not in deathmatch mode", nameof(data));
         }
 
+        protected override bool CanDamage(GamePeer victim, GamePeer attacker)
+        {
+            return true;
+        }
+
         protected override void OnPlayerJoined(PlayerJoinedEventArgs args)
         {
             base.OnPlayerJoined(args);

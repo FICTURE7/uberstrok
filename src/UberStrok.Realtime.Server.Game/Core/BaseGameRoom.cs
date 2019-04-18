@@ -253,10 +253,7 @@ namespace UberStrok.Realtime.Server.Game
             );
         }
 
-        protected virtual bool CanDamage(GamePeer victim, GamePeer attacker)
-        {
-            return true;
-        }
+        protected abstract bool CanDamage(GamePeer victim, GamePeer attacker);
 
         /* Does damage and returns true if victim is dead; otherwise false. */
         protected bool DoDamage(GamePeer victim, GamePeer attacker, short damage, BodyPart part, out Vector3 direction)
