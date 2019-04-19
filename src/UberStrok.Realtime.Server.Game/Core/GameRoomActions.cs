@@ -3,6 +3,7 @@ using UberStrok.Core.Common;
 
 namespace UberStrok.Realtime.Server.Game
 {
+    [Obsolete]
     public class GameRoomActions
     {
         private readonly BaseGameRoom _room;
