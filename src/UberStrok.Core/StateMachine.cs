@@ -48,9 +48,9 @@ namespace UberStrok.Core
         {
             _current?.OnExit();
 
-            var stateId = _states.Pop();
-            var state = default(State);
-            var exists = _registeredStates.TryGetValue(stateId, out state);
+            _states.Pop();
+            var stateId = _states.Peek();
+            var exists = _registeredStates.TryGetValue(stateId, out State state);
 
             Debug.Assert(exists);
 
