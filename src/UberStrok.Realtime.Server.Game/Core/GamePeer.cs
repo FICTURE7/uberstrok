@@ -114,7 +114,7 @@ namespace UberStrok.Realtime.Server.Game
                 if (gearId == 0)
                     continue;
 
-                if (!Room.ShopManager.GearItems.TryGetValue(gearId, out UberStrikeItemGearView gear))
+                if (!Room.Shop.GearItems.TryGetValue(gearId, out UberStrikeItemGearView gear))
                     throw new Exception($"Unable to find gear item with ID {gearId}");
 
                 armorCapacity += gear.ArmorPoints;

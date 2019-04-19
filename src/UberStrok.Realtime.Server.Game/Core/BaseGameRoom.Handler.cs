@@ -65,8 +65,8 @@ namespace UberStrok.Realtime.Server.Game
             Debug.Assert(positions.Count == rotations.Count, "Number of spawn positions given and number of rotations given is not equal.");
 
             /* We care only about the first operation sent for that team ID. */
-            if (!SpawnManager.IsLoaded(team))
-                SpawnManager.Load(team, positions, rotations);
+            if (!Spawns.IsLoaded(team))
+                Spawns.Load(team, positions, rotations);
         }
 
         protected override void OnRespawnRequest(GamePeer peer)
@@ -79,7 +79,7 @@ namespace UberStrok.Realtime.Server.Game
             GamePeer attacker = peer;
             int weaponId = attacker.Actor.Info.Weapons[slot];
 
-            if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
+            if (!Shop.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
             {
                 Log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
                 attacker.Disconnect();
@@ -116,7 +116,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             GamePeer attacker = peer;
             int weaponId = attacker.Actor.Info.CurrentWeaponID;
-            if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
+            if (!Shop.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
             {
                 Log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
                 attacker.Disconnect();

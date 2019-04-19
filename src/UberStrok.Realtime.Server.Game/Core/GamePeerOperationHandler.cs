@@ -71,7 +71,7 @@ namespace UberStrok.Realtime.Server.Game
             try
             {
                 room = GameApplication.Instance.Rooms.Create(roomData, password);
-                room.ShopManager.Load(authToken);
+                room.Shop.Load(authToken);
 
                 /* Enable QUICK-SWATCH boiiiii */
                 room.View.GameFlags |= 4;

@@ -80,7 +80,7 @@ namespace UberStrok.Realtime.Server.Game
             player.Actor.Info.Deaths = 0;
             player.Actor.Info.PlayerState &= ~PlayerStates.Dead;
 
-            var point = Room.SpawnManager.Get(player.Actor.Team);
+            var point = Room.Spawns.Get(player.Actor.Team);
             var movement = player.Actor.Movement;
             movement.Position = point.Position;
             movement.HorizontalRotation = point.Rotation;

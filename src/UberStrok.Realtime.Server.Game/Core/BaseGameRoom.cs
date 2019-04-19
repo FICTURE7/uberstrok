@@ -24,21 +24,20 @@ namespace UberStrok.Realtime.Server.Game
         /* Object to synchronize access to the room. */
         public object Sync { get; }
 
+        public Loop Loop { get; }
         public GameRoomDataView View { get; }
+        public GameRoomActions Actions { get; }
         public IReadOnlyList<GamePeer> Peers { get; }
         public IReadOnlyList<GamePeer> Players { get; }
         public StateMachine<MatchState.Id> State { get; }
+        public ShopManager Shop { get; }
+        public SpawnManager Spawns { get; }
         public PowerUpManager PowerUps { get; }
-        public GameRoomActions Actions { get; }
 
         public event EventHandler<PlayerKilledEventArgs> PlayerKilled;
         public event EventHandler<PlayerRespawnedEventArgs> PlayerRespawned;
         public event EventHandler<PlayerJoinedEventArgs> PlayerJoined;
         public event EventHandler<PlayerLeftEventArgs> PlayerLeft;
-
-        public Loop Loop { get; }
-        public ShopManager ShopManager { get; }
-        public SpawnManager SpawnManager { get; }
 
         public int RoundNumber { get; set; }
         /* Time in system ticks when the round ends.*/
@@ -84,8 +83,8 @@ namespace UberStrok.Realtime.Server.Game
             Loop = new Loop(64);
             Actions = new GameRoomActions(this);
 
-            ShopManager = new ShopManager();
-            SpawnManager = new SpawnManager();
+            Shop = new ShopManager();
+            Spawns = new SpawnManager();
             PowerUps = new PowerUpManager(this);
 
             State = new StateMachine<MatchState.Id>();

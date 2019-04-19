@@ -132,7 +132,7 @@ namespace UberStrok.Realtime.Server.Game
             e.Player.Actor.Info.ArmorPoints = e.Player.Actor.Info.ArmorPointCapacity;
             e.Player.Actor.Info.PlayerState &= ~PlayerStates.Dead;
 
-            var spawn = Room.SpawnManager.Get(e.Player.Actor.Team);
+            var spawn = Room.Spawns.Get(e.Player.Actor.Team);
             foreach (var otherPeer in Room.Peers)
                 otherPeer.Events.Game.SendPlayerRespawned(e.Player.Actor.Cmid, spawn.Position, spawn.Rotation);
 
@@ -146,7 +146,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             /* Spawn the player in the map. */
             var player = e.Player;
-            var point = Room.SpawnManager.Get(player.Actor.Team);
+            var point = Room.Spawns.Get(player.Actor.Team);
             player.Actor.Movement.Position = point.Position;
             player.Actor.Movement.HorizontalRotation = point.Rotation;
 
