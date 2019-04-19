@@ -106,11 +106,11 @@ namespace UberStrok.Realtime.Server
                     var reMagicHash = HashBytes(compositeHash, authTokenBytes);
                     if (reMagicHash == magicHash)
                     {
-                        Log.Debug($"MagicHash: {magicHash} == {reMagicHash}");
+                        Log.Debug($"MagicHash: {reMagicHash} == {magicHash}");
                         return true;
                     }
 
-                    Log.Error($"MagicHash: {magicHash} != {reMagicHash}");
+                    Log.Error($"MagicHash: {reMagicHash} != {magicHash}");
                 }
 
                 return false;
