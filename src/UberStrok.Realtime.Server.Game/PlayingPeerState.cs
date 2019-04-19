@@ -1,7 +1,13 @@
-﻿namespace UberStrok.Realtime.Server.Game
+﻿using log4net;
+
+namespace UberStrok.Realtime.Server.Game
 {
     public class PlayingPeerState : PeerState
     {
+        private readonly static ILog s_log = LogManager.GetLogger(nameof(PlayingPeerState));
+
+        public double _timer;
+
         public PlayingPeerState(GamePeer peer) : base(peer)
         {
             // Space
@@ -24,7 +30,8 @@
 
         public override void OnResume()
         {
-            // Space
+            _timer = 0;
+            s_log.Info("Playing state Resumed!");
         }
 
         public override void OnExit()
@@ -34,7 +41,21 @@
 
         public override void OnUpdate()
         {
-            // Space
+            double dt = Peer.Room.Loop.DeltaTime.TotalMilliseconds;
+            if (Peer.Actor.Info.Health > 100 || Peer.Actor.Info.ArmorPoints > Peer.Actor.Info.ArmorPointCapacity)
+                _timer += dt;
+            else
+                _timer = 0;
+
+            if (_timer > 1000)
+            {
+                if (Peer.Actor.Info.Health > 100)
+                    Peer.Actor.Info.Health -= 1;
+                if (Peer.Actor.Info.ArmorPoints > Peer.Actor.Info.ArmorPointCapacity)
+                    Peer.Actor.Info.ArmorPoints -= 1;
+
+                _timer -= 1000;
+            }
         }
     }
 }
