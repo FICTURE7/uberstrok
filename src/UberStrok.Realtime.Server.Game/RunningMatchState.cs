@@ -83,7 +83,7 @@ namespace UberStrok.Realtime.Server.Game
             var position = updatePositions ? new List<PlayerMovement>(Room.Players.Count) : null;
             foreach (var player in Room.Players)
             {
-                if (updatePositions)
+                if (updatePositions && (player.Actor.Info.PlayerState & PlayerStates.Dead) != PlayerStates.Dead)
                     position.Add(player.Actor.Movement);
 
                 /* If the player has any damage events, we sent them. */
