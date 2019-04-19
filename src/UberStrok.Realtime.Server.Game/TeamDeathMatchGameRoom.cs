@@ -23,7 +23,7 @@ namespace UberStrok.Realtime.Server.Game
             if (FriendlyFire)
                 return true;
 
-            return victim.Actor.Team != attacker.Actor.Team;
+            return victim == attacker || victim.Actor.Team != attacker.Actor.Team;
         }
 
         protected override void OnPlayerJoined(PlayerJoinedEventArgs args)
