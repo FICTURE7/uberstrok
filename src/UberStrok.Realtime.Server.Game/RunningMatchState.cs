@@ -129,6 +129,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             /* Let all peers know that the player has respawned. */
             e.Player.Actor.Info.Health = 100;
+            e.Player.Actor.Info.ArmorPoints = e.Player.Actor.Info.ArmorPointCapacity;
             e.Player.Actor.Info.PlayerState &= ~PlayerStates.Dead;
 
             var spawn = Room.SpawnManager.Get(e.Player.Actor.Team);

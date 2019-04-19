@@ -24,8 +24,7 @@ namespace UberStrok.Realtime.Server.Game
              */
             peer.Actor.Team = team;
             peer.Actor.Info.Health = 100;
-            peer.Actor.Info.ArmorPoints = 0;
-            peer.Actor.Info.ArmorPointCapacity = 0;
+            peer.Actor.Info.ArmorPoints = peer.Actor.Info.ArmorPointCapacity;
             peer.Actor.Info.Ping = (ushort)(peer.RoundTripTime / 2);
             peer.Actor.Info.PlayerState = PlayerStates.Ready;
 
@@ -117,8 +116,6 @@ namespace UberStrok.Realtime.Server.Game
         {
             GamePeer attacker = peer;
             int weaponId = attacker.Actor.Info.CurrentWeaponID;
-
-
             if (!ShopManager.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
             {
                 Log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");

@@ -176,7 +176,15 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnUpdateLoadout(GamePeer peer)
         {
-            peer.UpdateLoadout();
+            try
+            {
+                peer.UpdateLoadout();
+            }
+            catch (Exception ex)
+            {
+                peer.Disconnect();
+                Log.Error("Failed to update peer's loadout.", ex);
+            }
         }
     }
 }

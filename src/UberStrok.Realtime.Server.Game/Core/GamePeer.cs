@@ -1,4 +1,5 @@
 ﻿using Photon.SocketServer;
+using System;
 using System.Collections.Generic;
 using UberStrok.Core;
 using UberStrok.Core.Views;
@@ -54,6 +55,12 @@ namespace UberStrok.Realtime.Server.Game
 
         public void UpdateLoadout()
         {
+            if (Room == null)
+            {
+                Log.Error("Tried to update loadout but was not in a room.");
+                return;
+            }
+
             WaitingForLoadout = true;
 
             /* Retrieve loadout from web services. */
@@ -85,9 +92,36 @@ namespace UberStrok.Realtime.Server.Game
             Actor.Info.Weapons = weapons;
             Actor.Info.Gear = gear;
             Actor.Info.QuickItems = quickItems;
-            Loadout = loadout;
 
+            UpdateArmorCapacity();
+
+            Loadout = loadout;
             WaitingForLoadout = false;
+        }
+
+        public void UpdateArmorCapacity()
+        {
+            if (Room == null)
+            {
+                Log.Error("Tried to update armor but was not in a room.");
+                return;
+            }
+
+            /* Calculate armor capacity. */
+            int armorCapacity = 0;
+            foreach (var gearId in Actor.Info.Gear)
+            {
+                if (gearId == 0)
+                    continue;
+
+                if (!Room.ShopManager.GearItems.TryGetValue(gearId, out UberStrikeItemGearView gear))
+                    throw new Exception($"Unable to find gear item with ID {gearId}");
+
+                armorCapacity += gear.ArmorPoints;
+            }
+
+            /* Clamp armor capacity to 200. */
+            Actor.Info.ArmorPointCapacity = Math.Min((byte)200, (byte)armorCapacity);
         }
 
         protected override void OnAuthenticate(UberstrikeUserView userView)

@@ -127,34 +127,24 @@ namespace UberStrok.Realtime.Server.Game
             if (peerAlreadyConnected != null)
                 Leave(peerAlreadyConnected);
 
-            var roomView = View;
+            var publicProfile = peer.Member.CmuneMemberView.PublicProfile;
             var actorView = new GameActorInfoView
             {
-                TeamID = TeamID.NONE,
-
-                Health = 100,
-
-                /* 
-                 * TODO: Calculate armor points & armor capacity (but who cares
-                 * about those).
-                 */
-                ArmorPoints = 0,
-                ArmorPointCapacity = 0,
-
-                Deaths = 0,
-                Kills = 0,
-
-                Level = 1,
-
                 Channel = ChannelType.Steam,
                 PlayerState = PlayerStates.None,
-
+                TeamID = TeamID.NONE,
+                Health = 100,
+                ArmorPointCapacity = 0,
+                ArmorPoints = 0,
+                Deaths = 0,
+                Kills = 0,
+                Level = 1,
                 Ping = (ushort)(peer.RoundTripTime / 2),
 
-                Cmid = peer.Member.CmuneMemberView.PublicProfile.Cmid,
-                ClanTag = peer.Member.CmuneMemberView.PublicProfile.GroupTag,
-                AccessLevel = peer.Member.CmuneMemberView.PublicProfile.AccessLevel,
-                PlayerName = peer.Member.CmuneMemberView.PublicProfile.Name,
+                Cmid = publicProfile.Cmid,
+                ClanTag = publicProfile.GroupTag,
+                AccessLevel = publicProfile.AccessLevel,
+                PlayerName = publicProfile.Name,
             };
 
             /* Set the gears of the character. */
@@ -191,13 +181,16 @@ namespace UberStrok.Realtime.Server.Game
             peer.Room = this;
             peer.Actor = actor;
             peer.Actor.Number = number;
+
+            peer.UpdateArmorCapacity();
+
             peer.Handlers.Add(this);
 
             /* 
              * This prepares the client for the game room and sets the client
              * state to 'pre-game'.
              */
-            peer.Events.SendRoomEntered(roomView);
+            peer.Events.SendRoomEntered(View);
 
             /* 
              * Set the player in the overview state. Which also sends all player
@@ -269,22 +262,37 @@ namespace UberStrok.Realtime.Server.Game
             if (!CanDamage(victim, attacker))
                 return false;
 
-            var angle = Vector3.Angle(direction, new Vector3(0, 0, -1));
+            float angle = Vector3.Angle(direction, new Vector3(0, 0, -1));
             if (direction.x < 0)
                 angle = 360 - angle;
 
-            var byteAngle = Conversions.Angle2Byte(angle);
+            byte byteAngle = Conversions.Angle2Byte(angle);
 
             /* Check if not self-damage. */
             if (!selfDamage)
-            {
                 victim.Actor.Damages.Add(byteAngle, damage, part, 0, 0);
-                victim.Actor.Info.Health -= damage;
+            else
+                damage /= 2;
+
+            /* Calculate armor absorption. */
+            int armorDamage = 0;
+            int healthDamage = 0;
+            if (victim.Actor.Info.ArmorPoints > 0)
+            {
+                armorDamage = (byte)(0.66f * damage);
+                healthDamage = (short)(damage - armorDamage);
             }
             else
             {
-                victim.Actor.Info.Health -= (short)(damage / 2);
+                armorDamage = 0;
+                healthDamage = damage;
             }
+
+            int newArmor = victim.Actor.Info.ArmorPoints - armorDamage;
+            int newHealth = victim.Actor.Info.Health - healthDamage;
+
+            victim.Actor.Info.ArmorPoints = (byte)Math.Max(0, newArmor);
+            victim.Actor.Info.Health = (short)Math.Max(0, newHealth);
 
             /* Check if the player is dead. */
             if (victim.Actor.Info.Health <= 0)
