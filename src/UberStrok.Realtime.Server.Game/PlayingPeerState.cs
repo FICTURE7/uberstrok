@@ -4,8 +4,6 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class PlayingPeerState : PeerState
     {
-        private readonly static ILog s_log = LogManager.GetLogger(nameof(PlayingPeerState));
-
         public double _timer;
 
         public PlayingPeerState(GamePeer peer) : base(peer)
@@ -31,7 +29,6 @@ namespace UberStrok.Realtime.Server.Game
         public override void OnResume()
         {
             _timer = 0;
-            s_log.Info("Playing state Resumed!");
         }
 
         public override void OnExit()
