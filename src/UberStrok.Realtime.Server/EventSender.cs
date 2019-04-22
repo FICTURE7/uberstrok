@@ -24,11 +24,7 @@ namespace UberStrok.Realtime.Server
                 {0,  bytes.ToArray() }
             });
 
-            var result = Peer.SendEvent(eventData, new SendParameters { Unreliable = unreliable });
-            if (result != SendResult.Ok)
-                Log.Error($"Send event failed {opCode} -> {result}");
-
-            return result;
+            return Peer.SendEvent(eventData, new SendParameters { Unreliable = unreliable });
         }
 
         protected SendResult SendEvent(byte opCode, MemoryStream bytes) => SendEvent(opCode, bytes, false);

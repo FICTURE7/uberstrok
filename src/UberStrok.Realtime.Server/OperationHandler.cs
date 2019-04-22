@@ -1,4 +1,5 @@
 ﻿using PhotonHostRuntimeInterfaces;
+using System;
 using System.IO;
 
 namespace UberStrok.Realtime.Server
@@ -12,6 +13,11 @@ namespace UberStrok.Realtime.Server
         public virtual void OnDisconnect(Peer peer, DisconnectReason reasonCode, string reasonDetail)
         {
             // Space
+        }
+
+        protected virtual void Enqueue(Action action)
+        {
+            action();
         }
     }
 

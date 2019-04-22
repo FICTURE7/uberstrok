@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 
 namespace UberStrok.Core
@@ -17,10 +19,6 @@ namespace UberStrok.Core
 
         /* Amount of milliseconds we've lagged in between ticks. */
         private double _lag;
-        /* Time at the start of the tick. */
-        private DateTime _time;
-        /* Time difference between the last tick. */
-        private TimeSpan _deltaTime;
 
         /* Loop handler which is called every tick. */
         private LoopHandler _handler;
@@ -28,27 +26,36 @@ namespace UberStrok.Core
         private LoopExceptionHandler _exceptionHandler;
 
         private readonly EventWaitHandle _pauseWaitHandle;
-        /* Amount of time the thread needs to sleep in ms. */
-        private readonly double _interval;
+
+        /* Queue of Action to execute before calling the loop handler. */
+        private readonly ConcurrentQueue<Action> _workQueue;
+
         /* Thread that is going to do the work. */
         private readonly Thread _thread;
 
-        public Loop(int tickRateSeconds)
+        public double Interval { get; }
+        public bool CatchUp { get; }
+        public DateTime Time { get; private set; }
+        public TimeSpan DeltaTime { get; private set; }
+
+        public Loop(int tps)
+            : this(tps, false)
         {
-            if (tickRateSeconds < 0)
-                throw new ArgumentOutOfRangeException(nameof(tickRateSeconds), "Tick rate cannot be less than 0.");
-
-            CatchUp = false;
-
-            _pauseWaitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
-            _thread = new Thread(Work) { Name = "GameLoop-thread" };
-            _interval = 1000d / tickRateSeconds;
+            /* Space */
         }
 
-        public bool CatchUp { get; set; }
-        public double Interval => _interval;
-        public DateTime Time => _time;
-        public TimeSpan DeltaTime => _deltaTime;
+        public Loop(int tps, bool catchUp)
+        {
+            if (tps < 0)
+                throw new ArgumentOutOfRangeException(nameof(tps), "Tick rate cannot be less than 0.");
+
+            CatchUp = catchUp;
+            Interval = 1000d / tps;
+
+            _workQueue = new ConcurrentQueue<Action>();
+            _pauseWaitHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
+            _thread = new Thread(Work) { Name = "Loop-thread" };
+        }
 
         public void Start(LoopHandler handler, LoopExceptionHandler exceptionHandler)
         {
@@ -57,16 +64,10 @@ namespace UberStrok.Core
             if (_handler != null || _exceptionHandler != null)
                 throw new InvalidOperationException("Loop can be started only once.");
 
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
-            if (exceptionHandler == null)
-                throw new ArgumentNullException(nameof(exceptionHandler));
+            _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+            _exceptionHandler = exceptionHandler ?? throw new ArgumentNullException(nameof(exceptionHandler));
 
             _started = true;
-
-            _handler = handler;
-            _exceptionHandler = exceptionHandler;
-
             _thread.Start();
         }
 
@@ -78,8 +79,8 @@ namespace UberStrok.Core
             _started = false;
 
             /* 
-                Give the thread a chance to spin a couple of times to shutting down
-                gracefully then kill if it does not.
+             * Give the thread a chance to spin a couple of times to shutting
+             * down gracefully then kill if it does not.
              */
             if (!_thread.Join((int)Math.Ceiling(Interval * 3)))
                 _thread.Abort();
@@ -99,10 +100,18 @@ namespace UberStrok.Core
                 throw new InvalidOperationException("Loop not started");
 
             _lag = 0;
-            _time = DateTime.UtcNow;
-            _deltaTime = new TimeSpan();
+            Time = DateTime.UtcNow;
+            DeltaTime = new TimeSpan();
 
             _pauseWaitHandle.Set();
+        }
+
+        public void Enqueue(Action action)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+
+            _workQueue.Enqueue(action);
         }
 
         public int ToTicks(TimeSpan span)
@@ -110,16 +119,17 @@ namespace UberStrok.Core
             return (int)(span.TotalMilliseconds / Interval);
         }
 
+        /* Loop with catch up logic. */
         private void Work()
         {
             /* Interval between each sleep call. */
-            var interval = _interval;
+            var interval = Interval;
             /* Interval between each sleep call but ceiled. */
             var ceiledInterval = (int)Math.Ceiling(interval);
 
             _lag = 0;
-            _time = DateTime.UtcNow;
-            _deltaTime = new TimeSpan();
+            Time = DateTime.UtcNow;
+            DeltaTime = default(TimeSpan);
 
             try
             {
@@ -128,13 +138,16 @@ namespace UberStrok.Core
                     /* Wait to get the signal first. */
                     _pauseWaitHandle.WaitOne();
 
+                    /* Execute all the actions enqueued before updating. */
+                    DoActions();
+
                     /* Do time calculatations such as delta time. */
                     DoTime();
                     /* Do an update calling the user code. */
                     DoUpdate();
 
                     /* Catch up if we've lagged more than the a tick interval. */
-                    while (_lag >= interval && CatchUp)
+                    while (CatchUp && _lag >= interval)
                     {
                         DoTime();
                         DoUpdate();
@@ -147,7 +160,19 @@ namespace UberStrok.Core
             }
             catch (ThreadAbortException)
             {
-                // Space
+                /* Space */
+            }
+        }
+
+        private void DoActions()
+        {
+            while (!_workQueue.IsEmpty)
+            {
+                if (!_workQueue.TryDequeue(out Action action))
+                    continue;
+
+                try { action(); }
+                catch (Exception e) { _exceptionHandler(e); }
             }
         }
 
@@ -156,16 +181,18 @@ namespace UberStrok.Core
             var now = DateTime.UtcNow;
 
             /* Calculate the delta time & the lag. */
-            _deltaTime = now - _time;
-            _time = now;
-            _lag += _deltaTime.TotalMilliseconds;
+            DeltaTime = now - Time;
+            Time = now;
+
+            if (CatchUp)
+                _lag += DeltaTime.TotalMilliseconds;
         }
 
         private void DoUpdate()
         {
             /*
-                Pass control to the user code and if it throws an exception, 
-                pass it back to user exception handler.
+             * Pass control to the user code and if it throws an exception,
+             * pass it back to user exception handler.
              */
             try { _handler(); }
             catch (Exception e) { _exceptionHandler(e); }

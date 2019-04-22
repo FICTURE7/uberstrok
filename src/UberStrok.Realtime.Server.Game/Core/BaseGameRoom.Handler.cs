@@ -14,6 +14,12 @@ namespace UberStrok.Realtime.Server.Game
             Leave(peer);
         }
 
+        protected override void Enqueue(Action action)
+        {
+            /* Enqueue the work on the loop so processing of operations are serial. */
+            Loop.Enqueue(action);
+        }
+
         protected override void OnJoinGame(GamePeer peer, TeamID team)
         {
             /* 
@@ -28,11 +34,8 @@ namespace UberStrok.Realtime.Server.Game
             peer.Actor.Info.Ping = (ushort)(peer.RoundTripTime / 2);
             peer.Actor.Info.PlayerState = PlayerStates.Ready;
 
-            lock (Sync)
-            {
-                _players.Add(peer);
-                View.ConnectedPlayers = Players.Count;
-            }
+            _players.Add(peer);
+            View.ConnectedPlayers = Players.Count;
 
             OnPlayerJoined(new PlayerJoinedEventArgs
             {
@@ -115,6 +118,12 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets)
         {
             GamePeer attacker = peer;
+            if ((attacker.Actor.Info.PlayerState & PlayerStates.Dead) == PlayerStates.Dead)
+            {
+                Log.Info("Attacker is dead. Not registering direct hit.");
+                return;
+            }
+
             int weaponId = attacker.Actor.Info.CurrentWeaponID;
             if (!Shop.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
             {

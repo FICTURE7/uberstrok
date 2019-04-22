@@ -134,9 +134,12 @@ namespace UberStrok.Realtime.Server.Game
                 Log.Debug($"OnJoinRoom: Room: {roomId} IsPasswordProcted: {room.View.IsPasswordProtected}");
 
                 /* Request password if the room is password protected & check password.*/
-                if (room.View.IsPasswordProtected && password != room.Password && 
+                if (room.View.IsPasswordProtected && 
+                    password != room.Password &&
                     peer.Member.CmuneMemberView.PublicProfile.AccessLevel <= MemberAccessLevel.Moderator)
+                {
                     peer.Events.SendRequestPasswordForRoom(room.View.Server.ConnectionString, room.Number);
+                }
                 else
                 {
                     try
