@@ -128,19 +128,19 @@ namespace UberStrok.Realtime.Server.Game
             var type = ByteProxy.Deserialize(bytes);
             var value = ByteProxy.Deserialize(bytes);
 
-            OnPowerUpPicked(peer, pickupId, type, value);
+            Enqueue(() => OnPowerUpPicked(peer, pickupId, type, value));
         }
 
         private void IsInSniperMode(GamePeer peer, MemoryStream bytes)
         {
             var on = BooleanProxy.Deserialize(bytes);
 
-            OnIsInSniperMode(peer, on);
+            Enqueue(() => OnIsInSniperMode(peer, on));
         }
 
         private void SingleBulletFire(GamePeer peer, MemoryStream bytes)
         {
-            OnSingleBulletFire(peer);
+            Enqueue(() => OnSingleBulletFire(peer));
         }
 
         private void RemoveProjectile(GamePeer peer, MemoryStream bytes)
@@ -148,7 +148,7 @@ namespace UberStrok.Realtime.Server.Game
             var projectileId = Int32Proxy.Deserialize(bytes);
             var explode = BooleanProxy.Deserialize(bytes);
 
-            OnRemoveProjectile(peer, projectileId, explode);
+            Enqueue(() => OnRemoveProjectile(peer, projectileId, explode));
         }
 
         private void EmitProjectile(GamePeer peer, MemoryStream bytes)
@@ -159,7 +159,7 @@ namespace UberStrok.Realtime.Server.Game
             var projectileId = Int32Proxy.Deserialize(bytes);
             var explode = BooleanProxy.Deserialize(bytes);
 
-            OnEmitProjectile(peer, origin, direction, slot, projectileId, explode);
+            Enqueue(() => OnEmitProjectile(peer, origin, direction, slot, projectileId, explode));
         }
 
         private void EmitQuickItem(GamePeer peer, MemoryStream bytes)
@@ -170,12 +170,12 @@ namespace UberStrok.Realtime.Server.Game
             var playerNumber = ByteProxy.Deserialize(bytes);
             var projectileId = Int32Proxy.Deserialize(bytes);
 
-            OnEmitQuickItem(peer, origin, direction, itemId, playerNumber, projectileId);
+            Enqueue(() => OnEmitQuickItem(peer, origin, direction, itemId, playerNumber, projectileId));
         }
 
         private void RespawnRequest(GamePeer peer, MemoryStream bytes)
         {
-            OnRespawnRequest(peer);
+            Enqueue(() => OnRespawnRequest(peer));
         }
 
         private void ExplosionDamage(GamePeer peer, MemoryStream bytes)
@@ -185,7 +185,7 @@ namespace UberStrok.Realtime.Server.Game
             var distance = ByteProxy.Deserialize(bytes);
             var force = Vector3Proxy.Deserialize(bytes);
 
-            OnExplosionDamage(peer, target, slot, distance, force);
+            Enqueue(() => OnExplosionDamage(peer, target, slot, distance, force));
         }
 
         private void DirectHitDamage(GamePeer peer, MemoryStream bytes)
@@ -194,47 +194,47 @@ namespace UberStrok.Realtime.Server.Game
             var bodyPart = ByteProxy.Deserialize(bytes);
             var bullets = ByteProxy.Deserialize(bytes);
 
-            OnDirectHitDamage(peer, target, bodyPart, bullets);
+            Enqueue(() => OnDirectHitDamage(peer, target, bodyPart, bullets));
         }
 
         private void DirectDamage(GamePeer peer, MemoryStream bytes)
         {
             var damage = UInt16Proxy.Deserialize(bytes);
 
-            OnDirectDamage(peer, damage);
+            Enqueue(() => OnDirectDamage(peer, damage));
         }
 
         private void DirectDeath(GamePeer peer, MemoryStream bytes)
         {
-            OnDirectDeath(peer);
+            Enqueue(() => OnDirectDeath(peer));
         }
 
         private void SwitchWeapon(GamePeer peer, MemoryStream bytes)
         {
             var slot = ByteProxy.Deserialize(bytes);
 
-            OnSwitchWeapon(peer, slot);
+            Enqueue(() => OnSwitchWeapon(peer, slot));
         }
 
         private void IsPaused(GamePeer peer, MemoryStream bytes)
         {
             var on = BooleanProxy.Deserialize(bytes);
 
-            OnIsPaused(peer, on);
+            Enqueue(() => OnIsPaused(peer, on));
         }
 
         private void IsFiring(GamePeer peer, MemoryStream bytes)
         {
             var on = BooleanProxy.Deserialize(bytes);
 
-            OnIsFiring(peer, on);
+            Enqueue(() => OnIsFiring(peer, on));
         }
 
         private void Jump(GamePeer peer, MemoryStream bytes)
         {
             var position = Vector3Proxy.Deserialize(bytes);
 
-            OnJump(peer, position);
+            Enqueue(() => OnJump(peer, position));
         }
 
         private void UpdatePositionAndRotation(GamePeer peer, MemoryStream bytes)
@@ -245,7 +245,7 @@ namespace UberStrok.Realtime.Server.Game
             var verticalRotation = ByteProxy.Deserialize(bytes);
             var moveState = ByteProxy.Deserialize(bytes);
 
-            OnUpdatePositionAndRotation(peer, position, velocity, horizontalRotation, verticalRotation, moveState);
+            Enqueue(() => OnUpdatePositionAndRotation(peer, position, velocity, horizontalRotation, verticalRotation, moveState));
         }
 
         private void ChatMessage(GamePeer peer, MemoryStream bytes)
@@ -253,14 +253,14 @@ namespace UberStrok.Realtime.Server.Game
             var message = StringProxy.Deserialize(bytes);
             var context = ByteProxy.Deserialize(bytes);
 
-            OnChatMessage(peer, message, context);
+            Enqueue(() => OnChatMessage(peer, message, context));
         }
 
         private void PowerUpRespawnTimes(GamePeer peer, MemoryStream bytes)
         {
             var respawnTimes = ListProxy<ushort>.Deserialize(bytes, UInt16Proxy.Deserialize);
 
-            OnPowerUpRespawnTimes(peer, respawnTimes);
+            Enqueue(() => OnPowerUpRespawnTimes(peer, respawnTimes));
         }
 
         private void SpawnPositions(GamePeer peer, MemoryStream bytes)
@@ -269,14 +269,14 @@ namespace UberStrok.Realtime.Server.Game
             var positions = ListProxy<Vector3>.Deserialize(bytes, Vector3Proxy.Deserialize);
             var rotations = ListProxy<byte>.Deserialize(bytes, ByteProxy.Deserialize);
 
-            OnSpawnPositions(peer, team, positions, rotations);
+            Enqueue(() => OnSpawnPositions(peer, team, positions, rotations));
         }
 
         private void JoinGame(GamePeer peer, MemoryStream bytes)
         {
             var team = EnumProxy<TeamID>.Deserialize(bytes);
 
-            OnJoinGame(peer, team);
+            Enqueue(() => OnJoinGame(peer, team));
         }
     }
 }

@@ -21,9 +21,6 @@ namespace UberStrok.Realtime.Server.Game
 
         protected ILog Log { get; }
 
-        /* Object to synchronize access to the room. */
-        public object Sync { get; }
-
         public Loop Loop { get; }
         public GameRoomDataView View { get; }
         public GameRoomActions Actions { get; }
@@ -77,8 +74,6 @@ namespace UberStrok.Realtime.Server.Game
             Peers = _peers.AsReadOnly();
             Players = _players.AsReadOnly();
 
-            Sync = new object();
-
             /* Using a high tick rate to push updates to the client faster. */
             Loop = new Loop(64);
             Actions = new GameRoomActions(this);
@@ -95,8 +90,8 @@ namespace UberStrok.Realtime.Server.Game
 
             State.Set(MatchState.Id.WaitingForPlayers);
 
-            /* Start the game loop ASAP. */
-            StartLoop();
+            /* Start the game room loop. */
+            Loop.Start(OnTick, OnTickFailed);
         }
 
         public void Join(GamePeer peer)
@@ -106,96 +101,93 @@ namespace UberStrok.Realtime.Server.Game
 
             Debug.Assert(peer.Room == null, "GamePeer is joining room, but its already in another room.");
 
-            /* 
-             * If a peer with the same cmid is somehow in the room, disconnect him.
-             * Avoiding a dead-lock by calling Leave outside the lock.
-             */
-            var peerAlreadyConnected = default(GamePeer);
-            lock (Sync)
+            Enqueue(() =>
             {
-                foreach (var otherPeer in _peers)
+                Log.Info("Peer joining room");
+
+                /* 
+                 * If a peer with the same cmid is somehow in the room, 
+                 * disconnect him.
+                 */
+                foreach (var otherPeer in Peers)
                 {
                     if (otherPeer.Actor.Cmid == peer.Member.CmuneMemberView.PublicProfile.Cmid)
                     {
-                        peerAlreadyConnected = otherPeer;
+                        Leave(otherPeer);
                         break;
                     }
                 }
-            }
 
-            if (peerAlreadyConnected != null)
-                Leave(peerAlreadyConnected);
+                var publicProfile = peer.Member.CmuneMemberView.PublicProfile;
+                var actorView = new GameActorInfoView
+                {
+                    Channel = ChannelType.Steam,
+                    PlayerState = PlayerStates.None,
+                    TeamID = TeamID.NONE,
+                    Health = 100,
+                    ArmorPointCapacity = 0,
+                    ArmorPoints = 0,
+                    Deaths = 0,
+                    Kills = 0,
+                    Level = 1,
+                    Ping = (ushort)(peer.RoundTripTime / 2),
 
-            var publicProfile = peer.Member.CmuneMemberView.PublicProfile;
-            var actorView = new GameActorInfoView
-            {
-                Channel = ChannelType.Steam,
-                PlayerState = PlayerStates.None,
-                TeamID = TeamID.NONE,
-                Health = 100,
-                ArmorPointCapacity = 0,
-                ArmorPoints = 0,
-                Deaths = 0,
-                Kills = 0,
-                Level = 1,
-                Ping = (ushort)(peer.RoundTripTime / 2),
+                    Cmid = publicProfile.Cmid,
+                    ClanTag = publicProfile.GroupTag,
+                    AccessLevel = publicProfile.AccessLevel,
+                    PlayerName = publicProfile.Name,
+                };
 
-                Cmid = publicProfile.Cmid,
-                ClanTag = publicProfile.GroupTag,
-                AccessLevel = publicProfile.AccessLevel,
-                PlayerName = publicProfile.Name,
-            };
+                /* Set the gears of the character. */
+                /* Holo */
+                actorView.Gear[0] = peer.Loadout.Webbing;
+                actorView.Gear[1] = peer.Loadout.Head;
+                actorView.Gear[2] = peer.Loadout.Face;
+                actorView.Gear[3] = peer.Loadout.Gloves;
+                actorView.Gear[4] = peer.Loadout.UpperBody;
+                actorView.Gear[5] = peer.Loadout.LowerBody;
+                actorView.Gear[6] = peer.Loadout.Boots;
 
-            /* Set the gears of the character. */
-            /* Holo */
-            actorView.Gear[0] = peer.Loadout.Webbing;
-            actorView.Gear[1] = peer.Loadout.Head;
-            actorView.Gear[2] = peer.Loadout.Face;
-            actorView.Gear[3] = peer.Loadout.Gloves;
-            actorView.Gear[4] = peer.Loadout.UpperBody;
-            actorView.Gear[5] = peer.Loadout.LowerBody;
-            actorView.Gear[6] = peer.Loadout.Boots;
+                /* Sets the weapons of the character. */
+                actorView.Weapons[0] = peer.Loadout.MeleeWeapon;
+                actorView.Weapons[1] = peer.Loadout.Weapon1;
+                actorView.Weapons[2] = peer.Loadout.Weapon2;
+                actorView.Weapons[3] = peer.Loadout.Weapon3;
 
-            /* Sets the weapons of the character. */
-            actorView.Weapons[0] = peer.Loadout.MeleeWeapon;
-            actorView.Weapons[1] = peer.Loadout.Weapon1;
-            actorView.Weapons[2] = peer.Loadout.Weapon2;
-            actorView.Weapons[3] = peer.Loadout.Weapon3;
+                /* Set Quick items of the character. */
+                actorView.QuickItems[0] = peer.Loadout.QuickItem1;
+                actorView.QuickItems[0] = peer.Loadout.QuickItem2;
+                actorView.QuickItems[0] = peer.Loadout.QuickItem3;
 
-            /* Set Quick items of the character. */
-            actorView.QuickItems[0] = peer.Loadout.QuickItem1;
-            actorView.QuickItems[0] = peer.Loadout.QuickItem2;
-            actorView.QuickItems[0] = peer.Loadout.QuickItem3;
+                var number = 0;
+                var actor = new GameActor(actorView);
 
-            var number = 0;
-            var actor = new GameActor(actorView);
-
-            lock (Sync)
-            {
                 _peers.Add(peer);
                 /* TODO: Check for possible overflows. */
                 number = _nextPlayer++;
-            }
 
-            peer.Room = this;
-            peer.Actor = actor;
-            peer.Actor.Number = number;
+                peer.Room = this;
+                peer.Actor = actor;
+                peer.Actor.Number = number;
 
-            peer.UpdateArmorCapacity();
+                peer.UpdateArmorCapacity();
 
-            peer.Handlers.Add(this);
+                peer.Handlers.Add(this);
 
-            /* 
-             * This prepares the client for the game room and sets the client
-             * state to 'pre-game'.
-             */
-            peer.Events.SendRoomEntered(View);
+                /* 
+                 * This prepares the client for the game room and sets the client
+                 * state to 'pre-game'.
+                 */
+                peer.Events.SendRoomEntered(View);
 
-            /* 
-             * Set the player in the overview state. Which also sends all player
-             * data in the room to the peer.
-             */
-            peer.State.Set(PeerState.Id.Overview);
+                /* 
+                 * Set the player in the overview state. Which also sends all player
+                 * data in the room to the peer.
+                 */
+                peer.State.Set(PeerState.Id.Overview);
+
+                Log.Info("Set peer state to Overview");
+            });
         }
 
         public void Leave(GamePeer peer)
@@ -206,43 +198,33 @@ namespace UberStrok.Realtime.Server.Game
             Debug.Assert(peer.Room != null, "GamePeer is leaving room, but its not in a room.");
             Debug.Assert(peer.Room == this, "GamePeer is leaving room, but its not leaving the correct room.");
 
-            /* Let other peers know that the peer has left the room. */
-            Actions.PlayerLeft(peer);
-
-            lock (Sync)
+            Enqueue(() =>
             {
+                /* Let other peers know that the peer has left the room. */
+                Actions.PlayerLeft(peer);
+
                 _peers.Remove(peer);
                 _players.Remove(peer);
 
                 View.ConnectedPlayers = Players.Count;
-            }
 
-            /* Set peer state to none, and clean up. */
-            peer.State.Set(PeerState.Id.None);
-            peer.Handlers.Remove(Id);
-            peer.KnownActors.Clear();
-            peer.Actor = null;
-            peer.Room = null;
+                /* Set peer state to none, and clean up. */
+                peer.State.Set(PeerState.Id.None);
+                peer.Handlers.Remove(Id);
+                peer.KnownActors.Clear();
+                peer.Actor = null;
+                peer.Room = null;
+            });
         }
 
-        public void StartLoop()
+        private void OnTick()
         {
-            Loop.Start(
-                () => 
-                {
-                    lock (Sync)
-                    {
-                        foreach (var peer in Peers)
-                        {
-                            if (peer.HasError) peer.Disconnect();
-                            else peer.Update();
-                        }
-                    }
+            State.Update();
+        }
 
-                    State.Update();
-                },
-                (ex) => Log.Error("Failed to tick game loop.", ex)
-            );
+        private void OnTickFailed(Exception e)
+        {
+            Log.Error("Failed to tick game loop.", e);
         }
 
         protected abstract bool CanDamage(GamePeer victim, GamePeer attacker);
