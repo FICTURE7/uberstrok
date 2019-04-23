@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -10,8 +11,10 @@ namespace UberStrok.WebServices
     /**
      *  Manages Comm servers and game servers.
      */
+    
     public class ServerManager
     {
+
         public ServerManager(WebServiceContext ctx)
         {
             if (ctx == null)
@@ -31,7 +34,7 @@ namespace UberStrok.WebServices
             _commServer = new PhotonView
             {
                 PhotonId = ++id,
-                IP = commServer["IP"].ToObject<string>(),
+                IP = GetIPAddress(commServer["IP"].ToObject<string>()),
                 Port = commServer["Port"].ToObject<int>(),
 
                 Region = RegionType.UsEast,
@@ -45,7 +48,7 @@ namespace UberStrok.WebServices
                 var server = new PhotonView
                 {
                     PhotonId = ++id,
-                    IP = token["IP"].ToObject<string>(),
+                    IP = GetIPAddress(token["IP"].ToObject<string>()),
                     Port = token["Port"].ToObject<int>(),
                     Region = token["Region"].ToObject<RegionType>(),
                     UsageType = PhotonUsageType.All,
@@ -64,5 +67,19 @@ namespace UberStrok.WebServices
         private readonly List<PhotonView> _gameServers;
 
         private readonly WebServiceContext _ctx;
+
+        public static string GetIPAddress(string hostname)
+        {
+            IPHostEntry host = Dns.GetHostEntry(hostname);
+
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            return string.Empty;
+        }
     }
 }
