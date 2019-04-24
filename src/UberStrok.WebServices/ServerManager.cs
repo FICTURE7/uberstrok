@@ -11,10 +11,8 @@ namespace UberStrok.WebServices
     /**
      *  Manages Comm servers and game servers.
      */
-    
     public class ServerManager
     {
-
         public ServerManager(WebServiceContext ctx)
         {
             if (ctx == null)
@@ -79,7 +77,7 @@ namespace UberStrok.WebServices
                     return ip.ToString();
                 }
             }
-            return string.Empty;
+            throw new Exception($"Unable to get host entry at {hostname}");
         }
     }
 }
