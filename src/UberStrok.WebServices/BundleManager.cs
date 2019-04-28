@@ -1,7 +1,7 @@
-﻿/* using System;
+﻿using System;
 using System.IO;
 using UberStrok.Core.Views;
-using System.Collections.Generic;
+/* using System.Collections.Generic;
 
 namespace UberStrok.WebServices
 {
@@ -14,21 +14,23 @@ namespace UberStrok.WebServices
 
             _ctx = ctx;
 
-            var bundles = Utils.DeserializeJsonAt<List<BundleView>>("configs/game/bundles.json");
+            var bundles = Utils.DeserializeJsonAt<BundleView>("configs/game/bundles.json");
             if (bundles == null)
                 throw new FileNotFoundException("configs/game/bundles.json file not found.");
 
             _bundles = bundles;
         }
 
-        private readonly UberStrikeItemShopClientView _items;
+        private readonly BundleView _bundles;
         private readonly WebServiceContext _ctx;
-        private readonly List<BundleView> _bundles;
 
-        public List<BundleView> GetBundles()
+
+        public BundleView GetBundles()
         {
             return _bundles;
         }
     }
 }
- */
+
+*/
+

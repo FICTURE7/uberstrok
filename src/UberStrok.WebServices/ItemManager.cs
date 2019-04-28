@@ -23,16 +23,11 @@ namespace UberStrok.WebServices
 
         private readonly UberStrikeItemShopClientView _items;
         private readonly WebServiceContext _ctx;
-        private readonly List<BundleView> _bundles;
 
         public UberStrikeItemShopClientView GetShop()
         {
             return _items;
         }
 
-        public List<BundleView> GetBundles()
-        {
-            return _bundles;
-        }
     }
 }

@@ -18,6 +18,7 @@ namespace UberStrok.WebServices
         public ItemManager Items => _ws.Items;
         public ServerManager Servers => _ws.Servers;
         public MapManager Maps => _ws.Maps;
+      //  public BundleManager Bundles => _ws.Bundles;
 
         public WebServiceConfiguration Configuration => _ws.Configuration;
 

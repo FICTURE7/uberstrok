@@ -1,8 +1,8 @@
 ﻿using log4net;
+using System;
 using System.ServiceModel;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
-using System.Collections.Generic;
 
 namespace UberStrok.WebServices.Core
 {
@@ -39,9 +39,9 @@ namespace UberStrok.WebServices.Core
             return Context.Items.GetShop();
         }
 
-        public override List<BundleView> OnGetBundles(ChannelType channel)
+        public override BundleView OnGetBundles(ChannelType channel)
         {
-            return Context.Items.GetBundles();
+            throw new NotImplementedException();
         }
     }
 }

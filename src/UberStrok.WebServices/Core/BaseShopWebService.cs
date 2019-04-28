@@ -21,7 +21,7 @@ namespace UberStrok.WebServices.Core
 
         public abstract BuyItemResult OnBuyItem(int itemId, string authToken, UberStrikeCurrencyType currencyType, BuyingDurationType durationType, UberStrikeItemType itemType, BuyingLocationType marketLocation, BuyingRecommendationType recommendationType);
         public abstract UberStrikeItemShopClientView OnGetShop();
-        public abstract List<BundleView> OnGetBundles(ChannelType channel);
+        public abstract BundleView OnGetBundles(ChannelType channel);
 
         byte[] IShopWebServiceContract.BuyBundle(byte[] data)
         {
