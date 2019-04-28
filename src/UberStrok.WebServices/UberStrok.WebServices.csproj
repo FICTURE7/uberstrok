@@ -54,6 +54,7 @@
     <Compile Include="Core\BaseUserWebService.cs" />
     <Compile Include="Db\InventoryDb.cs" />
     <Compile Include="Db\ProfileDb.cs" />
+    <Compile Include="BundleManager.cs" />
     <Compile Include="ItemManager.cs" />
     <Compile Include="MapManager.cs" />
     <Compile Include="ServerManager.cs" />

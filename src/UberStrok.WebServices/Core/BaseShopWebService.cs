@@ -1,5 +1,6 @@
 ﻿using log4net;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UberStrok.Core.Common;
 using UberStrok.Core.Serialization;
@@ -20,6 +21,7 @@ namespace UberStrok.WebServices.Core
 
         public abstract BuyItemResult OnBuyItem(int itemId, string authToken, UberStrikeCurrencyType currencyType, BuyingDurationType durationType, UberStrikeItemType itemType, BuyingLocationType marketLocation, BuyingRecommendationType recommendationType);
         public abstract UberStrikeItemShopClientView OnGetShop();
+        public abstract List<BundleView> OnGetBundles(ChannelType channel);
 
         byte[] IShopWebServiceContract.BuyBundle(byte[] data)
         {
@@ -167,8 +169,18 @@ namespace UberStrok.WebServices.Core
         {
             try
             {
-                throw new NotImplementedException();
-            }
+                using (var bytes = new MemoryStream(data))
+                {
+                    var channel = EnumProxy<ChannelType>.Deserialize(bytes);
+
+
+                    using (var outBytes = new MemoryStream())
+                    {
+                        EnumProxy<ChannelType>.Serialize(outBytes, channel);
+                        return outBytes.ToArray();
+                    }
+                }
+                }
             catch (Exception ex)
             {
                 Log.Error("Unable to handle GetBundles request:");

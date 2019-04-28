@@ -51,6 +51,8 @@
     <Compile Include="Views\AccountCompletionResultViewProxy.cs" />
     <Compile Include="Views\ApplicationConfigurationViewProxy.cs" />
     <Compile Include="Views\AuthenticateApplicationViewProxy.cs" />
+    <Compile Include="Views\DecimalProxy.cs" />
+    <Compile Include="Views\BundleViewProxy.cs" />
     <Compile Include="Views\BundleItemViewProxy.cs" />
     <Compile Include="Views\CommActorInfoViewProxy.cs" />
     <Compile Include="Views\ConnectionAddressViewProxy.cs" />

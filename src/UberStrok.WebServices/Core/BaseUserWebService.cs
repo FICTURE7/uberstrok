@@ -25,11 +25,12 @@ namespace UberStrok.WebServices.Core
         public abstract LoadoutView OnGetLoadout(string authToken);
         public abstract List<ItemInventoryView> OnGetInventory(string authToken);
 
+
         byte[] IUserWebServiceContract.ChangeMemberName(byte[] data)
         {
-            try
-            {
-                throw new NotImplementedException();
+            try { 
+
+                    throw new NotImplementedException();
             }
             catch (Exception ex)
             {

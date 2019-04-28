@@ -2,6 +2,7 @@
 using System.ServiceModel;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using System.Collections.Generic;
 
 namespace UberStrok.WebServices.Core
 {
@@ -36,6 +37,11 @@ namespace UberStrok.WebServices.Core
         public override UberStrikeItemShopClientView OnGetShop()
         {
             return Context.Items.GetShop();
+        }
+
+        public override List<BundleView> OnGetBundles(ChannelType channel)
+        {
+            return Context.Items.GetBundles();
         }
     }
 }

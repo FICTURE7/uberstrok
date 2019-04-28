@@ -39,6 +39,7 @@
     <Compile Include="ApplicationConfigurationView.cs" />
     <Compile Include="AuthenticateApplicationView.cs" />
     <Compile Include="BaseUberStrikeItemView.cs" />
+    <Compile Include="BundleView.cs" />
     <Compile Include="BundleItemView.cs" />
     <Compile Include="CommActorInfoView.cs" />
     <Compile Include="ConnectionAddressView.cs" />
