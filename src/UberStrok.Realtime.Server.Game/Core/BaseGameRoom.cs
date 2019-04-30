@@ -229,7 +229,7 @@ namespace UberStrok.Realtime.Server.Game
 
         protected abstract bool CanDamage(GamePeer victim, GamePeer attacker);
 
-        /* Does damage and returns true if victim is dead; otherwise false. */
+        /* Does damage and returns true if victim is killed; otherwise false. */
         protected bool DoDamage(GamePeer victim, GamePeer attacker, short damage, BodyPart part, out Vector3 direction)
         {
             bool selfDamage = victim.Actor.Cmid == attacker.Actor.Cmid;
@@ -238,6 +238,11 @@ namespace UberStrok.Realtime.Server.Game
             var victimPos = victim.Actor.Movement.Position;
             var attackerPos = attacker.Actor.Movement.Position;
             direction = attackerPos - victimPos;
+
+            if ((victim.Actor.Info.PlayerState & PlayerStates.Dead) == PlayerStates.Dead)
+                return false;
+            if ((attacker.Actor.Info.PlayerState & PlayerStates.Dead) == PlayerStates.Dead)
+                return false;
 
             /* Check if we can apply the damage on the players. */
             if (!CanDamage(victim, attacker))

@@ -68,6 +68,9 @@ namespace UberStrok.WebServices
 
         public static string GetIPAddress(string hostname)
         {
+            if (IPAddress.TryParse(hostname, out IPAddress address))
+                return hostname;
+
             IPHostEntry host = Dns.GetHostEntry(hostname);
 
             foreach (IPAddress ip in host.AddressList)
@@ -77,6 +80,7 @@ namespace UberStrok.WebServices
                     return ip.ToString();
                 }
             }
+
             throw new Exception($"Unable to get host entry at {hostname}");
         }
     }
