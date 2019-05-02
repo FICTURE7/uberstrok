@@ -103,6 +103,7 @@ namespace UberStrok.Realtime.Server.Game
             }
             catch (Exception ex)
             {
+                room.Leave(peer);
                 peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
                 Log.Error("OnCreateRoom: Unable to join game room.", ex);
             }
@@ -148,6 +149,7 @@ namespace UberStrok.Realtime.Server.Game
                     }
                     catch (Exception ex)
                     {
+                        room.Leave(peer);
                         peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
                         Log.Error("OnJoinRoom: Unable to join game room.", ex);
                     }

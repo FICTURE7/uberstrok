@@ -159,10 +159,10 @@ namespace UberStrok.Realtime.Server.Game
                 actorView.QuickItems[0] = peer.Loadout.QuickItem2;
                 actorView.QuickItems[0] = peer.Loadout.QuickItem3;
 
+
                 var number = 0;
                 var actor = new GameActor(actorView);
 
-                _peers.Add(peer);
                 /* TODO: Check for possible overflows. */
                 number = _nextPlayer++;
 
@@ -171,7 +171,6 @@ namespace UberStrok.Realtime.Server.Game
                 peer.Actor.Number = number;
 
                 peer.UpdateArmorCapacity();
-
                 peer.Handlers.Add(this);
 
                 /* 
@@ -187,6 +186,8 @@ namespace UberStrok.Realtime.Server.Game
                 peer.State.Set(PeerState.Id.Overview);
 
                 Log.Info("Set peer state to Overview");
+
+                _peers.Add(peer);
             });
         }
 
