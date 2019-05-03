@@ -68,8 +68,9 @@ namespace UberStrok.Realtime.Server.Game
 
             try
             {
+                string webServices = GameApplication.Instance.Configuration.WebServices;
                 room = GameApplication.Instance.Rooms.Create(roomData, password);
-                room.Shop.Load(authToken);
+                room.Shop.Load(webServices, authToken);
             }
             catch (NotSupportedException)
             {

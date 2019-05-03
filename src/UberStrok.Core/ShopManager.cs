@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using UberStrok.Core.Views;
 using UberStrok.WebServices.Client;
 
@@ -8,40 +7,29 @@ namespace UberStrok.Core
 {
     public class ShopManager
     {
-        private bool _isLoaded;
+        public bool IsLoaded { get; private set; }
+        public Dictionary<int, UberStrikeItemFunctionalView> FunctionalItems { get; private set; }
+        public Dictionary<int, UberStrikeItemGearView> GearItems { get; private set; }
+        public Dictionary<int, UberStrikeItemQuickView> QuickItems { get; private set; }
+        public Dictionary<int, UberStrikeItemWeaponView> WeaponItems { get; private set; }
 
-        private Dictionary<int, UberStrikeItemFunctionalView> _functionalItems;
-        private Dictionary<int, UberStrikeItemGearView> _gearItems;
-        private Dictionary<int, UberStrikeItemQuickView> _quickItems;
-        private Dictionary<int, UberStrikeItemWeaponView> _weaponItems;
-
-        public bool IsLoaded => _isLoaded;
-        public Dictionary<int, UberStrikeItemFunctionalView> FunctionalItems => _functionalItems;
-        public Dictionary<int, UberStrikeItemGearView> GearItems => _gearItems;
-        public Dictionary<int, UberStrikeItemQuickView> QuickItems => _quickItems;
-        public Dictionary<int, UberStrikeItemWeaponView> WeaponItems => _weaponItems;
-
-        public void Load(string authToken)
+        public void Load(string webServices, string authToken)
         {
+            if (webServices == null)
+                throw new ArgumentNullException(nameof(webServices));
             if (authToken == null)
                 throw new ArgumentNullException(nameof(authToken));
 
-            //TODO: Provide some base class for this kind of server-server communications.
-            var bytes = Convert.FromBase64String(authToken);
-            var data = Encoding.UTF8.GetString(bytes);
-
-            var webServer = data.Substring(0, data.IndexOf("#####"));
-
-            // Retrieve loadout data from the web server.
-            var client = new ShopWebServiceClient(webServer);
+            /* Retrieve loadout data from the web server. */
+            var client = new ShopWebServiceClient(webServices);
             var shopView = client.GetShop();
 
-            _functionalItems = LoadDictionary(shopView.FunctionalItems);
-            _gearItems = LoadDictionary(shopView.GearItems);
-            _quickItems = LoadDictionary(shopView.QuickItems);
-            _weaponItems = LoadDictionary(shopView.WeaponItems);
+            FunctionalItems = LoadDictionary(shopView.FunctionalItems);
+            GearItems = LoadDictionary(shopView.GearItems);
+            QuickItems = LoadDictionary(shopView.QuickItems);
+            WeaponItems = LoadDictionary(shopView.WeaponItems);
 
-            _isLoaded = true;
+            IsLoaded = true;
         }
 
         private Dictionary<int, TUberStrikeItem> LoadDictionary<TUberStrikeItem>(List<TUberStrikeItem> list) where TUberStrikeItem : BaseUberStrikeItemView

@@ -16,8 +16,8 @@ namespace UberStrok.Realtime.Server.Comm
             }
             catch (Exception ex)
             {
-                Log.Error("Failed to authenticate user.", ex);
                 peer.Disconnect();
+                Log.Error("Failed to authenticate user.", ex);
                 throw;
             }
 
