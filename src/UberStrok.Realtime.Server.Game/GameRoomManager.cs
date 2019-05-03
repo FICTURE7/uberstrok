@@ -22,15 +22,19 @@ namespace UberStrok.Realtime.Server.Game
 
         public BaseGameRoom Get(int roomId)
         {
-            var room = default(BaseGameRoom);
-            _rooms.TryGetValue(roomId, out room);
+            if (_rooms.TryGetValue(roomId, out BaseGameRoom room) && room.Peers.Count == 0)
+            {
+                Remove(roomId);
+                return null;
+            }
+
             return room;
         }
 
         public void Remove(int roomId)
         {
-            var room = default(BaseGameRoom);
-            _rooms.TryRemove(roomId, out room);
+            if (_rooms.TryRemove(roomId, out BaseGameRoom room))
+                room.Dispose();
         }
 
         public BaseGameRoom Create(GameRoomDataView data, string password)
@@ -45,7 +49,7 @@ namespace UberStrok.Realtime.Server.Game
                 data.LevelMax = 0;
             }
 
-            var room = default(BaseGameRoom);
+            BaseGameRoom room;
             switch (data.GameMode)
             {
                 case GameModeType.DeathMatch:
@@ -64,26 +68,30 @@ namespace UberStrok.Realtime.Server.Game
 
             /* Should never really happen */
             if (!_rooms.TryAdd(room.Number, room))
-                throw new Exception("Already contains a game room with the specified room ID.");
+            {
+                room.Dispose();
+                throw new Exception("Unable to add game room to game room list");
+            }
 
             return room;
         }
 
         public IEnumerator<BaseGameRoom> GetEnumerator()
         {
+            var emptyRooms = new List<BaseGameRoom>();
+
             foreach (var kv in _rooms)
             {
                 var room = kv.Value;
-
                 /* Filter out empty rooms. */
                 if (room.Peers.Count == 0)
-                {
-                    _rooms.TryRemove(kv.Key, out BaseGameRoom x);
-                    room.Dispose();
-                }
+                    emptyRooms.Add(room);
                 else
                     yield return room;
             }
+
+            foreach (var room in emptyRooms)
+                Remove(room.Number);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
