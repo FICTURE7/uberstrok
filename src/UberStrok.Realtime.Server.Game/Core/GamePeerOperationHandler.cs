@@ -14,7 +14,7 @@ namespace UberStrok.Realtime.Server.Game
         private readonly static PhotonServerLoadView _loadView = new PhotonServerLoadView
         {
             /* TODO: Implement some configs or somethings. */
-            MaxPlayerCount = 100,
+            MaxPlayerCount = 200,
             State = PhotonServerLoadView.Status.Alive,
         };
 
