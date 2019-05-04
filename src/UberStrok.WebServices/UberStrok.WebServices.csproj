@@ -50,8 +50,10 @@
     <Compile Include="Core\AuthenticationWebService.cs" />
     <Compile Include="Core\BaseApplicationWebService.cs" />
     <Compile Include="Core\BaseAuthenticationWebService.cs" />
+    <Compile Include="Core\BaseModerationWebService.cs" />
     <Compile Include="Core\BaseShopWebService.cs" />
     <Compile Include="Core\BaseUserWebService.cs" />
+    <Compile Include="Core\ModerationWebService.cs" />
     <Compile Include="Db\InventoryDb.cs" />
     <Compile Include="Db\ProfileDb.cs" />
     <Compile Include="ItemManager.cs" />

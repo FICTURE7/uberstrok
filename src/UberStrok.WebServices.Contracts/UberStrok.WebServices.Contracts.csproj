@@ -39,6 +39,7 @@
     <Compile Include="IApplicationWebServiceContract.cs" />
     <Compile Include="IAuthenticationWebServiceContract.cs" />
     <Compile Include="IClanWebServiceContract.cs" />
+    <Compile Include="IModerationWebServiceContract.cs" />
     <Compile Include="IPrivateMessageWebServiceContract.cs" />
     <Compile Include="IRelationshipWebServiceContract.cs" />
     <Compile Include="IShopWebServiceContract.cs" />

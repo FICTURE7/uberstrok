@@ -15,6 +15,8 @@ namespace UberStrok.Realtime.Server.Comm
         private readonly Loop _loop;
         private readonly List<CommPeer> _peers;
 
+        private readonly List<CommPeer> _failedPeers;
+
         public object Sync { get; }
         public IReadOnlyList<CommPeer> Peers { get; }
 
@@ -22,6 +24,7 @@ namespace UberStrok.Realtime.Server.Comm
         {
             _loop = new Loop(5);
             _peers = new List<CommPeer>();
+            _failedPeers = new List<CommPeer>();
 
             Sync = new object();
             Peers = _peers.AsReadOnly();
@@ -39,13 +42,21 @@ namespace UberStrok.Realtime.Server.Comm
 
             peer.Room = this;
 
+            CommPeer oldPeer;
+            lock (Sync)
+                oldPeer = Find(peer.Actor.Cmid);
+
+            if (oldPeer != null)
+                Leave(oldPeer);
+
             lock (Sync)
                 _peers.Add(peer);
 
             Log.Debug($"CommPeer joined the room {peer.Actor.Cmid}");
 
-            peer.Events.SendLobbyEntered();
             peer.Handlers.Add(this);
+            peer.Events.SendLobbyEntered();
+
             UpdateList();
         }
 
@@ -75,14 +86,30 @@ namespace UberStrok.Realtime.Server.Comm
 
         private void OnTick()
         {
+            _failedPeers.Clear();
+
             lock (Sync)
             {
                 foreach (var peer in Peers)
                 {
-                    if (peer.HasError) peer.Disconnect();
-                    else peer.Update();
+                    if (peer.HasError)
+                    {
+                        peer.Disconnect();
+                        break;
+                    }
+
+                    try { peer.Update(); }
+                    catch (Exception ex)
+                    {
+                        /* NOTE: This should never happen, but just incase. */
+                        Log.Error("Failed to update peer.", ex);
+                        _failedPeers.Add(peer);
+                    }
                 }
             }
+
+            foreach (var peer in _failedPeers)
+                Leave(peer);
         }
 
         private void OnTickError(Exception ex)
@@ -102,6 +129,21 @@ namespace UberStrok.Realtime.Server.Comm
                 for (int i = 0; i < _peers.Count; i++)
                     _peers[i].Events.Lobby.SendFullPlayerListUpdate(actors);
             }
+        }
+
+        private CommPeer Find(int cmid)
+        {
+            lock (Sync)
+            {
+                for (int i = 0; i < _peers.Count; i++)
+                {
+                    var peer = _peers[i];
+                    if (peer.Actor.Cmid == cmid)
+                        return peer;
+                }
+            }
+
+            return null;
         }
 
         private static bool IsSpeedHacking(List<float> td)

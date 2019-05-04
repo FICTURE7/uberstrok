@@ -1,4 +1,5 @@
 ﻿using Photon.SocketServer;
+using System;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -25,6 +26,14 @@ namespace UberStrok.Realtime.Server.Comm
         {
             base.SendError(message);
             Events.SendDisconnectAndDisablePhoton(message);
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (Actor.IsMuted && DateTime.UtcNow >= Actor.MuteEndTime)
+                Actor.IsMuted = false;
         }
 
         protected override void OnAuthenticate(UberstrikeUserView userView)

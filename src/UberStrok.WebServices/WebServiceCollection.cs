@@ -12,41 +12,34 @@ namespace UberStrok.WebServices
     {
         public WebServiceCollection(WebServiceContext ctx)
         {
-            if (ctx == null)
-                throw new ArgumentNullException(nameof(ctx));
-
-            _ctx = ctx;
+            _ctx = ctx ?? throw new ArgumentNullException(nameof(ctx));
 
             _services = new List<BaseWebService>();
             _hosts = new List<ServiceHost>();
 
-            _applicationService = new ApplicationWebService(_ctx);
-            _authenticationService = new AuthenticationWebService(_ctx);
-            _relationshipService = new RelationshipWebService(_ctx);
-            _userService = new UserWebService(_ctx);
-            _shopService = new ShopWebService(_ctx);
+            ApplicationWebService = new ApplicationWebService(_ctx);
+            AuthenticationWebService = new AuthenticationWebService(_ctx);
+            RelationshipWebService = new RelationshipWebService(_ctx);
+            UserWebService = new UserWebService(_ctx);
+            ShopWebService = new ShopWebService(_ctx);
+            ModerationWebService = new ModerationWebService(_ctx);
 
-            _services.Add(_applicationService);
-            _services.Add(_authenticationService);
-            _services.Add(_relationshipService);
-            _services.Add(_userService);
-            _services.Add(_shopService);
+            _services.Add(ApplicationWebService);
+            _services.Add(AuthenticationWebService);
+            _services.Add(RelationshipWebService);
+            _services.Add(UserWebService);
+            _services.Add(ShopWebService);
+            _services.Add(ModerationWebService);
         }
 
-        public ApplicationWebService ApplicationWebService => _applicationService;
-        public AuthenticationWebService AuthenticationWebService => _authenticationService;
-        public RelationshipWebService RelationshipWebService => _relationshipService;
-        public UserWebService UserWebService => _userService;
-        public ShopWebService ShopWebService => _shopService;
+        public ApplicationWebService ApplicationWebService { get; }
+        public AuthenticationWebService AuthenticationWebService { get; }
+        public RelationshipWebService RelationshipWebService { get; }
+        public UserWebService UserWebService { get; }
+        public ShopWebService ShopWebService { get; }
+        public ModerationWebService ModerationWebService { get; }
 
         private readonly WebServiceContext _ctx;
-
-        private readonly ApplicationWebService _applicationService;
-        private readonly AuthenticationWebService _authenticationService;
-        private readonly RelationshipWebService _relationshipService;
-        private readonly UserWebService _userService;
-        private readonly ShopWebService _shopService;
-
         private readonly List<BaseWebService> _services;
         private readonly List<ServiceHost> _hosts;
 

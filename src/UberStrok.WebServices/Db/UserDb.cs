@@ -16,10 +16,13 @@ namespace UberStrok.WebServices.Db
             if (!Directory.Exists("data"))
                 Directory.CreateDirectory("data");
 
-            _profilesDb = new ProfileDb();
-            _walletsDb = new WalletDb();
-            _inventoriesDb = new InventoryDb();
-            _loadoutsDb = new LoadoutDb();
+            Profiles = new ProfileDb();
+            Wallets = new WalletDb();
+            Inventories = new InventoryDb();
+            Loadouts = new LoadoutDb();
+
+            _ipBans = new HashSet<string>();
+            _hwdBans = new HashSet<string>();
 
             if (!LoadSteamIds())
             {
@@ -28,25 +31,24 @@ namespace UberStrok.WebServices.Db
                 SaveSteamIds();
             }
 
-            if (!LoadSteamBans())
+            if (!LoadCmidBans())
             {
-                _steamBans = new HashSet<string>();
+                _cmidBans = new HashSet<int>();
                 // Create the file if it does not exists.
-                SaveSteamBans();
+                SaveCmidBans();
             }
         }
 
         private Dictionary<string, int> _steamId2Cmid; // SteamID -> CMID
-        private HashSet<string> _steamBans;
-        private readonly ProfileDb _profilesDb;
-        private readonly WalletDb _walletsDb;
-        private readonly InventoryDb _inventoriesDb;
-        private readonly LoadoutDb _loadoutsDb;
 
-        public ProfileDb Profiles => _profilesDb;
-        public WalletDb Wallets => _walletsDb;
-        public InventoryDb Inventories => _inventoriesDb;
-        public LoadoutDb Loadouts => _loadoutsDb;
+        private HashSet<int> _cmidBans;
+        private HashSet<string> _ipBans;
+        private HashSet<string> _hwdBans;
+
+        public ProfileDb Profiles { get; }
+        public WalletDb Wallets { get; }
+        public InventoryDb Inventories { get; }
+        public LoadoutDb Loadouts { get; }
 
         public bool Link(string steamId, MemberView member)
         {
@@ -66,21 +68,31 @@ namespace UberStrok.WebServices.Db
             return true;
         }
 
-        public bool IsBanned(string steamId)
+        public bool IsCmidBanned(int cmid)
         {
-            if (steamId == null)
-                throw new ArgumentNullException(nameof(steamId));
-
-            return _steamBans.Contains(steamId);
+            return _cmidBans.Contains(cmid);
         }
 
-        public void Ban(string steamId)
+        public bool IsHwdBanned(string hwd)
         {
-            if (steamId == null)
-                throw new ArgumentNullException(nameof(steamId));
+            if (hwd == null)
+                throw new ArgumentNullException(nameof(hwd));
 
-            if (_steamBans.Add(steamId))
-                SaveSteamBans();
+            return _hwdBans.Contains(hwd);
+        }
+
+        public bool IsIpBanned(string ip)
+        {
+            if (ip == null)
+                throw new ArgumentNullException(nameof(ip));
+
+            return _ipBans.Contains(ip);
+        }
+
+        public void BanCmid(int cmid)
+        {
+            if (_cmidBans.Add(cmid))
+                SaveCmidBans();
         }
 
         public MemberView LoadMember(string steamId)
@@ -131,19 +143,19 @@ namespace UberStrok.WebServices.Db
             File.WriteAllText("data/_nextcmid", cmid.ToString());
         }
 
-        private bool LoadSteamBans()
+        private bool LoadCmidBans()
         {
-            _steamBans = Utils.DeserializeJsonAt<HashSet<string>>("data/steam_bans.json");
-            return _steamBans != null;
+            _cmidBans = Utils.DeserializeJsonAt<HashSet<int>>("data/bans.json");
+            return _cmidBans != null;
         }
 
-        private void SaveSteamBans()
+        private void SaveCmidBans()
         {
-            if (_steamBans == null)
-                _steamBans = new HashSet<string>();
+            if (_cmidBans == null)
+                _cmidBans = new HashSet<int>();
 
-            var json = JsonConvert.SerializeObject(_steamBans);
-            File.WriteAllText("data/steam_bans.json", json);
+            var json = JsonConvert.SerializeObject(_cmidBans);
+            File.WriteAllText("data/bans.json", json);
         }
 
         private bool LoadSteamIds()

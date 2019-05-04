@@ -18,12 +18,17 @@ namespace UberStrok.Realtime.Server.Game
         protected abstract void OnLeaveRoom(GamePeer peer);
         protected abstract void OnUpdatePing(GamePeer peer, ushort ping);
         protected abstract void OnUpdateLoadout(GamePeer peer);
+        protected abstract void OnSendHeartbeatResponse(GamePeer peer, string authToken, string responseHash);
 
         public override void OnOperationRequest(GamePeer peer, byte opCode, MemoryStream bytes)
         {
             var operation = (IGamePeerOperationsType)opCode;
             switch (operation)
             {
+                case IGamePeerOperationsType.SendHeartbeatResponse:
+                    SendHeartbeatResponse(peer, bytes);
+                    break;
+
                 case IGamePeerOperationsType.UpdateKeyState:
                     UpdateKeyState(peer, bytes);
                     break;
@@ -59,6 +64,14 @@ namespace UberStrok.Realtime.Server.Game
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private void SendHeartbeatResponse(GamePeer peer, MemoryStream bytes)
+        {
+            var authToken = StringProxy.Deserialize(bytes);
+            var responseHash = StringProxy.Deserialize(bytes);
+
+            OnSendHeartbeatResponse(peer, authToken, responseHash);
         }
 
         private void UpdateKeyState(GamePeer peer, MemoryStream bytes)

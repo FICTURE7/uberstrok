@@ -19,6 +19,8 @@ namespace UberStrok.Realtime.Server.Game
         /* List of peers connected & playing. */
         private readonly List<GamePeer> _players;
 
+        private readonly List<GamePeer> _failedPeers;
+
         protected ILog Log { get; }
 
         public Loop Loop { get; }
@@ -70,6 +72,7 @@ namespace UberStrok.Realtime.Server.Game
 
             _peers = new List<GamePeer>();
             _players = new List<GamePeer>();
+            _failedPeers = new List<GamePeer>();
 
             Peers = _peers.AsReadOnly();
             Players = _players.AsReadOnly();
@@ -221,6 +224,27 @@ namespace UberStrok.Realtime.Server.Game
         private void OnTick()
         {
             State.Update();
+
+            _failedPeers.Clear();
+            foreach (var peer in Peers)
+            {
+                if (peer.HasError)
+                {
+                    peer.Disconnect();
+                    break;
+                }
+
+                try { peer.Update(); }
+                catch (Exception ex)
+                {
+                    /* NOTE: This should never happen, but just incase. */
+                    Log.Error("Failed to update peer.", ex);
+                    _failedPeers.Add(peer);
+                }
+            }
+
+            foreach (var peer in _failedPeers)
+                Leave(peer);
         }
 
         private void OnTickFailed(Exception e)

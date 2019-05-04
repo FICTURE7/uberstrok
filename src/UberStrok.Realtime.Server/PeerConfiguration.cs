@@ -18,7 +18,7 @@ namespace UberStrok.Realtime.Server
                 throw new ArgumentOutOfRangeException(nameof(heartbeatTimeout));
 
             HeartbeatInterval = heartbeatInterval;
-            HeartbeatTimeout = HeartbeatTimeout;
+            HeartbeatTimeout = heartbeatTimeout;
         }
 
         public string WebServices { get; }

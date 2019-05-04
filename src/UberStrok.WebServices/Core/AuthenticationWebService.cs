@@ -1,6 +1,8 @@
 ﻿using log4net;
 using System;
 using System.Collections.Generic;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -61,7 +63,22 @@ namespace UberStrok.WebServices.Core
 
         public override MemberAuthenticationResultView OnLoginSteam(string steamId, string authToken, string machineId)
         {
-            var banned = false;
+            var ip = ((RemoteEndpointMessageProperty)OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name]).Address;
+
+            if (Context.Users.Db.IsHwdBanned(machineId) && Context.Users.Db.IsIpBanned(ip))
+            {
+                return new MemberAuthenticationResultView
+                {
+                    MemberAuthenticationResult = MemberAuthenticationResult.IsBanned,
+                    AuthToken = null,
+                    IsAccountComplete = true,
+                    ServerTime = DateTime.Now,
+
+                    MemberView = null,
+                    PlayerStatisticsView = null
+                };
+            }
+
             // Figure out if the account has been linked.
             var linked = true;
             // Figure out if the account existed. true -> existed otherwise false.
@@ -91,13 +108,23 @@ namespace UberStrok.WebServices.Core
                 }
             }
 #endif
-            banned = Context.Users.Db.IsBanned(steamId);
+            if (Context.Users.Db.IsCmidBanned(member.PublicProfile.Cmid))
+            {
+                return new MemberAuthenticationResultView
+                {
+                    MemberAuthenticationResult = MemberAuthenticationResult.IsBanned,
+                    AuthToken = null,
+                    IsAccountComplete = true,
+                    ServerTime = DateTime.Now,
+
+                    MemberView = null,
+                    PlayerStatisticsView = null
+                };
+            }
 
             var result = MemberAuthenticationResult.Ok;
             if (!linked)
                 result = MemberAuthenticationResult.InvalidEsns;
-            else if (banned)
-                result = MemberAuthenticationResult.IsBanned;
 
             // Use the PublicProfile.EmailAddrsessStatus to figure out if its an incomplete account,
             // because why not.

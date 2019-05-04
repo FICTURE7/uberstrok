@@ -18,6 +18,20 @@ namespace UberStrok.Realtime.Server.Game
             State = PhotonServerLoadView.Status.Alive,
         };
 
+        protected override void OnSendHeartbeatResponse(GamePeer peer, string authToken, string responseHash)
+        {
+            try
+            {
+                if (!peer.HeartbeatCheck(responseHash))
+                    peer.SendError();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception while checking heartbeat", ex);
+                peer.SendError();
+            }
+        }
+
         protected override void OnGetGameListUpdates(GamePeer peer)
         {
             // TODO: Don't use that, cause apparently there is a FullGameList event which we can send to wipe stuff and things.

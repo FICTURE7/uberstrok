@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="AuthenticationWebServiceClient.cs" />
     <Compile Include="BaseWebServiceClient.cs" />
+    <Compile Include="ModerationWebServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShopWebServiceClient.cs" />
     <Compile Include="UserWebServiceClient.cs" />

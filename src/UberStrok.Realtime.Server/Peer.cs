@@ -64,7 +64,7 @@ namespace UberStrok.Realtime.Server
                 _heartbeatNextTime = DateTime.UtcNow.AddSeconds(HeartbeatInterval);
         }
 
-        public void Update()
+        public virtual void Update()
         {
             switch (_heartbeatState)
             {
@@ -128,7 +128,7 @@ namespace UberStrok.Realtime.Server
             _heartbeatExpireTime = DateTime.UtcNow.AddSeconds(HeartbeatTimeout);
             _heartbeatState = HeartbeatState.Waiting;
 
-            Log.Debug($"Heartbeat({_heartbeat})");
+            Log.Debug($"Heartbeat({_heartbeat}) with {HeartbeatTimeout}s timeout, expires at {_heartbeatExpireTime}");
             SendHeartbeat(_heartbeat);
         }
 
