@@ -13,6 +13,17 @@ namespace UberStrok.Realtime.Server.Comm
             // Space
         }
 
+        public void SendPrivateChatMessage(int cmid, string name, string message)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, cmid);
+                StringProxy.Serialize(bytes, name);
+                StringProxy.Serialize(bytes, message);
+                SendEvent((byte)ILobbyRoomEventsType.PrivateChatMessage, bytes);
+            }
+        }
+
         public void SendFullPlayerListUpdate(List<CommActorInfoView> actors)
         {
             using (var bytes = new MemoryStream())

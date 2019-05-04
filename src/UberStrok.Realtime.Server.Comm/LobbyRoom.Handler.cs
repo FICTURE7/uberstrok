@@ -177,7 +177,10 @@ namespace UberStrok.Realtime.Server.Comm
 
         protected override void OnChatMessageToPlayer(CommPeer peer, int cmid, string message)
         {
-            throw new NotImplementedException();
+            if (peer.Actor.IsMuted)
+                return;
+
+            Find(cmid)?.Events.Lobby.SendPrivateChatMessage(peer.Actor.Cmid, peer.Actor.Name, message);
         }
 
         protected override void OnChatMessageToClan(CommPeer peer, List<int> clanMembers, string message)
