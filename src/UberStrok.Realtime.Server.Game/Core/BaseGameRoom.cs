@@ -266,8 +266,6 @@ namespace UberStrok.Realtime.Server.Game
 
             if ((victim.Actor.Info.PlayerState & PlayerStates.Dead) == PlayerStates.Dead)
                 return false;
-            if ((attacker.Actor.Info.PlayerState & PlayerStates.Dead) == PlayerStates.Dead)
-                return false;
 
             /* Check if we can apply the damage on the players. */
             if (!CanDamage(victim, attacker))
@@ -286,8 +284,8 @@ namespace UberStrok.Realtime.Server.Game
                 damage /= 2;
 
             /* Calculate armor absorption. */
-            int armorDamage = 0;
-            int healthDamage = 0;
+            int armorDamage;
+            int healthDamage;
             if (victim.Actor.Info.ArmorPoints > 0)
             {
                 armorDamage = (byte)(0.66f * damage);
