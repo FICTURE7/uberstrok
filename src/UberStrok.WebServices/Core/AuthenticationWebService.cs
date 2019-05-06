@@ -28,6 +28,15 @@ namespace UberStrok.WebServices.Core
                 );
             }
 
+            if (!CheckName(name))
+            {
+                return new AccountCompletionResultView(
+                    4,
+                    null,
+                    null
+                );
+            }
+
             var member = Context.Users.GetMember(cmid);
             if (member == null)
             {
@@ -42,8 +51,18 @@ namespace UberStrok.WebServices.Core
             member.PublicProfile.Name = name;
             // Set email status to complete so we don't ask for the player name again.
             member.PublicProfile.EmailAddressStatus = EmailAddressStatus.Verified;
-            // Save the profile since we modified it.
-            Context.Users.Db.Profiles.Save(member.PublicProfile);
+
+            if (Context.Users.Db.UseName(name))
+                // Save the profile since we modified it.
+                Context.Users.Db.Profiles.Save(member.PublicProfile);
+            else
+            {
+                return new AccountCompletionResultView(
+                    2,
+                    null,
+                    null
+                );
+            }
 
             /*
              * result:
@@ -65,7 +84,7 @@ namespace UberStrok.WebServices.Core
         {
             var ip = ((RemoteEndpointMessageProperty)OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name]).Address;
 
-            if (Context.Users.Db.IsHwdBanned(machineId) && Context.Users.Db.IsIpBanned(ip))
+            if (Context.Users.Db.IsHwdBanned(machineId) || Context.Users.Db.IsIpBanned(ip))
             {
                 return new MemberAuthenticationResultView
                 {
@@ -151,6 +170,18 @@ namespace UberStrok.WebServices.Core
             Log.Info($"Logging in member {steamId}:{newAuthToken}");
 
             return view;
+        }
+
+        private bool CheckName(string name)
+        {
+            const string INVALID_CHARS = "[]";
+
+            for (int i = 0; i < INVALID_CHARS.Length; i++)
+            {
+                if (name.Contains(INVALID_CHARS[i].ToString()))
+                    return false;
+            }
+            return true;
         }
     }
 }

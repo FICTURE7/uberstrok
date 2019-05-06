@@ -37,6 +37,13 @@ namespace UberStrok.WebServices.Db
                 // Create the file if it does not exists.
                 SaveCmidBans();
             }
+
+            if (!LoadUsedNames())
+            {
+                _usedNames = new HashSet<string>();
+                // Create the file if it does not exists.
+                SaveUsedNames();
+            }
         }
 
         private Dictionary<string, int> _steamId2Cmid; // SteamID -> CMID
@@ -44,6 +51,7 @@ namespace UberStrok.WebServices.Db
         private HashSet<int> _cmidBans;
         private HashSet<string> _ipBans;
         private HashSet<string> _hwdBans;
+        private HashSet<string> _usedNames;
 
         public ProfileDb Profiles { get; }
         public WalletDb Wallets { get; }
@@ -93,6 +101,26 @@ namespace UberStrok.WebServices.Db
         {
             if (_cmidBans.Add(cmid))
                 SaveCmidBans();
+        }
+
+        public bool UseName(string name)
+        {
+            lock (_usedNames)
+            {
+                if (_usedNames.Add(name))
+                {
+                    SaveUsedNames();
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        public bool CanUseName(string name)
+        {
+            lock (_usedNames)
+                return !_usedNames.Contains(name);
         }
 
         public MemberView LoadMember(string steamId)
@@ -156,6 +184,21 @@ namespace UberStrok.WebServices.Db
 
             var json = JsonConvert.SerializeObject(_cmidBans);
             File.WriteAllText("data/bans.json", json);
+        }
+
+        private bool LoadUsedNames()
+        {
+            _usedNames = Utils.DeserializeJsonAt<HashSet<string>>("data/names.json");
+            return _usedNames != null;
+        }
+
+        private void SaveUsedNames()
+        {
+            if (_usedNames == null)
+                _usedNames = new HashSet<string>();
+
+            var json = JsonConvert.SerializeObject(_usedNames);
+            File.WriteAllText("data/names.json", json);
         }
 
         private bool LoadSteamIds()

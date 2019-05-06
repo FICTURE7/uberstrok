@@ -70,7 +70,7 @@ namespace UberStrok.WebServices.Core
 
         public override bool OnIsDuplicateMemberName(string username)
         {
-            return false;
+            return Context.Users.Db.CanUseName(username);
         }
 
         public override MemberOperationResult OnSetLoaduout(string authToken, LoadoutView loadoutView)
