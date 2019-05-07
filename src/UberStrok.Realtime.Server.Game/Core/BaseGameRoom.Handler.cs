@@ -309,5 +309,11 @@ namespace UberStrok.Realtime.Server.Game
 
             peer.Actor.Info.PlayerState = state;
         }
+
+        protected override void OnOpenDoor(GamePeer peer, int doorId)
+        {
+            foreach (var otherPeer in Peers)
+                otherPeer.Events.Game.SendDoorOpen(doorId);
+        }
     }
 }

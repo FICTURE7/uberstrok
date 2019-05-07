@@ -31,6 +31,7 @@ namespace UberStrok.Realtime.Server.Game
         protected abstract void OnPowerUpRespawnTimes(GamePeer peer, List<ushort> respawnTimes);
         protected abstract void OnSpawnPositions(GamePeer peer, TeamID team, List<Vector3> positions, List<byte> rotations);
         protected abstract void OnJoinGame(GamePeer peer, TeamID team);
+        protected abstract void OnOpenDoor(GamePeer peer, int doorId);
 
         public override void OnOperationRequest(GamePeer peer, byte opCode, MemoryStream bytes)
         {
@@ -115,6 +116,10 @@ namespace UberStrok.Realtime.Server.Game
 
                 case IGameRoomOperationsType.JoinGame:
                     JoinGame(peer, bytes);
+                    break;
+
+                case IGameRoomOperationsType.OpenDoor:
+                    OpenDoor(peer, bytes);
                     break;
 
                 default:
@@ -277,6 +282,13 @@ namespace UberStrok.Realtime.Server.Game
             var team = EnumProxy<TeamID>.Deserialize(bytes);
 
             Enqueue(() => OnJoinGame(peer, team));
+        }
+
+        private void OpenDoor(GamePeer peer, MemoryStream bytes)
+        {
+            var doorId = Int32Proxy.Deserialize(bytes);
+
+            Enqueue(() => OnOpenDoor(peer, doorId));
         }
     }
 }

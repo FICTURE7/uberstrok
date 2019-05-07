@@ -284,5 +284,14 @@ namespace UberStrok.Realtime.Server.Game
                 SendEvent((byte)IGameRoomEventsType.SingleBulletFire, bytes);
             }
         }
+
+        public void SendDoorOpen(int doorId)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, doorId);
+                SendEvent((byte)IGameRoomEventsType.DoorOpen, bytes);
+            }
+        }
     }
 }
