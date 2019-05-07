@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.IO;
+using System.Collections.Generic;
 using UberStrok.Core.Common;
 using UberStrok.Core.Serialization;
 using UberStrok.Core.Serialization.Views;
@@ -20,7 +21,7 @@ namespace UberStrok.WebServices.Core
 
         public abstract BuyItemResult OnBuyItem(int itemId, string authToken, UberStrikeCurrencyType currencyType, BuyingDurationType durationType, UberStrikeItemType itemType, BuyingLocationType marketLocation, BuyingRecommendationType recommendationType);
         public abstract UberStrikeItemShopClientView OnGetShop();
-
+        public abstract List<BundleView> OnGetBundles(ChannelType channel);
 
         byte[] IShopWebServiceContract.BuyBundle(byte[] data)
         {
@@ -170,13 +171,13 @@ namespace UberStrok.WebServices.Core
             {
                 using (var bytes = new MemoryStream(data))
                 {                  
-                var channel = EnumProxy<ChannelType>.Deserialize(bytes);
+                    var channel = EnumProxy<ChannelType>.Deserialize(bytes);
 
-                using (var outBytes = new MemoryStream())
-                {
-                    EnumProxy<ChannelType>.Serialize(outBytes, channel);
-                    return outBytes.ToArray();
-                }
+                    using (var outBytes = new MemoryStream())
+                    {
+                        EnumProxy<ChannelType>.Serialize(outBytes, channel);
+                        return outBytes.ToArray();
+                    }
             }
         }
             catch (Exception ex)

@@ -39,6 +39,7 @@
     <Compile Include="ByteProxy.cs" />
     <Compile Include="Common\ColorProxy.cs" />
     <Compile Include="DateTimeProxy.cs" />
+    <Compile Include="DecimalProxy.cs" />
     <Compile Include="DictionaryProxy.cs" />
     <Compile Include="EnumProxy.cs" />
     <Compile Include="Int16Proxy.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Views\ApplicationConfigurationViewProxy.cs" />
     <Compile Include="Views\AuthenticateApplicationViewProxy.cs" />
     <Compile Include="Views\BundleItemViewProxy.cs" />
+    <Compile Include="Views\BundleViewProxy.cs" />
     <Compile Include="Views\CommActorInfoViewProxy.cs" />
     <Compile Include="Views\ConnectionAddressViewProxy.cs" />
     <Compile Include="Views\DamageEventViewProxy.cs" />
