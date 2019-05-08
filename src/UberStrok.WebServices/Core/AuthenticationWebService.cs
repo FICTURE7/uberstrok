@@ -174,7 +174,7 @@ namespace UberStrok.WebServices.Core
 
         private bool CheckName(string name)
         {
-            const string INVALID_CHARS = "[]";
+            const string INVALID_CHARS = "[]'";
 
             for (int i = 0; i < INVALID_CHARS.Length; i++)
             {
