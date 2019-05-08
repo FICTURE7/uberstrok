@@ -36,5 +36,17 @@ namespace UberStrok.WebServices.Client
                     return LoadoutViewProxy.Deserialize(inBytes);
             }
         }
+
+        public LoadoutView GetLoadoutServer(string authToken)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                StringProxy.Serialize(bytes, authToken);
+
+                var data = Channel.GetLoadoutServer(bytes.ToArray());
+                using (var inBytes = new MemoryStream(data))
+                    return LoadoutViewProxy.Deserialize(inBytes);
+            }
+        }
     }
 }

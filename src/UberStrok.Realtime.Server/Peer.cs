@@ -275,7 +275,7 @@ namespace UberStrok.Realtime.Server
         {
             Log.Debug($"Retrieving Loadout from {Configuration.WebServices}");
             /* Retrieve loadout data from the web server. */
-            return new UserWebServiceClient(Configuration.WebServices).GetLoadout(AuthToken);
+            return new UserWebServiceClient(Configuration.WebServices).GetLoadoutServer(AuthToken);
         }
     }
 }

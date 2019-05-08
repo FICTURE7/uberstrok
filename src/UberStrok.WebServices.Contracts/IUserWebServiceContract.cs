@@ -33,6 +33,9 @@ namespace UberStrok.WebServices.Contracts
         byte[] GetLoadout(byte[] data);
 
         [OperationContract]
+        byte[] GetLoadoutServer(byte[] data);
+
+        [OperationContract]
         byte[] SetLoadout(byte[] data);
 
         [OperationContract]
