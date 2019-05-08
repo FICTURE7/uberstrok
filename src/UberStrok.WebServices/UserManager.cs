@@ -11,10 +11,9 @@ namespace UberStrok.WebServices
 {
     public class UserManager
     {
-        private readonly static ILog s_log = LogManager.GetLogger(typeof(UserManager).Name);
+        private readonly static ILog Log = LogManager.GetLogger(typeof(UserManager).Name);
 
         private int _nextCmid;
-        private readonly UserDb _db;
         private readonly Dictionary<string, MemberView> _sessions; // AuthToken -> MemberView
 
         private readonly WebServiceContext _ctx;
@@ -22,18 +21,22 @@ namespace UberStrok.WebServices
         public UserManager(WebServiceContext ctx)
         {
             _ctx = ctx;
-            _db = new UserDb();
+
+            Db = new UserDb();
+            Authed = new HashSet<string>();
 
             _sessions = new Dictionary<string, MemberView>();
-            _nextCmid = _db.GetNextCmid();
+            _nextCmid = Db.GetNextCmid();
             if (_nextCmid == -1)
             {
                 _nextCmid = 0;
-                _db.SetNextCmid(_nextCmid);
+                Db.SetNextCmid(_nextCmid);
             }
         }
 
-        public UserDb Db => _db;
+
+        public HashSet<string> Authed { get; }
+        public UserDb Db { get; }
 
         public MemberView NewMember()
         {
@@ -143,7 +146,7 @@ namespace UberStrok.WebServices
                     {
                         /* Replace players with same CMID, not the neatest of fixes, but it works. */
                         _sessions.Remove(kv.Key);
-                        s_log.Info($"Kicking player with CMID {value.PublicProfile.Cmid} cause of new login.");
+                        Log.Info($"Kicking player with CMID {value.PublicProfile.Cmid} cause of new login.");
                         break;
                     }
                 }
@@ -156,9 +159,21 @@ namespace UberStrok.WebServices
             return authToken;
         }
 
-        public void LogOutUser(MemberView member)
+        public bool LogOutUser(MemberView member)
         {
-            // Space
+            foreach (var kv in _sessions)
+            {
+                var value = kv.Value;
+                if (value.PublicProfile.Cmid == member.PublicProfile.Cmid)
+                {
+                    /* Replace players with same CMID, not the neatest of fixes, but it works. */
+                    _sessions.Remove(kv.Key);
+                    Log.Info($"Player with CMID {value.PublicProfile.Cmid} logged out.");
+                     return true;
+                }
+            }
+
+            return false;
         }
     }
 }

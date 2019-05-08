@@ -38,6 +38,15 @@ namespace UberStrok.WebServices.Core
                 return null;
             }
 
+            lock (Context.Users.Authed)
+            {
+                if (!Context.Users.Authed.Add(authToken))
+                {
+                    Context.Users.LogOutUser(member);
+                    return null;
+                }
+            }
+
             var view = Context.Users.Db.Loadouts.Load(member.PublicProfile.Cmid);
             return view;
         }
