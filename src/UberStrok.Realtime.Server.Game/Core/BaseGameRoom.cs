@@ -300,6 +300,9 @@ namespace UberStrok.Realtime.Server.Game
             int newArmor = victim.Actor.Info.ArmorPoints - armorDamage;
             int newHealth = victim.Actor.Info.Health - healthDamage;
 
+            if (newArmor < 0)
+                newHealth += newArmor;
+
             victim.Actor.Info.ArmorPoints = (byte)Math.Max(0, newArmor);
             victim.Actor.Info.Health = (short)Math.Max(0, newHealth);
 
