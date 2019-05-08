@@ -80,29 +80,58 @@ namespace UberStrok.Realtime.Server.Comm
                         switch (args[0])
                         {
                             case "?ban":
-                                if (args.Length < 2)
                                 {
-                                    response = "Usage: ?ban <cmid>";
+                                    if (args.Length < 2)
+                                    {
+                                        response = "Usage: ?ban <cmid>";
+                                        break;
+                                    }
+
+                                    if (!int.TryParse(args[1], out int cmid))
+                                    {
+                                        response = "Error: <cmid> must be an integer.";
+                                        break;
+                                    }
+
+                                    if (cmid == peer.Actor.Cmid)
+                                    {
+                                        response = "Banning yourself might be a bad idea. :)";
+                                        break;
+                                    }
+
+                                    if (DoBan(peer, cmid))
+                                        response = $"Banned user with CMID {cmid}.";
+                                    else
+                                        response = "Error: Failed to ban user.";
                                     break;
                                 }
 
-                                if (!int.TryParse(args[1], out int cmid))
+                            case "?unban":
                                 {
-                                    response = "Error: <cmid> must be an integer.";
+                                    if (args.Length < 2)
+                                    {
+                                        response = "Usage: ?unban <cmid>";
+                                        break;
+                                    }
+
+                                    if (!int.TryParse(args[1], out int cmid))
+                                    {
+                                        response = "Error: <cmid> must be an integer.";
+                                        break;
+                                    }
+
+                                    if (cmid == peer.Actor.Cmid)
+                                    {
+                                        response = "You can't unban yourself.";
+                                        break;
+                                    }
+
+                                    if (DoUnban(peer, cmid))
+                                        response = $"Unbanned user with CMID {cmid}.";
+                                    else
+                                        response = "Error: Failed to unban user.";
                                     break;
                                 }
-
-                                if (cmid == peer.Actor.Cmid)
-                                {
-                                    response = "Banning yourself might be a bad idea. :)";
-                                    break;
-                                }
-
-                                if (DoBan(peer, cmid))
-                                    response = $"Banned user with CMID {cmid}.";
-                                else
-                                    response = "Error: Failed to ban user.";
-                                break;
 
                             case "?msg":
                                 if (args.Length < 3)
@@ -295,6 +324,23 @@ namespace UberStrok.Realtime.Server.Comm
             }
 
             Find(cmid)?.SendError("You have been banned.");
+            return code == 0;
+        }
+
+        private bool DoUnban(CommPeer peer, int cmid)
+        {
+            int code;
+            try
+            {
+                var client = new ModerationWebServiceClient(CommApplication.Instance.Configuration.WebServices);
+                code = client.UnbanCmid(peer.AuthToken, cmid);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Failed to ban user.", ex);
+                code = 1;
+            }
+
             return code == 0;
         }
     }

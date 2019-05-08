@@ -97,6 +97,12 @@ namespace UberStrok.WebServices.Db
             return _ipBans.Contains(ip);
         }
 
+        public void UnbanCmid(int cmid)
+        {
+            if (_cmidBans.Remove(cmid))
+                SaveCmidBans();
+        }
+
         public void BanCmid(int cmid)
         {
             if (_cmidBans.Add(cmid))

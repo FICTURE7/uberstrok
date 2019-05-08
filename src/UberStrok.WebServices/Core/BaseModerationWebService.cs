@@ -17,9 +17,34 @@ namespace UberStrok.WebServices.Core
             // Space
         }
 
+        public abstract int OnUnbanCmid(string authToken, int cmid);
         public abstract int OnBanCmid(string authToken, int cmid);
         public abstract int OnBanIp(string authToken, string ip);
         public abstract int OnBanHwd(string authToken, string hwd);
+
+        byte[] IModerationWebServiceContract.UnbanCmid(byte[] data)
+        {
+            try
+            {
+                using (var bytes = new MemoryStream(data))
+                {
+                    string authToken = StringProxy.Deserialize(bytes);
+                    int cmid = Int32Proxy.Deserialize(bytes);
+
+                    var result = OnUnbanCmid(authToken, cmid);
+                    using (var outBytes = new MemoryStream())
+                    {
+                        Int32Proxy.Serialize(outBytes, result);
+                        return outBytes.ToArray();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Unable to handle BanCmid", ex);
+                return null;
+            }
+        }
 
         byte[] IModerationWebServiceContract.BanCmid(byte[] data)
         {

@@ -9,6 +9,16 @@ namespace UberStrok.WebServices.Core
 
         }
 
+        public override int OnUnbanCmid(string authToken, int cmid)
+        {
+            var member = Context.Users.GetMember(authToken);
+            if (member.PublicProfile.AccessLevel < MemberAccessLevel.SeniorQA)
+                return 1;
+
+            Context.Users.Db.UnbanCmid(cmid);
+            return 0;
+        }
+
         public override int OnBanCmid(string authToken, int cmid)
         {
             var member = Context.Users.GetMember(authToken);

@@ -11,6 +11,19 @@ namespace UberStrok.WebServices.Client
             // Space
         }
 
+        public int UnbanCmid(string authToken, int cmid)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                StringProxy.Serialize(bytes, authToken);
+                Int32Proxy.Serialize(bytes, cmid);
+
+                var data = Channel.UnbanCmid(bytes.ToArray());
+                using (var inBytes = new MemoryStream(data))
+                    return Int32Proxy.Deserialize(inBytes);
+            }
+        }
+
         public int BanCmid(string authToken, int cmid)
         {
             using (var bytes = new MemoryStream())
