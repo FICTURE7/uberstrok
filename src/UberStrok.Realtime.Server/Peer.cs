@@ -268,14 +268,14 @@ namespace UberStrok.Realtime.Server
         {
             Log.Debug($"Retrieving Member from {Configuration.WebServices}");
             /* Retrieve user data from the web server. */
-            return new UserWebServiceClient(Configuration.WebServices).GetMember(AuthToken);
+            return new UserWebServiceClient(Configuration.WebServices).GetMemberServer(Configuration.WebServicesAuth, AuthToken);
         }
 
         protected LoadoutView GetLoadout()
         {
             Log.Debug($"Retrieving Loadout from {Configuration.WebServices}");
             /* Retrieve loadout data from the web server. */
-            return new UserWebServiceClient(Configuration.WebServices).GetLoadoutServer(AuthToken);
+            return new UserWebServiceClient(Configuration.WebServices).GetLoadout(AuthToken);
         }
     }
 }

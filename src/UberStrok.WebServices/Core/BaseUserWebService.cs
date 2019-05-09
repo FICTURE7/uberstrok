@@ -22,8 +22,8 @@ namespace UberStrok.WebServices.Core
         public abstract bool OnIsDuplicateMemberName(string username);
         public abstract MemberOperationResult OnSetLoaduout(string authToken, LoadoutView loadoutView);
         public abstract UberstrikeUserView OnGetMember(string authToken);
+        public abstract UberstrikeUserView OnGetMemberServer(string serviceAuth, string authToken);
         public abstract LoadoutView OnGetLoadout(string authToken);
-        public abstract LoadoutView OnGetLoadoutServer(string authToken);
         public abstract List<ItemInventoryView> OnGetInventory(string authToken);
 
         byte[] IUserWebServiceContract.ChangeMemberName(byte[] data)
@@ -131,30 +131,6 @@ namespace UberStrok.WebServices.Core
             }
         }
 
-        byte[] IUserWebServiceContract.GetLoadoutServer(byte[] data)
-        {
-            try
-            {
-                using (var bytes = new MemoryStream(data))
-                {
-                    var authToken = StringProxy.Deserialize(bytes);
-
-                    LoadoutView view = OnGetLoadoutServer(authToken);
-                    using (var outBytes = new MemoryStream())
-                    {
-                        LoadoutViewProxy.Serialize(outBytes, view);
-                        return outBytes.ToArray();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Unable to handle GetLoadout request:");
-                Log.Error(ex);
-                return null;
-            }
-        }
-
         byte[] IUserWebServiceContract.GetMember(byte[] data)
         {
             try
@@ -164,6 +140,31 @@ namespace UberStrok.WebServices.Core
                     var authToken = StringProxy.Deserialize(bytes);
 
                     var view = OnGetMember(authToken);
+                    using (var outBytes = new MemoryStream())
+                    {
+                        UberstrikeUserViewProxy.Serialize(outBytes, view);
+                        return outBytes.ToArray();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Unable to handle GetMember request:");
+                Log.Error(ex);
+                return null;
+            }
+        }
+
+        byte[] IUserWebServiceContract.GetMemberServer(byte[] data)
+        {
+            try
+            {
+                using (var bytes = new MemoryStream(data))
+                {
+                    var serviceAuth = StringProxy.Deserialize(bytes);
+                    var authToken = StringProxy.Deserialize(bytes);
+
+                    var view = OnGetMemberServer(serviceAuth, authToken);
                     using (var outBytes = new MemoryStream())
                     {
                         UberstrikeUserViewProxy.Serialize(outBytes, view);

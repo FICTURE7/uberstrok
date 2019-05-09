@@ -69,6 +69,7 @@ namespace UberStrok.Realtime.Server
             PeerConfiguration = new PeerConfiguration
             (
                 Configuration.WebServices,
+                Configuration.WebServicesAuth,
                 Configuration.HeartbeatTimeout,
                 Configuration.HeartbeatInterval,
                 Configuration.CompositeHashBytes,
