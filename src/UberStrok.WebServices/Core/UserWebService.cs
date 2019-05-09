@@ -38,6 +38,34 @@ namespace UberStrok.WebServices.Core
                 return null;
             }
 
+            lock (Context.Users.Authed)
+            {
+                if (!Context.Users.Authed.Add(authToken))
+                {
+                    Context.Users.LogOutUser(member);
+                    return null;
+                }
+            }
+
+            var view = Context.Users.Db.Loadouts.Load(member.PublicProfile.Cmid);
+            return view;
+        }
+
+        public override LoadoutView OnGetLoadoutServer(string serviceAuth, string authToken)
+        {
+            var member = Context.Users.GetMember(authToken);
+            if (member == null)
+            {
+                Log.Error("An unidentified AuthToken was passed.");
+                return null;
+            }
+
+            if (Context.Configuration.ServiceAuth != serviceAuth)
+            {
+                Log.Error("An invalid service auth was passed.");
+                return null;
+            }
+
             var view = Context.Users.Db.Loadouts.Load(member.PublicProfile.Cmid);
             return view;
         }
@@ -49,46 +77,6 @@ namespace UberStrok.WebServices.Core
             if (member == null)
             {
                 Log.Error("An unidentified AuthToken was passed.");
-                return null;
-            }
-
-            lock (Context.Users.Authed)
-            {
-                if (!Context.Users.Authed.Add(authToken))
-                {
-                    Context.Users.LogOutUser(member);
-                    return null;
-                }
-            }
-
-            var view = new UberstrikeUserView
-            {
-                CmuneMemberView = member,
-                UberstrikeMemberView = new UberstrikeMemberView
-                {
-                    PlayerStatisticsView = new PlayerStatisticsView
-                    {
-                        Cmid = member.PublicProfile.Cmid,
-                        PersonalRecord = new PlayerPersonalRecordStatisticsView(),
-                        WeaponStatistics = new PlayerWeaponStatisticsView()
-                    }
-                }
-            };
-            return view;
-        }
-
-        public override UberstrikeUserView OnGetMemberServer(string serviceAuth, string authToken)
-        {
-            var member = Context.Users.GetMember(authToken);
-            if (member == null)
-            {
-                Log.Error("An unidentified AuthToken was passed.");
-                return null;
-            }
-
-            if (Context.Configuration.ServiceAuth != serviceAuth)
-            {
-                Log.Error("An invalid serviceauth was passed.");
                 return null;
             }
 

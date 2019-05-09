@@ -33,13 +33,13 @@ namespace UberStrok.WebServices.Contracts
         byte[] GetLoadout(byte[] data);
 
         [OperationContract]
+        byte[] GetLoadoutServer(byte[] data);
+
+        [OperationContract]
         byte[] SetLoadout(byte[] data);
 
         [OperationContract]
         byte[] GetMember(byte[] data);
-
-        [OperationContract]
-        byte[] GetMemberServer(byte[] data);
 
         [OperationContract]
         byte[] GetMemberSessionData(byte[] data);

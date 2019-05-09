@@ -25,19 +25,6 @@ namespace UberStrok.WebServices.Client
             }
         }
 
-        public UberstrikeUserView GetMemberServer(string serviceAuth, string authToken)
-        {
-            using (var bytes = new MemoryStream())
-            {
-                StringProxy.Serialize(bytes, serviceAuth);
-                StringProxy.Serialize(bytes, authToken);
-
-                var data = Channel.GetMemberServer(bytes.ToArray());
-                using (var inBytes = new MemoryStream(data))
-                    return UberstrikeUserViewProxy.Deserialize(inBytes);
-            }
-        }
-
         public LoadoutView GetLoadout(string authToken)
         {
             using (var bytes = new MemoryStream())
@@ -45,6 +32,19 @@ namespace UberStrok.WebServices.Client
                 StringProxy.Serialize(bytes, authToken);
 
                 var data = Channel.GetLoadout(bytes.ToArray());
+                using (var inBytes = new MemoryStream(data))
+                    return LoadoutViewProxy.Deserialize(inBytes);
+            }
+        }
+
+        public LoadoutView GetLoadoutServer(string serviceAuth, string authToken)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                StringProxy.Serialize(bytes, serviceAuth);
+                StringProxy.Serialize(bytes, authToken);
+
+                var data = Channel.GetLoadoutServer(bytes.ToArray());
                 using (var inBytes = new MemoryStream(data))
                     return LoadoutViewProxy.Deserialize(inBytes);
             }
