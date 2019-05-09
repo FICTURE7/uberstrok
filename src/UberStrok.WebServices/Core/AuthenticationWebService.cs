@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Text.RegularExpressions;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -28,7 +29,7 @@ namespace UberStrok.WebServices.Core
                 );
             }
 
-            if (!CheckName(name))
+            if (!ValidName(name))
             {
                 return new AccountCompletionResultView(
                     4,
@@ -172,16 +173,14 @@ namespace UberStrok.WebServices.Core
             return view;
         }
 
-        private bool CheckName(string name)
-        {
-            const string INVALID_CHARS = "[]'";
+        private static readonly Regex _nameRegex = new Regex("^[a-zA-Z0-9 .!_\\-<>{}~@#$%^&*()=+|:?]{3,18}$", RegexOptions.Compiled);
 
-            for (int i = 0; i < INVALID_CHARS.Length; i++)
-            {
-                if (name.Contains(INVALID_CHARS[i].ToString()))
-                    return false;
-            }
-            return true;
+        private bool ValidName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return false;
+
+            return _nameRegex.IsMatch(name);
         }
     }
 }
