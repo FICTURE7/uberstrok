@@ -89,6 +89,17 @@ namespace UberStrok.Realtime.Server.Game
                 loadout.QuickItem3
             };
 
+            var weaponViews = new List<UberStrikeItemWeaponView>();
+            foreach (var itemId in weapons)
+            {
+                if (itemId == 0)
+                    continue;
+
+                weaponViews.Add(Room.Shop.WeaponItems[itemId]);
+            }
+
+            Actor.Weapons.Update(weaponViews);
+
             Actor.Info.Weapons = weapons;
             Actor.Info.Gear = gear;
             Actor.Info.QuickItems = quickItems;

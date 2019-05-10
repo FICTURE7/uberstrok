@@ -1,4 +1,5 @@
 ﻿using System;
+using UberStrok.Core;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -6,18 +7,16 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameActor
     {
-        private readonly GameActorInfo _info;
-        private readonly PlayerMovement _movement;
-        private readonly DamageEventView _damages;
-
         public GameActor(GameActorInfoView data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
 
-            _info = new GameActorInfo(data);
-            _movement = new PlayerMovement();
-            _damages = new DamageEventView();
+            Info = new GameActorInfo(data);
+            Movement = new PlayerMovement();
+            Damages = new DamageEventView();
+            Weapons = new WeaponManager();
+            Projectiles = new ProjectileManager();
         }
 
         public TeamID Team
@@ -40,8 +39,10 @@ namespace UberStrok.Realtime.Server.Game
         public string PlayerName => Info.PlayerName;
         public MemberAccessLevel AccessLevel => Info.AccessLevel;
 
-        public DamageEventView Damages => _damages;
-        public PlayerMovement Movement => _movement;
-        public GameActorInfo Info => _info;
+        public ProjectileManager Projectiles { get; }
+        public WeaponManager Weapons { get; }
+        public DamageEventView Damages { get; }
+        public PlayerMovement Movement { get; }
+        public GameActorInfo Info { get; }
     }
 }

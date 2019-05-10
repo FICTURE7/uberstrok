@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using UberStrok.Core;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -33,6 +34,7 @@ namespace UberStrok.Realtime.Server.Game
             peer.Actor.Info.ArmorPoints = peer.Actor.Info.ArmorPointCapacity;
             peer.Actor.Info.Ping = (ushort)(peer.RoundTripTime / 2);
             peer.Actor.Info.PlayerState = PlayerStates.Ready;
+            peer.Actor.Weapons.Reset();
 
             _players.Add(peer);
             View.ConnectedPlayers = Players.Count;
@@ -74,24 +76,43 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnRespawnRequest(GamePeer peer)
         {
+            peer.Actor.Weapons.Reset();
             OnPlayerRespawned(new PlayerRespawnedEventArgs { Player = peer });
         }
 
         protected override void OnExplosionDamage(GamePeer peer, int targetCmid, byte slot, byte distance, Vector3 force)
         {
-            GamePeer attacker = peer;
-            int weaponId = attacker.Actor.Info.Weapons[slot];
-
-            if (!Shop.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
+            int weaponSlot = slot;
+            if (weaponSlot < 0 || weaponSlot >= peer.Actor.Info.Weapons.Count)
             {
-                Log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
-                attacker.Disconnect();
+                ReportLog.Warn($"[Weapon] OnExplosionDamage Could not find a Weapon ID in that slot {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
+            int weaponId = peer.Actor.Info.Weapons[weaponSlot];
+
+            GamePeer attacker = peer;
+            Weapon weapon = attacker.Actor.Weapons[weaponId];
+
+            if (weapon == null)
+            {
+                ReportLog.Warn($"[Weapon] OnExplosionDamage Could not find a Weapon in that slot {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
+            var itemClass = weapon.View.ItemClass;
+            if (itemClass != UberStrikeItemClass.WeaponCannon && itemClass != UberStrikeItemClass.WeaponLauncher)
+            {
+                ReportLog.Warn($"[Weapon] OnExplosionDamage ItemClass mismatch {peer.Actor.Cmid}");
+                peer.Disconnect();
                 return;
             }
 
             /* Calculate damage amount. */
-            float damage = weapon.DamagePerProjectile;
-            float radius = weapon.SplashRadius / 100f;
+            float damage = weapon.View.DamagePerProjectile;
+            float radius = weapon.View.SplashRadius / 100f;
             float damageExplosion = damage * (radius - distance) / radius;
             short shortDamage = (short)damageExplosion;
 
@@ -100,13 +121,21 @@ namespace UberStrok.Realtime.Server.Game
                 if (victim.Actor.Cmid != targetCmid)
                     continue;
 
+                peer.Actor.Projectiles.Explode();
+                if (peer.Actor.Projectiles.FalsePositive >= 10)
+                {
+                    ReportLog.Warn($"[Weapon] OnExplosionDamage False positive reached {peer.Actor.Cmid}");
+                    peer.Disconnect();
+                    return;
+                }
+
                 if (DoDamage(victim, attacker, shortDamage, BodyPart.Body, out Vector3 direction))
                 {
                     OnPlayerKilled(new PlayerKilledEventArgs
                     {
                         Attacker = attacker,
                         Victim = victim,
-                        ItemClass = weapon.ItemClass,
+                        ItemClass = weapon.View.ItemClass,
                         Damage = (ushort)shortDamage,
                         Part = BodyPart.Body,
                         Direction = -direction
@@ -117,27 +146,49 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnDirectHitDamage(GamePeer peer, int target, byte bodyPart, byte bullets)
         {
-            GamePeer attacker = peer;
-            if ((attacker.Actor.Info.PlayerState & PlayerStates.Dead) == PlayerStates.Dead)
+            int currentWeaponSlot = peer.Actor.Info.CurrentWeaponSlot;
+            if (currentWeaponSlot < 0 || currentWeaponSlot >= peer.Actor.Info.Weapons.Count)
             {
-                Log.Info("Attacker is dead. Not registering direct hit.");
+                ReportLog.Warn($"[Weapon] OnDirectHitDamage Could not find a Weapon ID in the current slot {peer.Actor.Cmid}");
+                peer.Disconnect();
                 return;
             }
 
-            int weaponId = attacker.Actor.Info.CurrentWeaponID;
-            if (!Shop.WeaponItems.TryGetValue(weaponId, out UberStrikeItemWeaponView weapon))
+            int currentWeaponId = peer.Actor.Info.Weapons[currentWeaponSlot];
+
+            GamePeer attacker = peer;
+            Weapon weapon = attacker.Actor.Weapons[currentWeaponId];
+
+            if (weapon == null)
             {
-                Log.Warn($"Unable to find weapon with ID {weaponId}. Disconnecting.");
-                attacker.Disconnect();
+                ReportLog.Warn($"[Weapon] OnDirectHitDamage Could not find a Weapon in the current slot {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
+            Debug.Assert(currentWeaponId == weapon.View.ID);
+
+            if (!attacker.Actor.Info.View.IsAlive)
+            {
+                Log.Info("Attacker is dead. Not registering direct hit");
+                return;
+            }
+
+            weapon.Trigger();
+
+            if (weapon.FalsePositive >= 5)
+            {
+                ReportLog.Warn($"[Weapon] OnDirectHitDamage FalsePositive reached {peer.Actor.Cmid}");
+                peer.Disconnect();
                 return;
             }
 
             /* TODO: Clamp value. */
-            int damage = weapon.DamagePerProjectile * bullets;
+            int damage = weapon.View.DamagePerProjectile * bullets;
 
             /* Calculate the critical hit damage. */
             var part = (BodyPart)bodyPart;
-            int bonus = weapon.CriticalStrikeBonus;
+            int bonus = weapon.View.CriticalStrikeBonus;
             if (bonus > 0 && (part == BodyPart.Head || part == BodyPart.Nuts))
                 damage = (int)Math.Round(damage + (damage * (bonus / 100f)));
             var shortDamage = (short)damage;
@@ -153,10 +204,10 @@ namespace UberStrok.Realtime.Server.Game
                     {
                         Attacker = attacker,
                         Victim = victim,
-                        ItemClass = weapon.ItemClass,
+                        ItemClass = weapon.View.ItemClass,
                         Damage = (ushort)shortDamage,
                         Part = part,
-                        Direction = -(direction.Normalized * weapon.DamageKnockback)
+                        Direction = -(direction.Normalized * weapon.View.DamageKnockback)
                     });
                 }
             }
@@ -195,7 +246,7 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnDirectDeath(GamePeer peer)
         {
-            if ((peer.Actor.Info.PlayerState & PlayerStates.Dead) == PlayerStates.Dead)
+            if (!peer.Actor.Info.View.IsAlive)
             {
                 Log.Debug($"Player {peer.Actor.Cmid} DirectDeath k: {peer.Actor.Info.Kills} d: {peer.Actor.Info.Deaths}, but already dead");
                 return;
@@ -217,12 +268,55 @@ namespace UberStrok.Realtime.Server.Game
                 Part = BodyPart.Body,
                 Direction = Vector3.Zero
             });
-
-            Log.Debug($"Player {peer.Actor.Cmid} DirectDeath k: {peer.Actor.Info.Kills} d: {peer.Actor.Info.Deaths}");
         }
 
         protected override void OnEmitProjectile(GamePeer peer, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
         {
+            int weaponSlot = slot - 7;
+            if (weaponSlot < 0 || weaponSlot >= peer.Actor.Info.Weapons.Count)
+            {
+                ReportLog.Warn($"[Weapon] OnEmitProjectile Could not find a Weapon ID in the current slot {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
+            int weaponId = peer.Actor.Info.Weapons[weaponSlot];
+
+            GamePeer emitter = peer;
+            Weapon weapon = emitter.Actor.Weapons[weaponId];
+
+            if (weapon == null)
+            {
+                ReportLog.Warn($"[Weapon] OnEmitProjectile Could not find a Weapon in that slot {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
+            var itemClass = weapon.View.ItemClass;
+            if (itemClass != UberStrikeItemClass.WeaponCannon && itemClass != UberStrikeItemClass.WeaponLauncher)
+            {
+                ReportLog.Warn($"[Weapon] OnEmitProjectile ItemClass mismatch {peer.Actor.Cmid}");
+                emitter.Disconnect();
+                return;
+            }
+
+            weapon.Trigger();
+
+            if (weapon.FalsePositive >= 5)
+            {
+                ReportLog.Warn($"[Weapon] OnEmitProjectile FalsePositive reached {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
+            emitter.Actor.Projectiles.Emit(projectileId);
+            if (emitter.Actor.Projectiles.FalsePositive >= 10)
+            {
+                ReportLog.Warn($"[Projectiles] OnEmitProjectile FalsePositive reached {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
             var shooterCmid = peer.Actor.Cmid;
             foreach (var otherPeer in Peers)
             {
@@ -243,6 +337,14 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnRemoveProjectile(GamePeer peer, int projectileId, bool explode)
         {
+            peer.Actor.Projectiles.Destroy(projectileId);
+            if (peer.Actor.Projectiles.FalsePositive >= 10)
+            {
+                ReportLog.Warn($"[Projectiles] OnRemoveProjectile FalsePositive reached {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
             foreach (var otherPeer in Peers)
                 otherPeer.Events.Game.SendRemoveProjectile(projectileId, explode);
         }

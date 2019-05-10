@@ -259,10 +259,7 @@ namespace UberStrok.Realtime.Server.Comm
 
         protected override void OnModerationCustomMessage(CommPeer peer, int cmid, string message)
         {
-            if (peer.Actor.AccessLevel < MemberAccessLevel.Moderator)
-                return;
-
-            Find(cmid)?.Events.Lobby.SendModerationCustomMessage(message);
+            /* NOTE: Not reachable from game client. */
         }
 
         protected override void OnSpeedhackDetection(CommPeer peer)
