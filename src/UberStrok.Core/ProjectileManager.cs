@@ -6,7 +6,7 @@ namespace UberStrok.Core
     public class ProjectileManager
     {
         private int _numExploded;
-        private int _numDestroyed;
+        private int _numEmitted;
         private readonly HashSet<int> _projectiles;
 
         public int FalsePositive { get; private set; }
@@ -20,28 +20,20 @@ namespace UberStrok.Core
         {
             _numExploded++;
 
-            var diff = Math.Abs(_numExploded - _numDestroyed);
-            if (diff > 2)
+            var diff = Math.Abs(_numEmitted - _numExploded);
+            if (diff > 50)
                 FalsePositive++;
-            else
-            {
-                _numDestroyed = 0;
-                _numExploded = 0;
-            }
         }
 
         public void Emit(int projectileId)
         {
-            if (!_projectiles.Add(projectileId))
-                FalsePositive++;
+            _projectiles.Add(projectileId);
+            _numEmitted++;
         }
 
         public void Destroy(int projectileId)
         {
-            if (!_projectiles.Remove(projectileId))
-                FalsePositive++;
-            else
-                _numDestroyed++;
+            _projectiles.Remove(projectileId);
         }
 
         public void Reset()
