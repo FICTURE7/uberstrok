@@ -33,6 +33,7 @@ namespace UberStrok.Core
         public void Reset()
         {
             _lastShot = DateTime.UtcNow;
+            FalsePositive = 0;
         }
     }
 }
