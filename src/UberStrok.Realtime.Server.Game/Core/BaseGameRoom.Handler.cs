@@ -116,18 +116,18 @@ namespace UberStrok.Realtime.Server.Game
             float damageExplosion = damage * (radius - distance) / radius;
             short shortDamage = (short)damageExplosion;
 
+            peer.Actor.Projectiles.Explode();
+            if (peer.Actor.Projectiles.FalsePositive >= 10)
+            {
+                ReportLog.Warn($"[Weapon] OnExplosionDamage False positive reached {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
             foreach (var victim in Players)
             {
                 if (victim.Actor.Cmid != targetCmid)
                     continue;
-
-                peer.Actor.Projectiles.Explode();
-                if (peer.Actor.Projectiles.FalsePositive >= 10)
-                {
-                    ReportLog.Warn($"[Weapon] OnExplosionDamage False positive reached {peer.Actor.Cmid}");
-                    peer.Disconnect();
-                    return;
-                }
 
                 if (DoDamage(victim, attacker, shortDamage, BodyPart.Body, out Vector3 direction))
                 {
@@ -176,7 +176,7 @@ namespace UberStrok.Realtime.Server.Game
 
             weapon.Trigger();
 
-            if (weapon.FalsePositive >= 5)
+            if (weapon.FalsePositive >= weapon.FalsePositiveThreshold)
             {
                 ReportLog.Warn($"[Weapon] OnDirectHitDamage FalsePositive reached {peer.Actor.Cmid}");
                 peer.Disconnect();
@@ -302,7 +302,7 @@ namespace UberStrok.Realtime.Server.Game
 
             weapon.Trigger();
 
-            if (weapon.FalsePositive >= 5)
+            if (weapon.FalsePositive >= weapon.FalsePositiveThreshold)
             {
                 ReportLog.Warn($"[Weapon] OnEmitProjectile FalsePositive reached {peer.Actor.Cmid}");
                 peer.Disconnect();
