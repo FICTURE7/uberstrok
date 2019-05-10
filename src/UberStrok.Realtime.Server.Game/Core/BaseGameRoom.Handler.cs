@@ -183,6 +183,13 @@ namespace UberStrok.Realtime.Server.Game
                 return;
             }
 
+            if (bullets > weapon.View.ProjectilesPerShot)
+            {
+                ReportLog.Warn($"[Weapon] OnDirectHitDamage Fired more bullet than in stats {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
             /* TODO: Clamp value. */
             int damage = weapon.View.DamagePerProjectile * bullets;
 
