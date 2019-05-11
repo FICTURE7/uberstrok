@@ -77,6 +77,7 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnRespawnRequest(GamePeer peer)
         {
             peer.Actor.Weapons.Reset();
+            peer.Actor.Ping.Reset();
             OnPlayerRespawned(new PlayerRespawnedEventArgs { Player = peer });
         }
 

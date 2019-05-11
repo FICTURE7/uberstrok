@@ -165,7 +165,8 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnUpdatePing(GamePeer peer, ushort ping)
         {
             peer.Actor.Ping.Update(ping);
-            if (peer.Actor.Ping.FalsePositive >= 5)
+
+            if (peer.Actor.Ping.FalsePositive >= 25)
             {
                 ReportLog.Warn($"[Ping] OnUpdatePing False positive reached {peer.Actor.Cmid}");
                 peer.Disconnect();

@@ -7,7 +7,7 @@ namespace UberStrok.Core
         public int Value { get; private set; }
         public int FalsePositive { get; private set; }
 
-        public bool CanUpdate => (DateTime.UtcNow - _lastUpdate).TotalSeconds >= 5;
+        public bool CanUpdate => (DateTime.UtcNow - _lastUpdate).TotalSeconds >= 4;
 
         private DateTime _lastUpdate;
 
@@ -21,8 +21,14 @@ namespace UberStrok.Core
             if (!CanUpdate)
                 FalsePositive++;
 
-            Value = value;
             _lastUpdate = DateTime.UtcNow;
+            Value = value;
+        }
+
+        public void Reset()
+        {
+            _lastUpdate = DateTime.UtcNow;
+            FalsePositive = 0;
         }
     }
 }

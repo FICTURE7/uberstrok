@@ -21,8 +21,10 @@ namespace UberStrok.Core
         {
             _numExploded++;
 
+            /*
             if (_numExploded > 50)
                 FalsePositive++;
+                */
         }
 
         public void Emit(int projectileId)

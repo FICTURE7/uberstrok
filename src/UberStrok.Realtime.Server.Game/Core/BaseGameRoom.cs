@@ -184,6 +184,7 @@ namespace UberStrok.Realtime.Server.Game
                     }
 
                     peer.Actor.Weapons.Update(weaponViews);
+                    peer.Actor.Ping.Reset();
                     peer.UpdateArmorCapacity();
                     peer.Handlers.Add(this);
 

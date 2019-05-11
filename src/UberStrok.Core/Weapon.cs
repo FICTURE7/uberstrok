@@ -24,7 +24,9 @@ namespace UberStrok.Core
         public void Trigger()
         {
             if (CanTrigger)
+            {
                 _lastShot = DateTime.UtcNow;
+            }
             else
                 FalsePositive++;
         }
