@@ -6,7 +6,6 @@ namespace UberStrok.Core
     public class ProjectileManager
     {
         private int _numExploded;
-        private int _numDestoryed;
         private int _numEmitted;
         private readonly HashSet<int> _projectiles;
 
@@ -21,10 +20,13 @@ namespace UberStrok.Core
         {
             _numExploded++;
 
-            /*
-            if (_numExploded > 50)
+            if (_numExploded - _numEmitted > 20)
+            {
                 FalsePositive++;
-                */
+
+                _numExploded = 0;
+                _numEmitted = 0;
+            }
         }
 
         public void Emit(int projectileId)

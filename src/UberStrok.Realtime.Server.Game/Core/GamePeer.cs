@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UberStrok.Core;
 using UberStrok.Core.Views;
+using UberStrok.WebServices.Client;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -50,6 +51,12 @@ namespace UberStrok.Realtime.Server.Game
         {
             base.SendError(message);
             Events.SendDisconnectAndDisablePhoton(message);
+        }
+
+        public int Ban()
+        {
+            /* Retrieve user data from the web server. */
+            return new ModerationWebServiceClient(Configuration.WebServices).Ban(Configuration.WebServicesAuth, Actor.Cmid);
         }
 
         public void UpdateLoadout()

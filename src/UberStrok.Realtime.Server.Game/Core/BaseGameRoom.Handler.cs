@@ -99,7 +99,6 @@ namespace UberStrok.Realtime.Server.Game
             if (weapon == null)
             {
                 ReportLog.Warn($"[Weapon] OnExplosionDamage Could not find a Weapon in that slot {peer.Actor.Cmid}");
-                peer.Disconnect();
                 return;
             }
 
@@ -107,7 +106,6 @@ namespace UberStrok.Realtime.Server.Game
             if (itemClass != UberStrikeItemClass.WeaponCannon && itemClass != UberStrikeItemClass.WeaponLauncher)
             {
                 ReportLog.Warn($"[Weapon] OnExplosionDamage ItemClass mismatch {peer.Actor.Cmid}");
-                peer.Disconnect();
                 return;
             }
 
@@ -163,7 +161,6 @@ namespace UberStrok.Realtime.Server.Game
             if (weapon == null)
             {
                 ReportLog.Warn($"[Weapon] OnDirectHitDamage Could not find a Weapon in the current slot {peer.Actor.Cmid}");
-                peer.Disconnect();
                 return;
             }
 
@@ -187,7 +184,6 @@ namespace UberStrok.Realtime.Server.Game
             if (bullets > weapon.View.ProjectilesPerShot)
             {
                 ReportLog.Warn($"[Weapon] OnDirectHitDamage Fired more bullet than in stats {peer.Actor.Cmid}");
-                peer.Disconnect();
                 return;
             }
 
@@ -296,7 +292,6 @@ namespace UberStrok.Realtime.Server.Game
             if (weapon == null)
             {
                 ReportLog.Warn($"[Weapon] OnEmitProjectile Could not find a Weapon in that slot {peer.Actor.Cmid}");
-                peer.Disconnect();
                 return;
             }
 
@@ -304,7 +299,6 @@ namespace UberStrok.Realtime.Server.Game
             if (itemClass != UberStrikeItemClass.WeaponCannon && itemClass != UberStrikeItemClass.WeaponLauncher)
             {
                 ReportLog.Warn($"[Weapon] OnEmitProjectile ItemClass mismatch {peer.Actor.Cmid}");
-                emitter.Disconnect();
                 return;
             }
 

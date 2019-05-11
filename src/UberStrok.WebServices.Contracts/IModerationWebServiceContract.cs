@@ -6,6 +6,9 @@ namespace UberStrok.WebServices.Contracts
     public interface IModerationWebServiceContract
     {
         [OperationContract]
+        byte[] Ban(byte[] data);
+
+        [OperationContract]
         byte[] UnbanCmid(byte[] data);
 
         [OperationContract]

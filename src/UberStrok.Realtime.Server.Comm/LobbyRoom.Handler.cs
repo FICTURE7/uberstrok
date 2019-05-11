@@ -133,6 +133,39 @@ namespace UberStrok.Realtime.Server.Comm
                                     break;
                                 }
 
+                            case "?baniphwd":
+                                {
+                                    if (peer.Actor.AccessLevel != MemberAccessLevel.Admin)
+                                    {
+                                        response = $"Error: Only admins can use this command.";
+                                        break;
+                                    }
+
+                                    if (args.Length < 2)
+                                    {
+                                        response = "Usage: ?baniphwd <cmid>";
+                                        break;
+                                    }
+
+                                    if (!int.TryParse(args[1], out int cmid))
+                                    {
+                                        response = "Error: <cmid> must be an integer.";
+                                        break;
+                                    }
+
+                                    if (cmid == peer.Actor.Cmid)
+                                    {
+                                        response = "Banning yourself might be a bad idea. :)";
+                                        break;
+                                    }
+
+                                    if (DoBanIpHwd(cmid))
+                                        response = $"Banned user with CMID {cmid}.";
+                                    else
+                                        response = "Error: Failed to ban user.";
+                                    break;
+                                }
+
                             case "?msg":
                                 if (args.Length < 3)
                                 {
@@ -313,6 +346,24 @@ namespace UberStrok.Realtime.Server.Comm
             {
                 var client = new ModerationWebServiceClient(CommApplication.Instance.Configuration.WebServices);
                 code = client.BanCmid(peer.AuthToken, cmid);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Failed to ban user.", ex);
+                code = 1;
+            }
+
+            Find(cmid)?.SendError("You have been banned.");
+            return code == 0;
+        }
+
+        private bool DoBanIpHwd(int cmid)
+        {
+            int code;
+            try
+            {
+                var client = new ModerationWebServiceClient(CommApplication.Instance.Configuration.WebServices);
+                code = client.Ban(CommApplication.Instance.Configuration.WebServicesAuth, cmid);
             }
             catch (Exception ex)
             {

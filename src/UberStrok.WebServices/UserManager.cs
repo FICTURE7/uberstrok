@@ -11,10 +11,18 @@ namespace UberStrok.WebServices
 {
     public class UserManager
     {
+        public class Session
+        {
+            public string AuthToken { get; set; }
+            public string Ip { get; set; }
+            public string Hwd { get; set; }
+            public MemberView Member { get; set; }
+        }
+
         private readonly static ILog Log = LogManager.GetLogger(typeof(UserManager).Name);
 
         private int _nextCmid;
-        private readonly Dictionary<string, MemberView> _sessions; // AuthToken -> MemberView
+        private readonly Dictionary<string, Session> _sessions; // AuthToken -> Session
 
         private readonly WebServiceContext _ctx;
 
@@ -25,7 +33,7 @@ namespace UberStrok.WebServices
             Db = new UserDb();
             Authed = new HashSet<string>();
 
-            _sessions = new Dictionary<string, MemberView>();
+            _sessions = new Dictionary<string, Session>();
             _nextCmid = Db.GetNextCmid();
             if (_nextCmid == -1)
             {
@@ -99,13 +107,13 @@ namespace UberStrok.WebServices
             if (authToken == null)
                 throw new ArgumentNullException(nameof(authToken));
 
-            var member = default(MemberView);
+            var session = default(Session);
             lock (_sessions)
             {
-                if (!_sessions.TryGetValue(authToken, out member))
+                if (!_sessions.TryGetValue(authToken, out session))
                     return null;
             }
-            return member;
+            return session.Member;
         }
 
         public MemberView GetMember(int cmid)
@@ -117,14 +125,30 @@ namespace UberStrok.WebServices
             {
                 foreach (var value in _sessions.Values)
                 {
-                    if (value.PublicProfile.Cmid == cmid)
+                    if (value.Member.PublicProfile.Cmid == cmid)
+                        return value.Member;
+                }
+            }
+            return null;
+        }
+
+        public Session GetSession(int cmid)
+        {
+            if (cmid <= 0)
+                throw new ArgumentException("CMID must be greater than 0.");
+
+            lock (_sessions)
+            {
+                foreach (var value in _sessions.Values)
+                {
+                    if (value.Member.PublicProfile.Cmid == cmid)
                         return value;
                 }
             }
             return null;
         }
 
-        public string LogInUser(MemberView member)
+        public Session LogInUser(MemberView member)
         {
             if (member == null)
                 throw new ArgumentNullException(nameof(member));
@@ -134,6 +158,7 @@ namespace UberStrok.WebServices
             var data = _ctx.ServiceBase + "#####" + DateTime.UtcNow.ToFileTime();
             var bytes = Encoding.UTF8.GetBytes(data);
             var authToken = Convert.ToBase64String(bytes);
+            var session = default(Session);
 
             member.PublicProfile.LastLoginDate = DateTime.UtcNow;
 
@@ -142,21 +167,29 @@ namespace UberStrok.WebServices
                 foreach (var kv in _sessions)
                 {
                     var value = kv.Value;
-                    if (value.PublicProfile.Cmid == member.PublicProfile.Cmid)
+                    if (value.Member.PublicProfile.Cmid == member.PublicProfile.Cmid)
                     {
                         /* Replace players with same CMID, not the neatest of fixes, but it works. */
                         _sessions.Remove(kv.Key);
-                        Log.Info($"Kicking player with CMID {value.PublicProfile.Cmid} cause of new login.");
+                        Log.Info($"Kicking player with CMID {value.Member.PublicProfile.Cmid} cause of new login.");
                         break;
                     }
                 }
 
-                _sessions.Add(authToken, member);
+                session = new Session
+                {
+                    AuthToken = authToken,
+                    Member = member,
+                    Ip = null,
+                    Hwd = null
+                };
+
+                _sessions.Add(authToken, session);
             }
 
             // Save only profile since we only modified the profile.
             Db.Profiles.Save(member.PublicProfile);
-            return authToken;
+            return session;
         }
 
         public bool LogOutUser(MemberView member)
@@ -164,11 +197,11 @@ namespace UberStrok.WebServices
             foreach (var kv in _sessions)
             {
                 var value = kv.Value;
-                if (value.PublicProfile.Cmid == member.PublicProfile.Cmid)
+                if (value.Member.PublicProfile.Cmid == member.PublicProfile.Cmid)
                 {
                     /* Replace players with same CMID, not the neatest of fixes, but it works. */
                     _sessions.Remove(kv.Key);
-                    Log.Info($"Player with CMID {value.PublicProfile.Cmid} logged out.");
+                    Log.Info($"Player with CMID {value.Member.PublicProfile.Cmid} logged out.");
                      return true;
                 }
             }

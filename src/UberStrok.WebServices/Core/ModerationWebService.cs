@@ -6,7 +6,23 @@ namespace UberStrok.WebServices.Core
     {
         public ModerationWebService(WebServiceContext ctx) : base(ctx)
         {
+            /* Space */
+        }
 
+        public override int OnBan(string serviceAuth, int cmid)
+        {
+            Context.Users.Db.BanCmid(cmid);
+
+            var session = Context.Users.GetSession(cmid);
+            if (session == null)
+                return 0;
+
+            if (session.Ip != null)
+                Context.Users.Db.BanIp(session.Ip);
+            if (session.Hwd != null)
+                Context.Users.Db.BanHwd(session.Hwd);
+
+            return 0;
         }
 
         public override int OnUnbanCmid(string authToken, int cmid)
@@ -31,12 +47,22 @@ namespace UberStrok.WebServices.Core
 
         public override int OnBanHwd(string authToken, string hwd)
         {
-            return 1;
+            var member = Context.Users.GetMember(authToken);
+            if (member.PublicProfile.AccessLevel < MemberAccessLevel.SeniorModerator)
+                return 1;
+
+            Context.Users.Db.BanHwd(hwd);
+            return 0;
         }
 
         public override int OnBanIp(string authToken, string ip)
         {
-            return 1;
+            var member = Context.Users.GetMember(authToken);
+            if (member.PublicProfile.AccessLevel < MemberAccessLevel.SeniorModerator)
+                return 1;
+
+            Context.Users.Db.BanIp(ip);
+            return 0;
         }
     }
 }

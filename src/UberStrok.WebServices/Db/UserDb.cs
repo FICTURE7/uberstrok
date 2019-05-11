@@ -38,6 +38,20 @@ namespace UberStrok.WebServices.Db
                 SaveCmidBans();
             }
 
+            if (!LoadIpBans())
+            {
+                _ipBans = new HashSet<string>();
+                // Create the file if it does not exists.
+                SaveIpBans();
+            }
+
+            if (!LoadHwdBans())
+            {
+                _hwdBans= new HashSet<string>();
+                // Create the file if it does not exists.
+                SaveHwdBans();
+            }
+
             if (!LoadUsedNames())
             {
                 _usedNames = new HashSet<string>();
@@ -107,6 +121,18 @@ namespace UberStrok.WebServices.Db
         {
             if (_cmidBans.Add(cmid))
                 SaveCmidBans();
+        }
+
+        public void BanIp(string ip)
+        {
+            if (_ipBans.Add(ip))
+                SaveIpBans();
+        }
+
+        public void BanHwd(string hwd)
+        {
+            if (_hwdBans.Add(hwd))
+                SaveHwdBans();
         }
 
         public bool UseName(string name)
@@ -190,6 +216,36 @@ namespace UberStrok.WebServices.Db
 
             var json = JsonConvert.SerializeObject(_cmidBans);
             File.WriteAllText("data/bans.json", json);
+        }
+
+        private bool LoadIpBans()
+        {
+            _ipBans = Utils.DeserializeJsonAt<HashSet<string>>("data/ips.json");
+            return _ipBans != null;
+        }
+
+        private void SaveIpBans()
+        {
+            if (_ipBans == null)
+                _ipBans = new HashSet<string>();
+
+            var json = JsonConvert.SerializeObject(_ipBans);
+            File.WriteAllText("data/ip.json", json);
+        }
+
+        private bool LoadHwdBans()
+        {
+            _hwdBans = Utils.DeserializeJsonAt<HashSet<string>>("data/hwds.json");
+            return _hwdBans != null;
+        }
+
+        private void SaveHwdBans()
+        {
+            if (_hwdBans == null)
+                _hwdBans = new HashSet<string>();
+
+            var json = JsonConvert.SerializeObject(_hwdBans);
+            File.WriteAllText("data/hwds.json", json);
         }
 
         private bool LoadUsedNames()

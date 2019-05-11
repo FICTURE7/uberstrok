@@ -151,11 +151,14 @@ namespace UberStrok.WebServices.Core
             if (member.PublicProfile.EmailAddressStatus == EmailAddressStatus.Unverified)
                 incomplete = true;
 
-            var newAuthToken = Context.Users.LogInUser(member);
+            var session = Context.Users.LogInUser(member);
+            session.Hwd = machineId;
+            session.Ip = ip;
+
             var view = new MemberAuthenticationResultView
             {
                 MemberAuthenticationResult = result,
-                AuthToken = newAuthToken,
+                AuthToken = session.AuthToken,
                 IsAccountComplete = !incomplete,
                 ServerTime = DateTime.Now,
 
@@ -168,7 +171,7 @@ namespace UberStrok.WebServices.Core
                 },
             };
 
-            Log.Info($"Logging in member {steamId}:{newAuthToken}");
+            Log.Info($"Logging in member {steamId}:{session.AuthToken}");
 
             return view;
         }

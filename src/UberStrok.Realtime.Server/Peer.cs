@@ -42,7 +42,7 @@ namespace UberStrok.Realtime.Server
         public string AuthToken { get; protected set; }
         public OperationHandlerCollection Handlers { get; }
 
-        private PeerConfiguration Configuration { get; }
+        protected PeerConfiguration Configuration { get; }
 
         public Peer(InitRequest request) : base(request)
         {
