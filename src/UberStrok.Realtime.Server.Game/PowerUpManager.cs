@@ -7,7 +7,7 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class PowerUpManager
     {
-        private readonly static ILog s_log = LogManager.GetLogger(nameof(PowerUpManager));
+        private readonly static ILog Log = LogManager.GetLogger(nameof(PowerUpManager));
 
         private List<TimeSpan> _respawnTimesOriginal;
         private List<TimeSpan> _respawnTimes;
@@ -17,10 +17,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public PowerUpManager(BaseGameRoom room)
         {
-            if (room == null)
-                throw new ArgumentNullException(nameof(room));
-
-            _room = room;
+            _room = room ?? throw new ArgumentNullException(nameof(room));
         }
 
         public bool IsLoaded => _respawnTimesOriginal != null;
@@ -46,11 +43,13 @@ namespace UberStrok.Realtime.Server.Game
         {
             if (pickupId < 0 || pickupId > _respawnTimesOriginal.Count - 1)
             {
-                s_log.Warn($"Unknown power-up with ID: {pickupId}");
+                Log.Warn($"Unknown power-up with ID: {pickupId}");
                 return;
             }
 
-            /* TODO: Check if the thing is respawning before doing anything. */
+            if (_respawning.Contains(pickupId))
+                return;
+
             _respawnTimes[pickupId] = _respawnTimesOriginal[pickupId];
             _respawning.Add(pickupId);
 
@@ -80,7 +79,7 @@ namespace UberStrok.Realtime.Server.Game
                     foreach (var otherPeer in _room.Peers)
                         otherPeer.Events.Game.SendPowerUpPicked(_respawning[i], 0);
                     
-                    s_log.Debug($"Respawned power-up with ID: {_respawning[i]}");
+                    Log.Debug($"Respawned power-up with ID: {_respawning[i]}");
                     _respawning.RemoveAt(i);
                 }
                 else

@@ -10,6 +10,7 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly static List<int> EmptyList = new List<int>(0);
         private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeerOperationHandler));
+        private readonly static ILog ReportLog = LogManager.GetLogger("Report");
 
         private readonly static PhotonServerLoadView _loadView = new PhotonServerLoadView
         {
@@ -163,7 +164,15 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnUpdatePing(GamePeer peer, ushort ping)
         {
-            peer.Actor.Info.Ping = (ushort)peer.RoundTripTime;
+            peer.Actor.Ping.Update(ping);
+            if (peer.Actor.Ping.FalsePositive >= 5)
+            {
+                ReportLog.Warn($"[Ping] OnUpdatePing False positive reached {peer.Actor.Cmid}");
+                peer.Disconnect();
+                return;
+            }
+
+            peer.Actor.Info.Ping = (ushort)peer.Actor.Ping.Value;
         }
 
         protected override void OnUpdateKeyState(GamePeer peer, byte state)

@@ -6,6 +6,7 @@ namespace UberStrok.Core
     public class ProjectileManager
     {
         private int _numExploded;
+        private int _numDestoryed;
         private int _numEmitted;
         private readonly HashSet<int> _projectiles;
 
@@ -20,8 +21,7 @@ namespace UberStrok.Core
         {
             _numExploded++;
 
-            var diff = Math.Abs(_numEmitted - _numExploded);
-            if (diff > 50)
+            if (_numExploded > 50)
                 FalsePositive++;
         }
 

@@ -17,6 +17,7 @@ namespace UberStrok.Realtime.Server.Game
             Damages = new DamageEventView();
             Weapons = new WeaponManager();
             Projectiles = new ProjectileManager();
+            Ping = new PingManager();
         }
 
         public TeamID Team
@@ -39,6 +40,7 @@ namespace UberStrok.Realtime.Server.Game
         public string PlayerName => Info.PlayerName;
         public MemberAccessLevel AccessLevel => Info.AccessLevel;
 
+        public PingManager Ping { get; }
         public ProjectileManager Projectiles { get; }
         public WeaponManager Weapons { get; }
         public DamageEventView Damages { get; }

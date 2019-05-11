@@ -16,7 +16,6 @@ namespace UberStrok.Realtime.Server.Game
 
         public HashSet<int> KnownActors { get; set; }
 
-        public ushort Ping { get; set; }
         public GameActor Actor { get; set; }
 
         public BaseGameRoom Room { get; set; }

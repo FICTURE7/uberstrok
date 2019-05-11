@@ -9,6 +9,8 @@ namespace UberStrok.Core
         public int FalsePositive { get; private set; }
         public UberStrikeItemWeaponView View { get; }
 
+        public bool CanTrigger => (DateTime.UtcNow - _lastShot).TotalMilliseconds >= View.RateOfFire;
+
         private DateTime _lastShot;
 
         public Weapon(UberStrikeItemWeaponView view)
@@ -19,14 +21,9 @@ namespace UberStrok.Core
             _lastShot = DateTime.UtcNow;
         }
 
-        public bool CanTrigger()
-        {
-            return (DateTime.UtcNow - _lastShot).TotalMilliseconds >= View.RateOfFire;
-        }
-
         public void Trigger()
         {
-            if (CanTrigger())
+            if (CanTrigger)
                 _lastShot = DateTime.UtcNow;
             else
                 FalsePositive++;
