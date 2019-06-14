@@ -11,11 +11,14 @@ namespace UberStrok.WebServices.Core
 
         public override int OnBan(string serviceAuth, int cmid)
         {
+            if (Context.Configuration.ServiceAuth != serviceAuth)
+                return 1;
+
             Context.Users.Db.BanCmid(cmid);
 
             var session = Context.Users.GetSession(cmid);
             if (session == null)
-                return 0;
+                return 1;
 
             if (session.Ip != null)
                 Context.Users.Db.BanIp(session.Ip);
