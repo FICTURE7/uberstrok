@@ -1,51 +1,59 @@
-﻿namespace UberStrok.Realtime.Server.Game
+﻿using System;
+using UberStrok.Core;
+
+namespace UberStrok.Realtime.Server.Game
 {
     public class PlayingPeerState : PeerState
     {
-        public double _timer;
+        private Timer _overflowTimer;
 
         public PlayingPeerState(GamePeer peer) : base(peer)
         {
-            // Space
+            /* Space */
         }
 
         public override void OnEnter()
         {
-            /* 
-                MatchStart event changes the match state of the client to match running,
-                which in turn changes the player state to playing.
+            _overflowTimer = new Timer(Room.Loop, TimeSpan.FromSeconds(1));
+            _overflowTimer.Tick += OnOverflowTick;
 
-                The client does not care about the roundNumber apparently (in TeamDeathMatch atleast).
+            /* 
+             * MatchStart event changes the match state of the client to match
+             * running, which in turn changes the player state to playing.
+             *
+             * The client does not care about the roundNumber apparently (in
+             * TeamDeathMatch atleast).
              */
             Peer.Events.Game.SendMatchStart(Room.RoundNumber, Room.EndTime);
             /*
-                This is to reset the top scoreboard to not display "STARTS IN".
+             * This is to reset the top scoreboard to not display "STARTS IN".
              */
             Peer.Events.Game.SendUpdateRoundScore(Room.RoundNumber, 0, 0);
         }
 
-        public override void OnResume()
-        {
-            _timer = 0;
-        }
-
         public override void OnUpdate()
         {
-            double dt = Peer.Room.Loop.DeltaTime.TotalMilliseconds;
-            if (Peer.Actor.Info.Health > 100 || Peer.Actor.Info.ArmorPoints > Peer.Actor.Info.ArmorPointCapacity)
-                _timer += dt;
-            else
-                _timer = 0;
+            int healthCapacity = 100;
+            int armorCapacity = Peer.Actor.Info.ArmorPointCapacity;
 
-            if (_timer > 1000)
-            {
-                if (Peer.Actor.Info.Health > 100)
-                    Peer.Actor.Info.Health -= 1;
-                if (Peer.Actor.Info.ArmorPoints > Peer.Actor.Info.ArmorPointCapacity)
-                    Peer.Actor.Info.ArmorPoints -= 1;
+            _overflowTimer.IsEnabled = Peer.Actor.Info.Health > healthCapacity || Peer.Actor.Info.ArmorPoints > armorCapacity;
+            _overflowTimer.Update();
+        }
 
-                _timer -= 1000;
-            }
+        public override void OnResume()
+        {
+            _overflowTimer.Reset();
+        }
+
+        private void OnOverflowTick()
+        {
+            int healthCapacity = 100;
+            int armorCapacity = Peer.Actor.Info.ArmorPointCapacity;
+
+            if (Peer.Actor.Info.Health > healthCapacity)
+                Peer.Actor.Info.Health--;
+            if (Peer.Actor.Info.ArmorPoints > armorCapacity)
+                Peer.Actor.Info.ArmorPoints--;
         }
     }
 }

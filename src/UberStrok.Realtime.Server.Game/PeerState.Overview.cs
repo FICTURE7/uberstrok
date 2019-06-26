@@ -9,7 +9,7 @@ namespace UberStrok.Realtime.Server.Game
     {
         public OverviewPeerState(GamePeer peer) : base(peer)
         {
-            // Space
+            /* Space */
         }
 
         public override void OnEnter()
@@ -21,6 +21,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 var allPlayers = new List<GameActorInfoView>(players.Count);
                 var allPositions = new List<PlayerMovement>(players.Count);
+
                 foreach (var player in players)
                 {
                     allPlayers.Add(player.Actor.Info.View);

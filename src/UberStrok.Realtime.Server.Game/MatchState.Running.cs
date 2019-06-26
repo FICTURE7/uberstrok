@@ -19,7 +19,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public RunningMatchState(BaseGameRoom room) : base(room)
         {
-            // Space
+            /* Space */
         }
 
         public override void OnEnter()

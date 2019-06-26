@@ -1,34 +1,37 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using UberStrok.Core;
 using UberStrok.Core.Common;
 
 namespace UberStrok.Realtime.Server.Game
 {
     public class CountdownMatchState : MatchState
     {
-        private double _countdown;
-        private double _countdownOld;
-        private DateTime _countdownEndTime;
+        private readonly Countdown _countdown;
 
         public CountdownMatchState(BaseGameRoom room) : base(room)
         {
-            // Space
+            _countdown = new Countdown(Room.Loop, 5, 0);
+            _countdown.Counted += OnCountdownCounted;
+            _countdown.Completed += OnCountdownCompleted;
         }
 
         public override void OnEnter()
         {
             Room.PlayerJoined += OnPlayerJoined;
 
-            /* TODO: Allow user to set the countdown timer duration in a config or something. */
-            _countdown = 5 * 1000;
-            _countdownEndTime = DateTime.UtcNow.AddSeconds(_countdown);
-
             /* 
-                Prepare all players by placing them in a 'prepare for next round state',
-                and spawning them.
+             * Prepare all players by placing them in a 'prepare for next round state',
+             * and spawning them.
              */
             foreach (var player in Room.Players)
                 PrepareAndSpawnPlayer(player);
+
+            _countdown.Start();
+        }
+
+        public override void OnUpdate()
+        {
+            _countdown.Update();
         }
 
         public override void OnExit()
@@ -36,35 +39,23 @@ namespace UberStrok.Realtime.Server.Game
             Room.PlayerJoined -= OnPlayerJoined;
         }
 
-        public override void OnUpdate()
+        private void OnCountdownCounted(int count)
         {
-            _countdownOld = _countdown;
-            _countdown -= Room.Loop.DeltaTime.TotalMilliseconds;
+            foreach (var player in Room.Players)
+                player.Events.Game.SendMatchStartCountdown(count);
+        }
 
-            var countdownOldRound = (int)Math.Round(_countdownOld / 1000);
-            var countdownRound = (int)Math.Round(_countdown / 1000);
-
-            if (countdownOldRound < 0)
-            {
-                /* Make sure the countdown thingy is gone. */
-                foreach (var player in Room.Players)
-                    player.Events.Game.SendMatchStartCountdown(0);
-
-                Room.State.Set(Id.Running);
-            }
-            else if (countdownOldRound > countdownRound)
-            {
-                foreach (var player in Room.Players)
-                    player.Events.Game.SendMatchStartCountdown(countdownOldRound);
-            }
+        private void OnCountdownCompleted()
+        {
+            Room.State.Set(Id.Running);
         }
 
         private void OnPlayerJoined(object sender, PlayerJoinedEventArgs e)
         {
-            /* Set players who just joined in the 'prepare for next round' state */
             PrepareAndSpawnPlayer(e.Player);
         }
 
+        /* Set the GamePeer in the `prepare for next round` state. */
         private void PrepareAndSpawnPlayer(GamePeer player)
         {
             player.Actor.Info.Health = 100;
@@ -80,8 +71,8 @@ namespace UberStrok.Realtime.Server.Game
             Debug.Assert(player.Actor.Info.PlayerId == player.Actor.Movement.Number);
 
             /*
-                This prepares the client for the next round and enables match start
-                countdown thingy.
+             * This prepares the client for the next round and enables match start
+             * countdown thingy.
              */
             player.State.Set(PeerState.Id.Countdown);
 
@@ -91,8 +82,8 @@ namespace UberStrok.Realtime.Server.Game
                 if (!otherPeer.KnownActors.Contains(player.Actor.Cmid))
                 {
                     /*
-                        PlayerJoinedGame event tells the client to initiate the character and register it
-                        in its player list and update the team player number counts.
+                     * PlayerJoinedGame event tells the client to initiate the character and register it
+                     * in its player list and update the team player number counts.
                      */
                     otherPeer.Events.Game.SendPlayerJoinedGame(player.Actor.Info.View, movement);
                     otherPeer.KnownActors.Add(player.Actor.Cmid);

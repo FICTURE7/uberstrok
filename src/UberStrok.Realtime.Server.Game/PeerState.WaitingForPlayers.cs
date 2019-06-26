@@ -4,7 +4,7 @@
     {
         public WaitingForPlayersPeerState(GamePeer peer) : base(peer)
         {
-            // Space
+            /* Space */
         }
 
         public override void OnEnter()

@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\BaseGamePeerOperationHandler.cs" />
-    <Compile Include="Core\GameRoomActions.cs" />
     <Compile Include="Core\BaseGameRoomOperationHandler.cs" />
     <Compile Include="PeerState.Countdown.cs" />
     <Compile Include="Core\GameActor.cs" />

@@ -9,7 +9,7 @@ namespace UberStrok.Realtime.Server.Game
     {
         public WaitingForPlayersMatchState(BaseGameRoom room) : base(room)
         {
-            // Space
+            /* Space */
         }
 
         public override void OnEnter()
@@ -30,6 +30,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             var deltas = new List<GameActorInfoDeltaView>(Room.Peers.Count);
             var position = new List<PlayerMovement>(Room.Players.Count);
+
             foreach (var player in Room.Players)
             {
                 position.Add(player.Actor.Movement);
@@ -53,7 +54,9 @@ namespace UberStrok.Realtime.Server.Game
 
             /* If we got more than 1 player we start the countdown. */
             if (Room.Players.Count > 1)
+            {
                 Room.State.Set(Id.Countdown);
+            }
             else
             {
                 /* Let all peers know that the client has joined. */

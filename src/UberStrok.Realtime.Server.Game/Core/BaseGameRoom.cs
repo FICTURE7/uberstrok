@@ -78,7 +78,10 @@ namespace UberStrok.Realtime.Server.Game
             Peers = _peers.AsReadOnly();
             Players = _players.AsReadOnly();
 
-            /* Using a high tick rate to push updates to the client faster. */
+            /* 
+             * Using a high tick rate to push updates to the client faster.
+             * But the player movements are still sent at 10 tps.
+             */
             Loop = new Loop(64);
 
             Shop = new ShopManager();
@@ -187,18 +190,16 @@ namespace UberStrok.Realtime.Server.Game
                     peer.Handlers.Add(this);
 
                     /* 
-                     * This prepares the client for the game room and sets the client
-                     * state to 'pre-game'.
+                     * This prepares the client for the game room and sets the
+                     * client state to `overview`.
                      */
                     peer.Events.SendRoomEntered(View);
 
                     /* 
-                     * Set the player in the overview state. Which also sends all player
-                     * data in the room to the peer.
+                     * Set the player in the overview state. Which also sends
+                     * all player data in the room to the peer.
                      */
                     peer.State.Set(PeerState.Id.Overview);
-
-                    Log.Info("Set peer state to Overview");
 
                     _peers.Add(peer);
                 }

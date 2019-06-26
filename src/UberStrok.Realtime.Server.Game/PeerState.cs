@@ -6,16 +6,6 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract class PeerState : State
     {
-        public PeerState(GamePeer peer)
-        {
-            Peer = peer ?? throw new ArgumentNullException(nameof(peer));
-            Log = LogManager.GetLogger(GetType().Name);
-        }
-
-        protected ILog Log { get; }
-        protected GamePeer Peer { get; }
-        protected BaseGameRoom Room => Peer.Room;
-
         public enum Id
         {
             None,
@@ -24,6 +14,16 @@ namespace UberStrok.Realtime.Server.Game
             Countdown,
             Playing,
             Killed
+        }
+
+        protected ILog Log { get; }
+        protected GamePeer Peer { get; }
+        protected BaseGameRoom Room => Peer.Room;
+
+        public PeerState(GamePeer peer)
+        {
+            Peer = peer ?? throw new ArgumentNullException(nameof(peer));
+            Log = LogManager.GetLogger(GetType().Name);
         }
     }
 }

@@ -4,7 +4,7 @@
     {
         public CountdownPeerState(GamePeer peer) : base(peer)
         {
-            // Space
+            /* Space */
         }
 
         public override void OnEnter()
