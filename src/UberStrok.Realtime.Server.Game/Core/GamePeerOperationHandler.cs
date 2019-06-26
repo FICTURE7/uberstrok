@@ -26,10 +26,10 @@ namespace UberStrok.Realtime.Server.Game
                 if (!peer.HeartbeatCheck(responseHash))
                     peer.SendError();
             }
-            catch (Exception ex)
+            catch
             {
-                Log.Error("Exception while checking heartbeat", ex);
                 peer.SendError();
+                throw;
             }
         }
 
@@ -180,7 +180,7 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnUpdateKeyState(GamePeer peer, byte state)
         {
-            // Space
+            /* Space */
         }
 
         protected override void OnUpdateLoadout(GamePeer peer)
@@ -193,7 +193,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        private bool NeedPassword(BaseGameRoom room, UberstrikeUserView user)
+        private static bool NeedPassword(BaseGameRoom room, UberstrikeUserView user)
         {
             return room.View.IsPasswordProtected && user.CmuneMemberView.PublicProfile.AccessLevel <= MemberAccessLevel.Moderator;
         }

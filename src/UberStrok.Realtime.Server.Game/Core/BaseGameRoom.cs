@@ -14,7 +14,9 @@ namespace UberStrok.Realtime.Server.Game
         private byte _nextPlayer;
         private string _password;
 
-        /* List of peers connected to the game room (not necessarily playing). */
+        /* 
+         * List of peers connected to the game room (not necessarily playing).
+         */
         private readonly List<GamePeer> _peers;
         /* List of peers connected & playing. */
         private readonly List<GamePeer> _players;
@@ -26,9 +28,12 @@ namespace UberStrok.Realtime.Server.Game
 
         public Loop Loop { get; }
         public GameRoomDataView View { get; }
+
         public IReadOnlyList<GamePeer> Peers { get; }
         public IReadOnlyList<GamePeer> Players { get; }
+
         public StateMachine<MatchState.Id> State { get; }
+
         public ShopManager Shop { get; }
         public SpawnManager Spawns { get; }
         public PowerUpManager PowerUps { get; }
@@ -39,13 +44,16 @@ namespace UberStrok.Realtime.Server.Game
         public event EventHandler<PlayerLeftEventArgs> PlayerLeft;
 
         public int RoundNumber { get; set; }
-        /* Time in system ticks when the round ends.*/
+
         public int EndTime { get; set; }
 
         public bool IsRunning => State.Current == MatchState.Id.Running;
         public bool IsWaitingForPlayers => State.Current == MatchState.Id.WaitingForPlayers;
 
-        /* Room ID but we call it number since we already defined Id & thats how UberStrike calls it too. */
+        /* 
+         * Room ID but we call it number since we already defined Id &
+         * thats how UberStrike calls it too. 
+         */
         public int Number
         {
             get => View.Number;
@@ -57,7 +65,10 @@ namespace UberStrok.Realtime.Server.Game
             get => _password;
             set
             {
-                /* If the password is null or empty it means its not password protected. */
+                /* 
+                 * If the password is null or empty it means its not
+                 * password protected. 
+                 */
                 View.IsPasswordProtected = !string.IsNullOrEmpty(value);
                 _password = value;
             }
@@ -106,110 +117,7 @@ namespace UberStrok.Realtime.Server.Game
                 throw new ArgumentNullException(nameof(peer));
 
             Debug.Assert(peer.Room == null, "GamePeer is joining room, but its already in another room.");
-
-            Enqueue(() => {
-                Log.Info("Peer joining room");
-                try
-                {
-                    /* 
-                     * If a peer with the same cmid is somehow in the room, 
-                     * disconnect him.
-                     */
-                    foreach (var otherPeer in Peers)
-                    {
-                        if (otherPeer.Actor.Cmid == peer.Member.CmuneMemberView.PublicProfile.Cmid)
-                        {
-                            Leave(otherPeer);
-                            break;
-                        }
-                    }
-
-                    var publicProfile = peer.Member.CmuneMemberView.PublicProfile;
-                    var actorView = new GameActorInfoView
-                    {
-                        Channel = ChannelType.Steam,
-                        PlayerState = PlayerStates.None,
-                        TeamID = TeamID.NONE,
-                        Health = 100,
-                        ArmorPointCapacity = 0,
-                        ArmorPoints = 0,
-                        Deaths = 0,
-                        Kills = 0,
-                        Level = 1,
-                        Ping = (ushort)(peer.RoundTripTime / 2),
-
-                        Cmid = publicProfile.Cmid,
-                        ClanTag = publicProfile.GroupTag,
-                        AccessLevel = publicProfile.AccessLevel,
-                        PlayerName = publicProfile.Name,
-                    };
-
-                    /* Set the gears of the character. */
-                    /* Holo */
-                    actorView.Gear[0] = peer.Loadout.Webbing;
-                    actorView.Gear[1] = peer.Loadout.Head;
-                    actorView.Gear[2] = peer.Loadout.Face;
-                    actorView.Gear[3] = peer.Loadout.Gloves;
-                    actorView.Gear[4] = peer.Loadout.UpperBody;
-                    actorView.Gear[5] = peer.Loadout.LowerBody;
-                    actorView.Gear[6] = peer.Loadout.Boots;
-
-                    /* Sets the weapons of the character. */
-                    actorView.Weapons[0] = peer.Loadout.MeleeWeapon;
-                    actorView.Weapons[1] = peer.Loadout.Weapon1;
-                    actorView.Weapons[2] = peer.Loadout.Weapon2;
-                    actorView.Weapons[3] = peer.Loadout.Weapon3;
-
-                    /* Set Quick items of the character. */
-                    actorView.QuickItems[0] = peer.Loadout.QuickItem1;
-                    actorView.QuickItems[0] = peer.Loadout.QuickItem2;
-                    actorView.QuickItems[0] = peer.Loadout.QuickItem3;
-
-                    var number = 0;
-                    var actor = new GameActor(actorView);
-
-                    /* TODO: Check for possible overflows. */
-                    number = _nextPlayer++;
-
-                    peer.Room = this;
-                    peer.Actor = actor;
-                    peer.Actor.Number = number;
-
-                    var weaponViews = new List<UberStrikeItemWeaponView>();
-                    foreach (var itemId in actorView.Weapons)
-                    {
-                        if (itemId == 0)
-                            continue;
-
-                        weaponViews.Add(Shop.WeaponItems[itemId]);
-                    }
-
-                    peer.Actor.Weapons.Update(weaponViews);
-                    peer.Actor.Ping.Reset();
-                    peer.UpdateArmorCapacity();
-                    peer.Handlers.Add(this);
-
-                    /* 
-                     * This prepares the client for the game room and sets the
-                     * client state to `overview`.
-                     */
-                    peer.Events.SendRoomEntered(View);
-
-                    /* 
-                     * Set the player in the overview state. Which also sends
-                     * all player data in the room to the peer.
-                     */
-                    peer.State.Set(PeerState.Id.Overview);
-
-                    _peers.Add(peer);
-                }
-                catch (Exception ex)
-                {
-                    Leave(peer);
-                    peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
-                    Log.Error("Failed to join room", ex);
-                }
-            });
+            Enqueue(() => JoinWork(peer));
         }
 
         public void Leave(GamePeer peer)
@@ -219,34 +127,13 @@ namespace UberStrok.Realtime.Server.Game
 
             Debug.Assert(peer.Room != null, "GamePeer is leaving room, but its not in a room.");
             Debug.Assert(peer.Room == this, "GamePeer is leaving room, but its not leaving the correct room.");
-
-            Enqueue(() => {
-                /* Let other peers know that the peer has left the room. */
-                foreach (var otherPeer in Peers)
-                {
-                    otherPeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
-                    otherPeer.KnownActors.Remove(peer.Actor.Cmid);
-                }
-
-                _peers.Remove(peer);
-                _players.Remove(peer);
-
-                View.ConnectedPlayers = Players.Count;
-
-                /* Set peer state to none, and clean up. */
-                peer.State.Set(PeerState.Id.None);
-                peer.Handlers.Remove(Id);
-                peer.KnownActors.Clear();
-                peer.Actor = null;
-                peer.Room = null;
-            });
+            Enqueue(() => LeaveWork(peer));
         }
 
         private void OnTick()
         {
             State.Update();
 
-            _failedPeers.Clear();
             foreach (var peer in Peers)
             {
                 if (peer.HasError)
@@ -259,20 +146,151 @@ namespace UberStrok.Realtime.Server.Game
                 catch (Exception ex)
                 {
                     /* NOTE: This should never happen, but just incase. */
-                    Log.Error("Failed to update peer.", ex);
+                    Log.Error("Failed to update peer", ex);
                     _failedPeers.Add(peer);
                 }
             }
 
             foreach (var peer in _failedPeers)
                 Leave(peer);
+
+            _failedPeers.Clear();
         }
 
         private void OnTickFailed(Exception e)
         {
-            Log.Error("Failed to tick game loop.", e);
+            Log.Error("Failed to tick game loop", e);
         }
 
+        /* This is executed on the game room loop thread. */
+        private void JoinWork(GamePeer peer)
+        {
+            try
+            {
+                /* 
+                 * If a peer with the same cmid is somehow in the room, 
+                 * disconnect him.
+                 */
+                foreach (var otherPeer in Peers)
+                {
+                    if (otherPeer.Actor.Cmid == peer.Member.CmuneMemberView.PublicProfile.Cmid)
+                    {
+                        LeaveWork(otherPeer);
+                        break;
+                    }
+                }
+
+                var publicProfile = peer.Member.CmuneMemberView.PublicProfile;
+                var actorView = new GameActorInfoView
+                {
+                    Channel = ChannelType.Steam,
+                    PlayerState = PlayerStates.None,
+                    TeamID = TeamID.NONE,
+                    Health = 100,
+                    ArmorPointCapacity = 0,
+                    ArmorPoints = 0,
+                    Deaths = 0,
+                    Kills = 0,
+                    Level = 1,
+                    Ping = (ushort)(peer.RoundTripTime / 2),
+
+                    Cmid = publicProfile.Cmid,
+                    ClanTag = publicProfile.GroupTag,
+                    AccessLevel = publicProfile.AccessLevel,
+                    PlayerName = publicProfile.Name,
+                };
+
+                /* Set the gears of the character. */
+                /* Holo */
+                actorView.Gear[0] = peer.Loadout.Webbing;
+                actorView.Gear[1] = peer.Loadout.Head;
+                actorView.Gear[2] = peer.Loadout.Face;
+                actorView.Gear[3] = peer.Loadout.Gloves;
+                actorView.Gear[4] = peer.Loadout.UpperBody;
+                actorView.Gear[5] = peer.Loadout.LowerBody;
+                actorView.Gear[6] = peer.Loadout.Boots;
+
+                /* Sets the weapons of the character. */
+                actorView.Weapons[0] = peer.Loadout.MeleeWeapon;
+                actorView.Weapons[1] = peer.Loadout.Weapon1;
+                actorView.Weapons[2] = peer.Loadout.Weapon2;
+                actorView.Weapons[3] = peer.Loadout.Weapon3;
+
+                /* Set Quick items of the character. */
+                actorView.QuickItems[0] = peer.Loadout.QuickItem1;
+                actorView.QuickItems[0] = peer.Loadout.QuickItem2;
+                actorView.QuickItems[0] = peer.Loadout.QuickItem3;
+
+                var number = 0;
+                var actor = new GameActor(actorView);
+
+                /* TODO: Check for possible overflows. */
+                number = _nextPlayer++;
+
+                peer.Room = this;
+                peer.Actor = actor;
+                peer.Actor.Number = number;
+
+                var weaponViews = new List<UberStrikeItemWeaponView>();
+                foreach (var itemId in actorView.Weapons)
+                {
+                    if (itemId == 0)
+                        continue;
+
+                    weaponViews.Add(Shop.WeaponItems[itemId]);
+                }
+
+                peer.Actor.Weapons.Update(weaponViews);
+                peer.Actor.Ping.Reset();
+                peer.UpdateArmorCapacity();
+                peer.Handlers.Add(this);
+
+                /* 
+                 * This prepares the client for the game room and sets the
+                 * client state to `overview`.
+                 */
+                peer.Events.SendRoomEntered(View);
+
+                /* 
+                 * Set the player in the overview state. Which also sends
+                 * all player data in the room to the peer.
+                 */
+                peer.State.Set(PeerState.Id.Overview);
+
+                _peers.Add(peer);
+            }
+            catch (Exception ex)
+            {
+                Leave(peer);
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
+                Log.Error("Failed to join room", ex);
+            }
+        }
+
+        /* This is executed on the game room loop thread. */
+        private void LeaveWork(GamePeer peer)
+        {
+            /* Let other peers know that the peer has left the room. */
+            foreach (var otherPeer in Peers)
+            {
+                otherPeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
+                otherPeer.KnownActors.Remove(peer.Actor.Cmid);
+            }
+
+            _peers.Remove(peer);
+            _players.Remove(peer);
+
+            View.ConnectedPlayers = Players.Count;
+
+            /* Set peer state to none, and clean up. */
+            peer.State.Set(PeerState.Id.None);
+            peer.Handlers.Remove(Id);
+            peer.KnownActors.Clear();
+            peer.Actor = null;
+            peer.Room = null;
+        }
+
+        /* Determines if the vicitim can get damaged by the attcker. */
         protected abstract bool CanDamage(GamePeer victim, GamePeer attacker);
 
         /* Does damage and returns true if victim is killed; otherwise false. */
