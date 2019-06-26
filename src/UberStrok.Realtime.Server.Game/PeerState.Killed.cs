@@ -5,10 +5,15 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class KilledPeerState : PeerState
     {
-        private readonly Countdown _respawnCountdown;
-        private readonly Countdown _disconnectCountdown;
+        private Countdown _respawnCountdown;
+        private Countdown _disconnectCountdown;
 
         public KilledPeerState(GamePeer peer) : base(peer)
+        {
+            /* Space */
+        }
+
+        public sealed override void OnEnter()
         {
             _respawnCountdown = new Countdown(Room.Loop, 5, 0);
             _respawnCountdown.Counted += OnRespawnCounted;
@@ -17,10 +22,7 @@ namespace UberStrok.Realtime.Server.Game
             _disconnectCountdown = new Countdown(Room.Loop, 60, 0);
             _disconnectCountdown.Counted += OnDisconnectCounted;
             _disconnectCountdown.Completed += OnDisconnectCompleted;
-        }
 
-        public sealed override void OnEnter()
-        {
             _respawnCountdown.Start();
         }
 
