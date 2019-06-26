@@ -92,9 +92,6 @@ namespace UberStrok.Realtime.Server.Game
                     delta.UpdateMask();
                     deltas.Add(delta);
                 }
-
-                /* Tick the player state. */
-                player.State.Update();
             }
 
             /* Send movement and deltas data to all connected peers, including peers in 'overview' state. */
@@ -103,6 +100,9 @@ namespace UberStrok.Realtime.Server.Game
                 otherPeer.Events.Game.SendAllPlayerDeltas(deltas);
                 if (updatePositions)
                     otherPeer.Events.Game.SendAllPlayerPositions(position, _frame);
+
+                /* Tick the player state. */
+                otherPeer.State.Update();
             }
 
             /* Wipe the delta changes. */
