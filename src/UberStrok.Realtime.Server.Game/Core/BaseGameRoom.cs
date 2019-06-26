@@ -26,7 +26,6 @@ namespace UberStrok.Realtime.Server.Game
 
         public Loop Loop { get; }
         public GameRoomDataView View { get; }
-        public GameRoomActions Actions { get; }
         public IReadOnlyList<GamePeer> Peers { get; }
         public IReadOnlyList<GamePeer> Players { get; }
         public StateMachine<MatchState.Id> State { get; }
@@ -81,7 +80,6 @@ namespace UberStrok.Realtime.Server.Game
 
             /* Using a high tick rate to push updates to the client faster. */
             Loop = new Loop(64);
-            Actions = new GameRoomActions(this);
 
             Shop = new ShopManager();
             Spawns = new SpawnManager();
@@ -223,7 +221,11 @@ namespace UberStrok.Realtime.Server.Game
 
             Enqueue(() => {
                 /* Let other peers know that the peer has left the room. */
-                Actions.PlayerLeft(peer);
+                foreach (var otherPeer in Peers)
+                {
+                    otherPeer.Events.Game.SendPlayerLeftGame(peer.Actor.Cmid);
+                    otherPeer.KnownActors.Remove(peer.Actor.Cmid);
+                }
 
                 _peers.Remove(peer);
                 _players.Remove(peer);
