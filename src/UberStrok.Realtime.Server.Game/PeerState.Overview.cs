@@ -1,5 +1,4 @@
-﻿using log4net;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
@@ -8,8 +7,6 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class OverviewPeerState : PeerState
     {
-        private readonly static ILog s_log = LogManager.GetLogger(nameof(OverviewPeerState));
-
         public OverviewPeerState(GamePeer peer) : base(peer)
         {
             // Space
@@ -38,17 +35,17 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        public override void OnUpdate()
+        {
+            // Space
+        }
+
         public override void OnResume()
         {
             // Space
         }
 
         public override void OnExit()
-        {
-            // Space
-        }
-
-        public override void OnUpdate()
         {
             // Space
         }

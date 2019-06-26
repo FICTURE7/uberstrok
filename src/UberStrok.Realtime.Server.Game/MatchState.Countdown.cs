@@ -1,5 +1,4 @@
-﻿using log4net;
-using System;
+﻿using System;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 
@@ -7,8 +6,6 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class CountdownMatchState : MatchState
     {
-        private readonly static ILog s_log = LogManager.GetLogger(nameof(CountdownMatchState));
-
         private double _countdown;
         private double _countdownOld;
         private DateTime _countdownEndTime;
@@ -109,7 +106,7 @@ namespace UberStrok.Realtime.Server.Game
                 otherPeer.Events.Game.SendPlayerRespawned(player.Actor.Cmid, movement.Position, movement.HorizontalRotation);
             }
 
-            s_log.Debug($"Spawned: {player.Actor.Cmid} at: {point}");
+            Log.Debug($"Spawned: {player.Actor.Cmid} at: {point}");
         }
     }
 }

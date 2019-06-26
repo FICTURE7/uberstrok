@@ -1,21 +1,19 @@
-﻿using System;
+﻿using log4net;
+using System;
 using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
     public abstract class MatchState : State
     {
-        private readonly BaseGameRoom _room;
-
         public MatchState(BaseGameRoom room)
         {
-            if (room == null)
-                throw new ArgumentNullException(nameof(room));
-
-            _room = room;
+            Room = room ?? throw new ArgumentNullException(nameof(room));
+            Log = LogManager.GetLogger(GetType().Name);
         }
 
-        protected BaseGameRoom Room => _room;
+        protected ILog Log { get; }
+        protected BaseGameRoom Room { get; }
 
         public enum Id
         {

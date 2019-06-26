@@ -1,22 +1,20 @@
-﻿using System;
+﻿using log4net;
+using System;
 using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
     public abstract class PeerState : State
     {
-        private readonly GamePeer _peer;
-
         public PeerState(GamePeer peer)
         {
-            if (peer == null)
-                throw new ArgumentNullException(nameof(peer));
-
-            _peer = peer;
+            Peer = peer ?? throw new ArgumentNullException(nameof(peer));
+            Log = LogManager.GetLogger(GetType().Name);
         }
 
-        protected GamePeer Peer => _peer;
-        protected BaseGameRoom Room => _peer.Room;
+        protected ILog Log { get; }
+        protected GamePeer Peer { get; }
+        protected BaseGameRoom Room => Peer.Room;
 
         public enum Id
         {

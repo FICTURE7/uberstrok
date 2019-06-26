@@ -1,5 +1,4 @@
-﻿using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
@@ -9,8 +8,6 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class RunningMatchState : MatchState
     {
-        private readonly static ILog s_log = LogManager.GetLogger(nameof(RunningMatchState));
-
         /* 
          * Current tick we're in.
          * 
