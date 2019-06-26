@@ -34,20 +34,5 @@ namespace UberStrok.Realtime.Server.Game
                 Peer.Events.Game.SendAllPlayers(allPlayers, allPositions, 0);
             }
         }
-
-        public override void OnUpdate()
-        {
-            // Space
-        }
-
-        public override void OnResume()
-        {
-            // Space
-        }
-
-        public override void OnExit()
-        {
-            // Space
-        }
     }
 }

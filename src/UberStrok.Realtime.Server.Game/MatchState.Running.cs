@@ -38,11 +38,6 @@ namespace UberStrok.Realtime.Server.Game
             Room.RoundNumber++;
         }
 
-        public override void OnResume()
-        {
-            // Space
-        }
-
         public override void OnExit()
         {
             Room.PlayerJoined -= OnPlayerJoined;

@@ -11,20 +11,5 @@
         {
             Peer.Events.Game.SendWaitingForPlayer();
         }
-
-        public override void OnResume()
-        {
-            // Space
-        }
-
-        public override void OnExit()
-        {
-            // Space
-        }
-
-        public override void OnUpdate()
-        {
-            // Space
-        }
     }
 }

@@ -19,11 +19,6 @@ namespace UberStrok.Realtime.Server.Game
             Room.PlayerRespawned += OnPlayerRespawned;
         }
 
-        public override void OnResume()
-        {
-            // Space
-        }
-
         public override void OnExit()
         {
             Room.PlayerJoined -= OnPlayerJoined;

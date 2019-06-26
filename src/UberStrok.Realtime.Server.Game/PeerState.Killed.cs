@@ -35,11 +35,6 @@ namespace UberStrok.Realtime.Server.Game
             Debug.Fail("KilledPeerState should never be resumed");
         }
 
-        public sealed override void OnExit()
-        {
-            /* Space */
-        }
-
         private void OnRespawnCounted(int count)
         {
             Peer.Events.Game.SendPlayerRespawnCountdown(count);

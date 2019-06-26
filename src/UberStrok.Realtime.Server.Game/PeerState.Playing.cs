@@ -29,11 +29,6 @@
             _timer = 0;
         }
 
-        public override void OnExit()
-        {
-            // Space
-        }
-
         public override void OnUpdate()
         {
             double dt = Peer.Room.Loop.DeltaTime.TotalMilliseconds;
