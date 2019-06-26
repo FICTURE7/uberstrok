@@ -1,4 +1,5 @@
 ﻿using Photon.SocketServer;
+using System;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -32,7 +33,15 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override Peer OnCreatePeer(InitRequest initRequest)
         {
-            return new GamePeer(initRequest);
+            try
+            {
+                return new GamePeer(initRequest);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Failed to create GamePeer instance", ex);
+                return null;
+            }
         }
     }
 }

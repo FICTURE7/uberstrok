@@ -48,6 +48,7 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnGetServerLoad(GamePeer peer)
         {
+            Log.Debug("test");
             /* UberStrike does not care about this value, it uses its client side value. */
             _loadView.Latency = peer.RoundTripTime;
             _loadView.PeersConnected = GameApplication.Instance.PlayerCount;

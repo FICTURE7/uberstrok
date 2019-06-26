@@ -49,7 +49,7 @@
     <Compile Include="Core\BaseGamePeerOperationHandler.cs" />
     <Compile Include="Core\GameRoomActions.cs" />
     <Compile Include="Core\BaseGameRoomOperationHandler.cs" />
-    <Compile Include="CountdownPeerState.cs" />
+    <Compile Include="PeerState.Countdown.cs" />
     <Compile Include="Core\GameActor.cs" />
     <Compile Include="Core\GameActorInfo.cs" />
     <Compile Include="DeathMatchGameRoom.cs" />
@@ -62,17 +62,17 @@
     <Compile Include="Core\BaseGameRoom.cs" />
     <Compile Include="Core\GameRoomEvents.cs" />
     <Compile Include="Core\BaseGameRoom.Handler.cs" />
-    <Compile Include="CountdownMatchState.cs" />
-    <Compile Include="KilledPeerState.cs" />
-    <Compile Include="OverviewPeerState.cs" />
+    <Compile Include="MatchState.Countdown.cs" />
+    <Compile Include="PeerState.Killed.cs" />
+    <Compile Include="PeerState.Overview.cs" />
     <Compile Include="PeerState.cs" />
-    <Compile Include="PlayingPeerState.cs" />
+    <Compile Include="PeerState.Playing.cs" />
     <Compile Include="PowerUpManager.cs" />
-    <Compile Include="RunningMatchState.cs" />
-    <Compile Include="WaitingForPlayersMatchState.cs" />
+    <Compile Include="MatchState.Running.cs" />
+    <Compile Include="MatchState.WaitingForPlayers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeamDeathMatchGameRoom.cs" />
-    <Compile Include="WaitingForPlayersPeerState.cs" />
+    <Compile Include="PeerState.WaitingForPlayers.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UberStrok.Core.Common\UberStrok.Core.Common.csproj">

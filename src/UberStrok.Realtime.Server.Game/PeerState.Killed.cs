@@ -1,49 +1,68 @@
-﻿using System;
+﻿using System.Diagnostics;
+using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
     public class KilledPeerState : PeerState
     {
-        private double _countdown;
-        private double _countdownOld;
-        private DateTime _countdownEndTime;
+        private readonly Countdown _respawnCountdown;
+        private readonly Countdown _disconnectCountdown;
 
         public KilledPeerState(GamePeer peer) : base(peer)
         {
-            // Space
+            _respawnCountdown = new Countdown(Room.Loop, 5, 0);
+            _respawnCountdown.Counted += OnRespawnCounted;
+            _respawnCountdown.Completed += OnRespawnCompleted;
+
+            _disconnectCountdown = new Countdown(Room.Loop, 60, 0);
+            _disconnectCountdown.Counted += OnDisconnectCounted;
+            _disconnectCountdown.Completed += OnDisconnectCompleted;
         }
 
-        public override void OnEnter()
+        public sealed override void OnEnter()
         {
-            var now = DateTime.UtcNow;
-
-            /* TODO: Allow user to set the countdown timer duration in a config or something. */
-            _countdown = 5 * 1000;
-            _countdownEndTime = now.AddSeconds(_countdown);
+            _respawnCountdown.Start();
         }
 
-        public override void OnResume()
+        public sealed override void OnUpdate()
         {
-            // Space
+            _respawnCountdown.Update();
+            _disconnectCountdown.Update();
         }
 
-        public override void OnExit()
+        public sealed override void OnResume()
         {
-            // Space
+            Debug.Fail("KilledPeerState should never be resumed");
         }
 
-        public override void OnUpdate()
+        public sealed override void OnExit()
         {
-            var now = DateTime.UtcNow;
+            /* Space */
+        }
 
-            _countdownOld = _countdown;
-            _countdown -= Room.Loop.DeltaTime.TotalMilliseconds;
+        private void OnRespawnCounted(int count)
+        {
+            Peer.Events.Game.SendPlayerRespawnCountdown(count);
+        }
 
-            var countdownOldRound = (int)Math.Round(_countdownOld / 1000);
-            var countdownRound = (int)Math.Round(_countdown / 1000);
+        private void OnRespawnCompleted()
+        {
+            /* 
+             * Start disconnect countdown after the respawn countdown is done.
+             */
+            _disconnectCountdown.Start();
+        }
 
-            if (countdownOldRound > -1 && countdownOldRound > countdownRound)
-                Peer.Events.Game.SendPlayerRespawnCountdown(countdownOldRound);
+        private void OnDisconnectCounted(int count)
+        {
+            /* Start sending count after 10th countdown. */
+            if (count <= 10)
+                Peer.Events.Game.SendDisconnectCountdown(count);
+        }
+
+        private void OnDisconnectCompleted()
+        {
+            Peer.Disconnect();
         }
     }
 }

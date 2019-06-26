@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Threading;
 
 namespace UberStrok.Core
@@ -79,7 +78,7 @@ namespace UberStrok.Core
             _started = false;
 
             /* 
-             * Give the thread a chance to spin a couple of times to shutting
+             * Give the thread a chance to spin a couple of times to shut
              * down gracefully then kill if it does not.
              */
             if (!_thread.Join((int)Math.Ceiling(Interval * 3)))

@@ -104,6 +104,16 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        public void SendDisconnectCountdown(int countdown)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                Int32Proxy.Serialize(bytes, countdown);
+
+                SendEvent((byte)IGameRoomEventsType.DisconnectCountdown, bytes);
+            }
+        }
+
         public void SendPlayerKilled(int shooter, int target, UberStrikeItemClass weaponClass, ushort damage, BodyPart bodyPart, Vector3 direction)
         {
             using (var bytes = new MemoryStream())
