@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -10,18 +9,22 @@ namespace UberStrok.Realtime.Server.Game
         private readonly GameActorInfoView _view;
         private readonly GameActorInfoDeltaView _viewDelta;
 
-        public GameActorInfo(GameActorInfoView view)
+        public GameActorInfo()
         {
-            if (view == null)
-                throw new ArgumentNullException(nameof(view));
-
-            _view = view;
+            _view = new GameActorInfoView();
             _viewDelta = new GameActorInfoDeltaView();
         }
 
+        public bool IsAlive => !Is(PlayerStates.Dead);
+        public bool IsOnline => !Is(PlayerStates.Offline);
+        public bool IsSpectator => Is(PlayerStates.Spectator);
+        public bool IsShooting => Is(PlayerStates.Shooting);
+        public bool IsReady => Is(PlayerStates.Ready);
+        public int CurrentWeaponID => (Weapons == null || Weapons.Count <= CurrentWeaponSlot) ? 0 : Weapons[CurrentWeaponSlot];
+
         public int Cmid
         {
-            get { return _view.Cmid; }
+            get => _view.Cmid;
             set
             {
                 if (value != Cmid)
@@ -32,9 +35,29 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        public byte PlayerId
+        {
+            get => _view.PlayerId;
+            set
+            {
+                _viewDelta.PlayerId = value;
+
+                /* 
+                 * I don't think the client would like it, but whatever; should
+                 * also change the PlayerId associated with the 
+                 * `PlayerMovement` of the actor.
+                 */
+                if (value != PlayerId)
+                {
+                    _view.PlayerId = value;
+                    _viewDelta.Changes[GameActorInfoDeltaView.Keys.PlayerId] = value;
+                }
+            }
+        }
+
         public string PlayerName
         {
-            get { return _view.PlayerName; }
+            get => _view.PlayerName;
             set
             {
                 if (value != PlayerName)
@@ -47,7 +70,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public MemberAccessLevel AccessLevel
         {
-            get { return _view.AccessLevel; }
+            get => _view.AccessLevel;
             set
             {
                 if (value != AccessLevel)
@@ -60,7 +83,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public ChannelType Channel
         {
-            get { return _view.Channel; }
+            get => _view.Channel;
             set
             {
                 if (value != Channel)
@@ -73,7 +96,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public string ClanTag
         {
-            get { return _view.ClanTag; }
+            get => _view.ClanTag;
             set
             {
                 if (value != ClanTag)
@@ -86,7 +109,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public byte Rank
         {
-            get { return _view.Rank; }
+            get => _view.Rank;
             set
             {
                 if (value != Rank)
@@ -97,25 +120,9 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public byte PlayerId
-        {
-            get { return _view.PlayerId; }
-            set
-            {
-                _viewDelta.Id = value;
-
-                /* I don't think the client would like it, but whatever. */
-                if (value != PlayerId)
-                {
-                    _view.PlayerId = value;
-                    _viewDelta.Changes[GameActorInfoDeltaView.Keys.PlayerId] = value;
-                }
-            }
-        }
-
         public PlayerStates PlayerState
         {
-            get { return _view.PlayerState; }
+            get => _view.PlayerState;
             set
             {
                 if (value != PlayerState)
@@ -128,7 +135,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public short Health
         {
-            get { return _view.Health; }
+            get => _view.Health;
             set
             {
                 if (value != Health)
@@ -138,9 +145,10 @@ namespace UberStrok.Realtime.Server.Game
                 }
             }
         }
+
         public TeamID TeamID
         {
-            get { return _view.TeamID; }
+            get => _view.TeamID;
             set
             {
                 if (value != TeamID)
@@ -153,7 +161,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public int Level
         {
-            get { return _view.Level; }
+            get => _view.Level;
             set
             {
                 if (value != Level)
@@ -166,7 +174,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public ushort Ping
         {
-            get { return _view.Ping; }
+            get => _view.Ping;
             set
             {
                 if (value != Ping)
@@ -179,7 +187,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public byte CurrentWeaponSlot
         {
-            get { return _view.CurrentWeaponSlot; }
+            get => _view.CurrentWeaponSlot;
             set
             {
                 if (value != CurrentWeaponSlot)
@@ -192,7 +200,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public FireMode CurrentFiringMode
         {
-            get { return _view.CurrentFiringMode; }
+            get => _view.CurrentFiringMode;
             set
             {
                 if (value != CurrentFiringMode)
@@ -205,7 +213,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public byte ArmorPoints
         {
-            get { return _view.ArmorPoints; }
+            get => _view.ArmorPoints;
             set
             {
                 if (value != ArmorPoints)
@@ -218,7 +226,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public byte ArmorPointCapacity
         {
-            get { return _view.ArmorPointCapacity; }
+            get => _view.ArmorPointCapacity;
             set
             {
                 if (value != ArmorPointCapacity)
@@ -231,7 +239,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public Color SkinColor
         {
-            get { return _view.SkinColor; }
+            get => _view.SkinColor;
             set
             {
                 if (value != SkinColor)
@@ -244,7 +252,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public short Kills
         {
-            get { return _view.Kills; }
+            get => _view.Kills;
             set
             {
                 if (value != Kills)
@@ -257,7 +265,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public short Deaths
         {
-            get { return _view.Deaths; }
+            get => _view.Deaths;
             set
             {
                 if (value != Deaths)
@@ -270,7 +278,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public List<int> Weapons
         {
-            get { return _view.Weapons; }
+            get => _view.Weapons;
             set
             {
                 if (value != Weapons)
@@ -283,7 +291,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public List<int> Gear
         {
-            get { return _view.Gear; }
+            get => _view.Gear;
             set
             {
                 if (value != Gear)
@@ -296,7 +304,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public List<int> FunctionalItems
         {
-            get { return _view.FunctionalItems; }
+            get => _view.FunctionalItems;
             set
             {
                 if (value != FunctionalItems)
@@ -309,7 +317,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public List<int> QuickItems
         {
-            get { return _view.QuickItems; }
+            get => _view.QuickItems;
             set
             {
                 if (value != QuickItems)
@@ -322,7 +330,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public SurfaceType StepSound
         {
-            get { return _view.StepSound; }
+            get => _view.StepSound;
             set
             {
                 if (value != StepSound)
@@ -333,9 +341,24 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public int CurrentWeaponID => _view.CurrentWeaponID;
+        public bool Is(PlayerStates state)
+        {
+            return (byte)(PlayerState & state) == (byte)state;
+        }
 
-        public GameActorInfoDeltaView ViewDelta => _viewDelta;
-        public GameActorInfoView View => _view;
+        public float GetAbsorptionRate()
+        {
+            return 0.66f;
+        }
+
+        public GameActorInfoView GetView()
+        {
+            return _view;
+        }
+
+        public GameActorInfoDeltaView GetViewDelta()
+        {
+            return _viewDelta;
+        }
     }
 }

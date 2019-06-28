@@ -49,13 +49,21 @@ namespace UberStrok.Core
             _current?.OnExit();
 
             _states.Pop();
-            var stateId = _states.Peek();
-            var exists = _registeredStates.TryGetValue(stateId, out State state);
 
-            Debug.Assert(exists);
+            if (_states.Count > 0)
+            {
+                var stateId = _states.Peek();
+                var exists = _registeredStates.TryGetValue(stateId, out State state);
 
-            _current = state;
-            _current?.OnResume();
+                Debug.Assert(exists);
+
+                _current = state;
+                _current?.OnResume();
+            }
+            else
+            {
+                _current = null;
+            }
         }
 
         public void Reset()
@@ -64,9 +72,9 @@ namespace UberStrok.Core
                 Previous();
         }
 
-        public void Update()
+        public void Tick()
         {
-            _current?.OnUpdate();
+            _current?.OnTick();
         }
     }
 }

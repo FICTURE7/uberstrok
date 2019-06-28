@@ -12,7 +12,7 @@
             /* Space */
         }
 
-        public virtual void OnUpdate()
+        public virtual void OnTick()
         {
             /* Space */
         }

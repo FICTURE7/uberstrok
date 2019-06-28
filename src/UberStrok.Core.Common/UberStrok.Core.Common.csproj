@@ -35,6 +35,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AchievementType.cs" />
     <Compile Include="AvatarType.cs" />
     <Compile Include="BodyPart.cs" />
     <Compile Include="BundleCategoryType.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="FireMode.cs" />
     <Compile Include="GameFlags.cs" />
     <Compile Include="GameModeType.cs" />
+    <Compile Include="GearSlotType.cs" />
     <Compile Include="ItemPropertyType.cs" />
     <Compile Include="ItemShopHighlightType.cs" />
     <Compile Include="MathUtils.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="UberStrikeItemClass.cs" />
     <Compile Include="UberStrikeItemType.cs" />
     <Compile Include="Vector3.cs" />
+    <Compile Include="WeaponSlotType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

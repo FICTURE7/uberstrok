@@ -35,6 +35,8 @@ namespace UberStrok.Realtime.Server
 
         protected ILog Log { get; }
 
+        protected UberstrikeUserView UserView { get; set; }
+
         public int HeartbeatTimeout { get; set; }
         public int HeartbeatInterval { get; set; }
 
@@ -64,7 +66,7 @@ namespace UberStrok.Realtime.Server
                 _heartbeatNextTime = DateTime.UtcNow.AddSeconds(HeartbeatInterval);
         }
 
-        public virtual void Update()
+        public virtual void Tick()
         {
             switch (_heartbeatState)
             {
@@ -87,12 +89,13 @@ namespace UberStrok.Realtime.Server
         public bool Authenticate(string authToken, string magicHash)
         {
             AuthToken = authToken ?? throw new ArgumentNullException(nameof(authToken));
+
             if (magicHash == null)
                 throw new ArgumentNullException(nameof(magicHash));
 
             Log.Info($"Authenticating {authToken}:{magicHash} at {RemoteIP}:{RemotePort}");
 
-            var userView = GetMember();
+            var userView = GetUser(true);
             OnAuthenticate(userView);
 
 #if !DEBUG
@@ -128,7 +131,10 @@ namespace UberStrok.Realtime.Server
             _heartbeatExpireTime = DateTime.UtcNow.AddSeconds(HeartbeatTimeout);
             _heartbeatState = HeartbeatState.Waiting;
 
+#if DEBUG_HEARTBEAT
             Log.Debug($"Heartbeat({_heartbeat}) with {HeartbeatTimeout}s timeout, expires at {_heartbeatExpireTime}");
+#endif
+
             SendHeartbeat(_heartbeat);
         }
 
@@ -137,7 +143,10 @@ namespace UberStrok.Realtime.Server
             if (responseHash == null)
                 throw new ArgumentNullException(nameof(responseHash));
 
+#if DEBUG_HEARTBEAT
             Log.Debug($"HeartbeatCheck({responseHash})");
+#endif
+
             if (_heartbeat == null)
             {
                 Log.Error("Heartbeat was null while checking.");
@@ -152,7 +161,9 @@ namespace UberStrok.Realtime.Server
 
                 if (expectedHeartbeat == responseHash)
                 {
+#if DEBUG_HEARTBEAT
                     Log.Debug($"Heartbeat: {expectedHeartbeat} == {responseHash}");
+#endif
 
                     _heartbeat = null;
                     _heartbeatNextTime = DateTime.UtcNow.AddSeconds(HeartbeatInterval);
@@ -175,6 +186,18 @@ namespace UberStrok.Realtime.Server
             HasError = true;
         }
 
+        public int Ban()
+        {
+            if (UserView == null)
+                return 1;
+
+            return new ModerationWebServiceClient(Configuration.WebServices)
+                    .Ban(
+                        Configuration.WebServicesAuth, 
+                        UserView.CmuneMemberView.PublicProfile.Cmid
+                     );
+        }
+
         protected virtual void OnAuthenticate(UberstrikeUserView userView)
         {
             /* Space */
@@ -184,7 +207,10 @@ namespace UberStrok.Realtime.Server
         {
             foreach (var handler in Handlers)
             {
-                try { handler.OnDisconnect(this, reasonCode, reasonDetail); }
+                try
+                {
+                    handler.OnDisconnect(this, reasonCode, reasonDetail);
+                }
                 catch (Exception ex)
                 {
                     Log.Error($"Error while handling disconnection of peer on {handler.GetType().Name}", ex);
@@ -228,12 +254,27 @@ namespace UberStrok.Realtime.Server
 
             using (var bytes = new MemoryStream(data))
             {
-                try { handler.OnOperationRequest(this, operationRequest.OperationCode, bytes); }
+                try
+                {
+                    handler.OnOperationRequest(this, operationRequest.OperationCode, bytes);
+                }
                 catch (Exception ex)
                 {
                     Log.Error($"Error while handling request on {handler.GetType().Name} -> :{operationRequest.OperationCode}", ex);
                 }
             }
+        }
+
+        public UberstrikeUserView GetUser(bool retrieve)
+        {
+            if (retrieve || UserView == null)
+            {
+                /* Retrieve user data from the web server. */
+                Log.Debug($"Retrieving User from {Configuration.WebServices}");
+                UserView = new UserWebServiceClient(Configuration.WebServices).GetMember(AuthToken);
+            }
+
+            return UserView;
         }
 
         private static string HashBytes(byte[] a, byte[] b)
@@ -262,20 +303,6 @@ namespace UberStrok.Realtime.Server
             var buffer = new byte[32];
             _random.NextBytes(buffer);
             return BytesToHexString(buffer);
-        }
-
-        protected UberstrikeUserView GetMember()
-        {
-            Log.Debug($"Retrieving Member from {Configuration.WebServices}");
-            /* Retrieve user data from the web server. */
-            return new UserWebServiceClient(Configuration.WebServices).GetMember(AuthToken);
-        }
-
-        protected LoadoutView GetLoadout()
-        {
-            Log.Debug($"Retrieving Loadout from {Configuration.WebServices}");
-            /* Retrieve loadout data from the web server. */
-            return new UserWebServiceClient(Configuration.WebServices).GetLoadoutServer(Configuration.WebServicesAuth, AuthToken);
         }
     }
 }

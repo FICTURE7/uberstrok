@@ -3,20 +3,18 @@ using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class PlayingPeerState : PeerState
+    public sealed class PlayingActorState : ActorState
     {
-        private Timer _overflowTimer;
+        private readonly Timer _overflowTimer;
 
-        public PlayingPeerState(GamePeer peer) : base(peer)
+        public PlayingActorState(GameActor actor) : base(actor)
         {
-            /* Space */
+            _overflowTimer = new Timer(Room.Loop, TimeSpan.FromSeconds(1));
+            _overflowTimer.Tick += OnOverflowTick;
         }
 
         public override void OnEnter()
         {
-            _overflowTimer = new Timer(Room.Loop, TimeSpan.FromSeconds(1));
-            _overflowTimer.Tick += OnOverflowTick;
-
             /* 
              * MatchStart event changes the match state of the client to match
              * running, which in turn changes the player state to playing.
@@ -25,13 +23,9 @@ namespace UberStrok.Realtime.Server.Game
              * TeamDeathMatch atleast).
              */
             Peer.Events.Game.SendMatchStart(Room.RoundNumber, Room.EndTime);
-            /*
-             * This is to reset the top scoreboard to not display "STARTS IN".
-             */
-            Peer.Events.Game.SendUpdateRoundScore(Room.RoundNumber, 0, 0);
         }
 
-        public override void OnUpdate()
+        public override void OnTick()
         {
             int healthCapacity = 100;
             int armorCapacity = Peer.Actor.Info.ArmorPointCapacity;

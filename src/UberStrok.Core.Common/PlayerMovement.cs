@@ -5,7 +5,8 @@ namespace UberStrok.Core.Common
     [Serializable]
     public class PlayerMovement
     {
-        public byte Number { get; set; }
+        /* Original identifier `Number`. */
+        public byte PlayerId { get; set; }
         public Vector3 Position { get; set; }
         public Vector3 Velocity { get; set; }
         public byte HorizontalRotation { get; set; }

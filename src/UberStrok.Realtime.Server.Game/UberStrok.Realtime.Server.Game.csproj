@@ -46,32 +46,34 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\BaseGamePeerOperationHandler.cs" />
-    <Compile Include="Core\BaseGameRoomOperationHandler.cs" />
-    <Compile Include="PeerState.Countdown.cs" />
-    <Compile Include="Core\GameActor.cs" />
-    <Compile Include="Core\GameActorInfo.cs" />
-    <Compile Include="DeathMatchGameRoom.cs" />
+    <Compile Include="ActorStates\ActorState.End.cs" />
+    <Compile Include="Operations\BaseGamePeerOperationHandler.cs" />
+    <Compile Include="Operations\BaseGameRoomOperationHandler.cs" />
+    <Compile Include="MatchStates\MatchState.End.cs" />
+    <Compile Include="ActorStates\ActorState.Countdown.cs" />
+    <Compile Include="GameActor.cs" />
+    <Compile Include="GameActorInfo.cs" />
+    <Compile Include="Rooms\DeathMatchGameRoom.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="GameRoomManager.cs" />
-    <Compile Include="Core\GamePeer.cs" />
-    <Compile Include="Core\GamePeerEvents.cs" />
-    <Compile Include="Core\GamePeerOperationHandler.cs" />
-    <Compile Include="Core\BaseGameRoom.cs" />
-    <Compile Include="Core\GameRoomEvents.cs" />
-    <Compile Include="Core\BaseGameRoom.Handler.cs" />
-    <Compile Include="MatchState.Countdown.cs" />
-    <Compile Include="PeerState.Killed.cs" />
-    <Compile Include="PeerState.Overview.cs" />
-    <Compile Include="PeerState.cs" />
-    <Compile Include="PeerState.Playing.cs" />
+    <Compile Include="GamePeer.cs" />
+    <Compile Include="Events\GamePeerEvents.cs" />
+    <Compile Include="GamePeerOperationHandler.cs" />
+    <Compile Include="Rooms\GameRoom.cs" />
+    <Compile Include="Events\GameRoomEvents.cs" />
+    <Compile Include="Rooms\GameRoom.Handler.cs" />
+    <Compile Include="MatchStates\MatchState.Countdown.cs" />
+    <Compile Include="ActorStates\ActorState.Killed.cs" />
+    <Compile Include="ActorStates\ActorState.Overview.cs" />
+    <Compile Include="ActorStates\ActorState.cs" />
+    <Compile Include="ActorStates\ActorState.Playing.cs" />
     <Compile Include="PowerUpManager.cs" />
-    <Compile Include="MatchState.Running.cs" />
-    <Compile Include="MatchState.WaitingForPlayers.cs" />
+    <Compile Include="MatchStates\MatchState.Running.cs" />
+    <Compile Include="MatchStates\MatchState.WaitingForPlayers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TeamDeathMatchGameRoom.cs" />
-    <Compile Include="PeerState.WaitingForPlayers.cs" />
+    <Compile Include="Rooms\TeamDeathMatchGameRoom.cs" />
+    <Compile Include="ActorStates\ActorState.WaitingForPlayers.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UberStrok.Core.Common\UberStrok.Core.Common.csproj">
@@ -109,7 +111,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MatchState.cs" />
+    <Compile Include="MatchStates\MatchState.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

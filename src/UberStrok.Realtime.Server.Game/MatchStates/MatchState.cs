@@ -11,13 +11,14 @@ namespace UberStrok.Realtime.Server.Game
             None,
             WaitingForPlayers,
             Countdown,
-            Running
+            Running,
+            End
         }
 
         protected ILog Log { get; }
-        protected BaseGameRoom Room { get; }
+        protected GameRoom Room { get; }
 
-        public MatchState(BaseGameRoom room)
+        public MatchState(GameRoom room)
         {
             Room = room ?? throw new ArgumentNullException(nameof(room));
             Log = LogManager.GetLogger(GetType().Name);

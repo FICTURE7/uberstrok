@@ -10,11 +10,9 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameRoomEvents : EventSender
     {
-        private GamePeer _peer;
-
         public GameRoomEvents(GamePeer peer) : base(peer)
         {
-            _peer = peer;
+            /* Space */
         }
 
         public void SendPowerUpPicked(int pickupId, byte flag)
@@ -33,7 +31,6 @@ namespace UberStrok.Realtime.Server.Game
             using (var bytes = new MemoryStream())
             {
                 ListProxy<int>.Serialize(bytes, states, Int32Proxy.Serialize);
-
                 SendEvent((byte)IGameRoomEventsType.SetPowerupState, bytes);
             }
         }
@@ -49,7 +46,6 @@ namespace UberStrok.Realtime.Server.Game
             using (var bytes = new MemoryStream())
             {
                 Vector3Proxy.Serialize(bytes, force);
-
                 SendEvent((byte)IGameRoomEventsType.PlayerHit, bytes);
             }
         }
@@ -99,7 +95,6 @@ namespace UberStrok.Realtime.Server.Game
             using (var bytes = new MemoryStream())
             {
                 Int32Proxy.Serialize(bytes, countdown);
-
                 SendEvent((byte)IGameRoomEventsType.PlayerRespawnCountdown, bytes);
             }
         }
@@ -109,12 +104,12 @@ namespace UberStrok.Realtime.Server.Game
             using (var bytes = new MemoryStream())
             {
                 Int32Proxy.Serialize(bytes, countdown);
-
                 SendEvent((byte)IGameRoomEventsType.DisconnectCountdown, bytes);
             }
         }
 
-        public void SendPlayerKilled(int shooter, int target, UberStrikeItemClass weaponClass, ushort damage, BodyPart bodyPart, Vector3 direction)
+        public void SendPlayerKilled(int shooter, int target, UberStrikeItemClass weaponClass, 
+                    ushort damage, BodyPart bodyPart, Vector3 direction)
         {
             using (var bytes = new MemoryStream())
             {
@@ -134,7 +129,6 @@ namespace UberStrok.Realtime.Server.Game
             using (var bytes = new MemoryStream())
             {
                 DamageEventViewProxy.Serialize(bytes, damageEvent);
-
                 SendEvent((byte)IGameRoomEventsType.DamageEvent, bytes);
             }
         }
@@ -172,7 +166,6 @@ namespace UberStrok.Realtime.Server.Game
             using (var bytes = new MemoryStream())
             {
                 ListProxy<GameActorInfoDeltaView>.Serialize(bytes, allDeltas, GameActorInfoDeltaViewProxy.Serialize);
-
                 SendEvent((byte)IGameRoomEventsType.AllPlayerDeltas, bytes);
             }
         }
@@ -194,7 +187,6 @@ namespace UberStrok.Realtime.Server.Game
             using (var bytes = new MemoryStream())
             {
                 Int32Proxy.Serialize(bytes, cmid);
-
                 SendEvent((byte)IGameRoomEventsType.PlayerLeftGame, bytes);
             }
         }
@@ -269,8 +261,16 @@ namespace UberStrok.Realtime.Server.Game
             using (var bytes = new MemoryStream())
             {
                 Int32Proxy.Serialize(bytes, countdown);
-
                 SendEvent((byte)IGameRoomEventsType.MatchStartCountdown, bytes);
+            }
+        }
+
+        public void SendMatchEnd(EndOfMatchDataView endOfMatch)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                EndOfMatchDataViewProxy.Serialize(bytes, endOfMatch);
+                SendEvent((byte)IGameRoomEventsType.MatchEnd, bytes);
             }
         }
 
@@ -301,6 +301,15 @@ namespace UberStrok.Realtime.Server.Game
             {
                 Int32Proxy.Serialize(bytes, doorId);
                 SendEvent((byte)IGameRoomEventsType.DoorOpen, bytes);
+            }
+        }
+
+        public void SendTeamWins(TeamID team)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                EnumProxy<TeamID>.Serialize(bytes, team);
+                SendEvent((byte)IGameRoomEventsType.TeamWins, bytes);
             }
         }
     }

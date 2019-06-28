@@ -29,6 +29,12 @@ namespace UberStrok.Core
             return true;
         }
 
+        public bool Restart()
+        {
+            Reset();
+            return Start();
+        }
+
         public bool Stop()
         {
             if (!IsEnabled)
@@ -58,6 +64,26 @@ namespace UberStrok.Core
         {
             _accumulator -= Interval.TotalMilliseconds;
             Tick?.Invoke();
+        }
+    }
+
+    public class Timer<T> : Timer
+    {
+        public new event Action<T> Tick;
+
+        public T Data { get; set; }
+
+        public Timer(Loop loop, TimeSpan interval) 
+            : base(loop, interval)
+        {
+            /* Space */
+        }
+
+        protected override void OnTick()
+        {
+            base.OnTick();
+
+            Tick?.Invoke(Data);
         }
     }
 }

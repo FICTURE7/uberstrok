@@ -1,8 +1,8 @@
 ﻿namespace UberStrok.Realtime.Server.Game
 {
-    public class WaitingForPlayersPeerState : PeerState
+    public sealed class WaitingForPlayersActorState : ActorState
     {
-        public WaitingForPlayersPeerState(GamePeer peer) : base(peer)
+        public WaitingForPlayersActorState(GameActor actor) : base(actor)
         {
             /* Space */
         }

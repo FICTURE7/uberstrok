@@ -1,5 +1,4 @@
-﻿using log4net;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using UberStrok.Core.Serialization;
 using UberStrok.Core.Serialization.Views;
@@ -9,15 +8,12 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeerEvents : EventSender
     {
-        private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeerEvents));
+        public GameRoomEvents Game { get; }
 
         public GamePeerEvents(GamePeer peer) : base(peer)
         {
-            _game = new GameRoomEvents(peer);
+            Game = new GameRoomEvents(peer);
         }
-
-        private readonly GameRoomEvents _game;
-        public GameRoomEvents Game => _game;
 
         public void SendGameListUpdate(List<GameRoomDataView> updatedGames, List<int> removedGames)
         {

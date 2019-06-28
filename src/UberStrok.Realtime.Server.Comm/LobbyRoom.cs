@@ -18,7 +18,7 @@ namespace UberStrok.Realtime.Server.Comm
         private readonly List<CommPeer> _failedPeers;
 
         public object Sync { get; }
-        public IReadOnlyList<CommPeer> Peers { get; }
+        public ICollection<CommPeer> Peers { get; }
 
         public LobbyRoom()
         {
@@ -98,7 +98,7 @@ namespace UberStrok.Realtime.Server.Comm
                         break;
                     }
 
-                    try { peer.Update(); }
+                    try { peer.Tick(); }
                     catch (Exception ex)
                     {
                         /* NOTE: This should never happen, but just incase. */

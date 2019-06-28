@@ -48,7 +48,13 @@ namespace UberStrok.Core
             _timer.Reset();
         }
 
-        public void Update()
+        public void Restart()
+        {
+            Reset();
+            Start();
+        }
+
+        public void Tick()
         {
             _timer.Update();
         }

@@ -32,6 +32,8 @@ namespace UberStrok.Core
         /* Thread that is going to do the work. */
         private readonly Thread _thread;
 
+        public bool IsInLoop => _thread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
+
         public double Interval { get; }
         public bool CatchUp { get; }
         public DateTime Time { get; private set; }
@@ -128,7 +130,7 @@ namespace UberStrok.Core
 
             _lag = 0;
             Time = DateTime.UtcNow;
-            DeltaTime = default(TimeSpan);
+            DeltaTime = default;
 
             try
             {
@@ -137,19 +139,20 @@ namespace UberStrok.Core
                     /* Wait to get the signal first. */
                     _pauseWaitHandle.WaitOne();
 
-                    /* Execute all the actions enqueued before updating. */
-                    DoActions();
 
-                    /* Do time calculatations such as delta time. */
-                    DoTime();
-                    /* Do an update calling the user code. */
+                    /* Execute all the actions enqueued after updating. */
+                    DoActions();
+                    /* Do an update; calling the user code. */
                     DoUpdate();
+                    /* Do time calculations such as delta time. */
+                    DoTime();
 
                     /* Catch up if we've lagged more than the a tick interval. */
                     while (CatchUp && _lag >= interval)
                     {
-                        DoTime();
+                        DoActions();
                         DoUpdate();
+                        DoTime();
 
                         _lag -= interval;
                     }

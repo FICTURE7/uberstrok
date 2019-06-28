@@ -12,7 +12,7 @@ namespace UberStrok.Core.Serialization.Common
                 ByteProxy.Serialize(bytes, instance.HorizontalRotation);
                 ByteProxy.Serialize(bytes, instance.KeyState);
                 ByteProxy.Serialize(bytes, instance.MovementState);
-                ByteProxy.Serialize(bytes, instance.Number);
+                ByteProxy.Serialize(bytes, instance.PlayerId);
                 ShortVector3Proxy.Serialize(bytes, instance.Position);
                 ShortVector3Proxy.Serialize(bytes, instance.Velocity);
                 ByteProxy.Serialize(bytes, instance.VerticalRotation);
@@ -27,7 +27,7 @@ namespace UberStrok.Core.Serialization.Common
                 HorizontalRotation = ByteProxy.Deserialize(bytes),
                 KeyState = ByteProxy.Deserialize(bytes),
                 MovementState = ByteProxy.Deserialize(bytes),
-                Number = ByteProxy.Deserialize(bytes),
+                PlayerId = ByteProxy.Deserialize(bytes),
                 Position = ShortVector3Proxy.Deserialize(bytes),
                 Velocity = ShortVector3Proxy.Deserialize(bytes),
                 VerticalRotation = ByteProxy.Deserialize(bytes)

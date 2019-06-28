@@ -4,18 +4,30 @@ namespace UberStrok.Core.Views
 {
     public class GameActorInfoDeltaView
     {
+        /* Original identifier `Id`. */
+        public byte PlayerId { get; set; }
         public int DeltaMask { get; set; }
-        public byte Id { get; set; }
 
-        public readonly Dictionary<Keys, object> Changes = new Dictionary<Keys, object>();
+        public Dictionary<Keys, object> Changes { get; }
 
-        public void UpdateMask()
+        public GameActorInfoDeltaView()
         {
-            var mask = 0;
+            Changes = new Dictionary<Keys, object>();
+        }
+
+        public void Update()
+        {
+            int mask = 0;
             foreach (var key in Changes.Keys)
                 mask |= 1 << (int)key;
 
             DeltaMask = mask;
+        }
+
+        public void Reset()
+        {
+            Changes.Clear();
+            Update();
         }
 
         public enum Keys

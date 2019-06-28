@@ -8,21 +8,21 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GameRoomManager : IEnumerable<BaseGameRoom>
+    public class GameRoomManager : IEnumerable<GameRoom>
     {
         private int _roomId;
-        private readonly ConcurrentDictionary<int, BaseGameRoom> _rooms;
+        private readonly ConcurrentDictionary<int, GameRoom> _rooms;
 
         public GameRoomManager()
         {
-            _rooms = new ConcurrentDictionary<int, BaseGameRoom>();
+            _rooms = new ConcurrentDictionary<int, GameRoom>();
         }
 
         public int Count => _rooms.Count;
 
-        public BaseGameRoom Get(int roomId)
+        public GameRoom Get(int roomId)
         {
-            if (_rooms.TryGetValue(roomId, out BaseGameRoom room) && room.Peers.Count == 0)
+            if (_rooms.TryGetValue(roomId, out GameRoom room) && room.Actors.Count == 0)
             {
                 Remove(roomId);
                 return null;
@@ -33,11 +33,11 @@ namespace UberStrok.Realtime.Server.Game
 
         public void Remove(int roomId)
         {
-            if (_rooms.TryRemove(roomId, out BaseGameRoom room))
+            if (_rooms.TryRemove(roomId, out GameRoom room))
                 room.Dispose();
         }
 
-        public BaseGameRoom Create(GameRoomDataView data, string password)
+        public GameRoom Create(GameRoomDataView data, string password)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
@@ -49,7 +49,7 @@ namespace UberStrok.Realtime.Server.Game
                 data.LevelMax = 0;
             }
 
-            BaseGameRoom room;
+            GameRoom room;
             switch (data.GameMode)
             {
                 case GameModeType.DeathMatch:
@@ -63,11 +63,11 @@ namespace UberStrok.Realtime.Server.Game
                     throw new NotSupportedException();
             }
 
-            room.Number = Interlocked.Increment(ref _roomId);
+            room.RoomId = Interlocked.Increment(ref _roomId);
             room.Password = password;
 
             /* Should never really happen */
-            if (!_rooms.TryAdd(room.Number, room))
+            if (!_rooms.TryAdd(room.RoomId, room))
             {
                 room.Dispose();
                 throw new Exception("Unable to add game room to game room list");
@@ -76,22 +76,22 @@ namespace UberStrok.Realtime.Server.Game
             return room;
         }
 
-        public IEnumerator<BaseGameRoom> GetEnumerator()
+        public IEnumerator<GameRoom> GetEnumerator()
         {
-            var emptyRooms = new List<BaseGameRoom>();
+            var emptyRooms = new List<GameRoom>();
 
             foreach (var kv in _rooms)
             {
                 var room = kv.Value;
                 /* Filter out empty rooms. */
-                if (room.Peers.Count == 0)
+                if (room.Actors.Count == 0)
                     emptyRooms.Add(room);
                 else
                     yield return room;
             }
 
             foreach (var room in emptyRooms)
-                Remove(room.Number);
+                Remove(room.RoomId);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

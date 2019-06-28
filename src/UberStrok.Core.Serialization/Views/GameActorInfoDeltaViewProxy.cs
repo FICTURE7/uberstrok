@@ -13,7 +13,7 @@ namespace UberStrok.Core.Serialization.Views
             if (instance != null)
             {
                 Int32Proxy.Serialize(stream, instance.DeltaMask);
-                ByteProxy.Serialize(stream, instance.Id);
+                ByteProxy.Serialize(stream, instance.PlayerId);
 
                 if ((instance.DeltaMask & 1) != 0)
                     EnumProxy<MemberAccessLevel>.Serialize(stream, (MemberAccessLevel)((int)instance.Changes[GameActorInfoDeltaView.Keys.AccessLevel]));
@@ -76,7 +76,7 @@ namespace UberStrok.Core.Serialization.Views
             byte id = ByteProxy.Deserialize(bytes);
 
             var view = new GameActorInfoDeltaView();
-            view.Id = id;
+            view.PlayerId = id;
             if (mask != 0)
             {
                 if ((mask & 1) != 0)

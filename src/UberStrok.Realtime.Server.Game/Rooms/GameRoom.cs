@@ -1,0 +1,650 @@
+﻿using log4net;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using UberStrok.Core;
+using UberStrok.Core.Common;
+using UberStrok.Core.Views;
+
+namespace UberStrok.Realtime.Server.Game
+{
+    public abstract partial class GameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>, IDisposable
+    {
+        private bool _disposed;
+
+        private ushort _frame;
+        private double _frameTime;
+
+        private byte _nextPlayer;
+        private string _password;
+
+        private List<StatsSummaryView> _mvps;
+
+        /* List of actor info delta. */
+        private readonly List<GameActorInfoDeltaView> _actorDeltas;
+        /* List of actor movement. */
+        private readonly List<PlayerMovement> _actorMovements;
+
+        private readonly List<GameActor> _actors;
+        private readonly List<GameActor> _players;
+
+        protected ILog Log { get; }
+        protected ILog ReportLog { get; }
+
+        public Loop Loop { get; }
+        public GameRoomDataView View { get; }
+
+        public ICollection<GameActor> Players { get; }
+        public ICollection<GameActor> Actors { get; }
+
+        public StateMachine<MatchState.Id> State { get; }
+
+        public ShopManager Shop { get; }
+        public SpawnManager Spawns { get; }
+        public PowerUpManager PowerUps { get; }
+
+        public event EventHandler<PlayerKilledEventArgs> PlayerKilled;
+        public event EventHandler<PlayerRespawnedEventArgs> PlayerRespawned;
+        public event EventHandler<PlayerJoinedEventArgs> PlayerJoined;
+        public event EventHandler<PlayerLeftEventArgs> PlayerLeft;
+
+        public abstract bool CanStart { get; }
+        public TeamID Winner { get; protected set; }
+
+        public int RoundNumber { get; set; }
+        public int StartTime { get; set; }
+        public int EndTime { get; set; }
+
+        /* 
+         * Room ID but we call it number since we already defined Id &
+         * thats how UberStrike calls it too. 
+         */
+        public int RoomId
+        {
+            get => View.Number;
+            set => View.Number = value;
+        }
+
+        public string Password
+        {
+            get => _password;
+            set
+            {
+                /* 
+                 * If the password is null or empty it means its not
+                 * password protected. 
+                 */
+                View.IsPasswordProtected = !string.IsNullOrEmpty(value);
+                _password = View.IsPasswordProtected ? value : null;
+            }
+        }
+
+        public GameRoom(GameRoomDataView data)
+        {
+            View = data ?? throw new ArgumentNullException(nameof(data));
+            View.ConnectedPlayers = 0;
+
+            Log = LogManager.GetLogger(GetType().Name);
+            ReportLog = LogManager.GetLogger("Report");
+
+            int capacity = data.PlayerLimit / 2;
+
+            _players = new List<GameActor>(capacity);
+            _actors = new List<GameActor>(capacity); 
+            _actorDeltas = new List<GameActorInfoDeltaView>(capacity);
+            _actorMovements = new List<PlayerMovement>(capacity);
+
+            Players = _players;
+            Actors = _actors;
+
+            /* 
+             * Using a high tick rate to push updates to the client faster.
+             * But the player movements are still sent at 10 tps.
+             */
+            Loop = new Loop(64);
+
+            Shop = new ShopManager();
+            Spawns = new SpawnManager();
+            PowerUps = new PowerUpManager(this);
+
+            State = new StateMachine<MatchState.Id>();
+            State.Register(MatchState.Id.None, null);
+            State.Register(MatchState.Id.WaitingForPlayers, new WaitingForPlayersMatchState(this));
+            State.Register(MatchState.Id.Countdown, new CountdownMatchState(this));
+            State.Register(MatchState.Id.Running, new RunningMatchState(this));
+            State.Register(MatchState.Id.End, new EndMatchState(this));
+
+            Reset();
+
+            /* Start the game room loop. */
+            Loop.Start(OnTick, OnTickFailed);
+        }
+
+        public void Join(GamePeer peer)
+        {
+            if (peer == null)
+                throw new ArgumentNullException(nameof(peer));
+            if (peer.Actor != null)
+                throw new InvalidOperationException("Peer already in another room");
+
+            if (Loop.IsInLoop)
+                DoJoin(peer);
+            else
+                Enqueue(() => DoJoin(peer));
+        }
+
+        public void Leave(GamePeer peer)
+        {
+            if (peer == null)
+                throw new ArgumentNullException(nameof(peer));
+            if (peer.Actor == null)
+                throw new InvalidOperationException("Peer is not in a room");
+            if (peer.Actor.Room != this)
+                throw new InvalidOperationException("Peer is not leaving the correct room");
+
+            if (Loop.IsInLoop)
+                DoLeave(peer);
+            else
+                Enqueue(() => DoLeave(peer));
+        }
+
+        public void Spawn(GameActor actor, out SpawnPoint spawn)
+        {
+            if (actor == null)
+                throw new ArgumentNullException(nameof(actor));
+
+            spawn = Spawns.Get(actor.Info.TeamID);
+
+            var movement = actor.Movement;
+
+            Debug.Assert(movement.PlayerId == actor.PlayerId);
+
+            movement.Position = spawn.Position;
+            movement.HorizontalRotation = spawn.Rotation;
+
+            foreach (var otherActor in Actors)
+            {
+                otherActor.Peer.Events.Game.SendPlayerRespawned(
+                    actor.Cmid,
+                    spawn.Position,
+                    spawn.Rotation
+                );
+            }
+        }
+
+        private struct Achievement
+        {
+            public Dictionary<AchievementType, Tuple<StatsSummaryView, ushort>> All;
+            public AchievementType Type;
+            public int Value;
+
+            public Achievement(AchievementType type, Dictionary<AchievementType, Tuple<StatsSummaryView, ushort>> all)
+            {
+                All = all;
+                Type = type;
+                Value = int.MinValue;
+            }
+
+            public void Check(StatsSummaryView summary, int value)
+            {
+                if (Value == value)
+                {
+                    All.Remove(Type);
+                }
+                else if (value > Value)
+                {
+                    Value = value;
+
+                    if (Value > 0)
+                        All[Type] = new Tuple<StatsSummaryView, ushort>(summary, (ushort)value);
+                }
+            }
+        }
+
+        public List<StatsSummaryView> GetMvps(bool force = false)
+        {
+            if (_mvps == null || force)
+            {
+                _mvps = new List<StatsSummaryView>();
+
+                var achievements = new Dictionary<AchievementType, Tuple<StatsSummaryView, ushort>>();
+                var mostValuable = new Achievement(AchievementType.MostValuable, achievements);
+                var mostAggressive = new Achievement(AchievementType.MostAggressive, achievements);
+                var costEffective = new Achievement(AchievementType.CostEffective, achievements);
+                var hardestHitter = new Achievement(AchievementType.HardestHitter, achievements);
+                var sharpestShooter = new Achievement(AchievementType.SharpestShooter, achievements);
+                var triggerHappy = new Achievement(AchievementType.TriggerHappy, achievements);
+                
+                foreach (var player in Players)
+                {
+                    var stats = player.Statistics.Total;
+                    var summary = new StatsSummaryView
+                    {
+                        Cmid = player.Cmid,
+                        Name = player.PlayerName,
+                        Kills = player.Info.Kills,
+                        Deaths = player.Info.Deaths,
+                        Level = player.Info.Level,  
+                        Team = player.Info.TeamID,
+                        Achievements = new Dictionary<byte, ushort>()
+                    };
+
+                    _mvps.Add(summary);
+
+                    int kills = player.Statistics.Total.GetKills();
+                    int deaths = player.Statistics.Total.Deaths;
+                    int kdr;
+
+                    if (kills == deaths)
+                        kdr = 10;
+                    else
+                        kdr = (int)Math.Floor((float)kills / Math.Max(1, deaths)) * 10;
+
+                    int shots = player.Statistics.Total.GetShots();
+                    int hits = player.Statistics.Total.GetHits();
+
+                    int accuracy = (int)Math.Floor((float)hits / Math.Max(1, shots) * 1000f);
+                    int damageDealt = player.Statistics.Total.GetDamageDealt();
+                    int criticalHits = player.Statistics.Total.Headshots + player.Statistics.Total.Nutshots;
+                    int consecutiveKills = player.Statistics.MostConsecutiveKills;
+
+                    mostValuable.Check(summary, kdr);
+                    mostAggressive.Check(summary, kills);
+                    costEffective.Check(summary, accuracy);
+                    hardestHitter.Check(summary, damageDealt);
+                    sharpestShooter.Check(summary, criticalHits);
+                    triggerHappy.Check(summary, consecutiveKills);
+                }
+
+                foreach (var kv in achievements)
+                {
+                    var tuple = kv.Value;
+                    var achievement = kv.Key;
+
+                    tuple.Item1.Achievements.Add((byte)achievement, tuple.Item2);
+                }
+
+                //_mvps = _mvps.OrderBy(x => x.Kills).ToList();
+            }
+
+            return _mvps;
+        }
+
+        public virtual void Reset()
+        {
+            _frame = 0;
+            _frameTime = 0f;
+            _nextPlayer = 0;
+
+            /* Reset all the actors in the room's player list. */
+            foreach (var player in Players)
+            {
+                foreach (var otherActor in Actors)
+                    otherActor.Peer.Events.Game.SendPlayerLeftGame(player.Cmid);
+            }
+
+            _mvps = null;
+            _players.Clear();
+
+            View.ConnectedPlayers = 0;
+
+            State.Reset();
+            State.Set(MatchState.Id.WaitingForPlayers);
+        }
+
+        private void OnTick()
+        {
+            State.Tick();
+            PowerUps.Tick();
+
+            /* XXX: Review this. */
+
+            /* 
+             * Expected interval between ticks by the client is 100ms (10tick/s),
+             *
+             * Lag extrapolation starts when the packets arrive at around 150ms
+             * late assuming the client receives a constant stream of packets
+             * of 100ms intervals.
+             */
+            const int UBZ_INTERVAL = 125;
+
+            _frameTime += Loop.DeltaTime.TotalMilliseconds;
+
+            bool updatePositions = _frameTime >= UBZ_INTERVAL;
+            if (updatePositions)
+            {
+                _frameTime %= UBZ_INTERVAL;
+                _frame++;
+            }
+
+            if (updatePositions)
+            {
+                foreach (var player in Players)
+                {
+                    if (player.Info.IsAlive)
+                        _actorMovements.Add(player.Movement);
+
+                    Debug.Assert(player.Movement.PlayerId == player.PlayerId);
+
+                    /* If the player has any damage events, we sent them. */
+                    if (player.Damages.Count > 0)
+                    {
+                        player.Peer.Events.Game.SendDamageEvent(player.Damages);
+                        player.Damages.Clear();
+                    }
+                }
+
+                /* Send movement and deltas data to all connected peers, including peers in 'overview' state. */
+                foreach (var otherActor in Actors)
+                    otherActor.Peer.Events.Game.SendAllPlayerPositions(_actorMovements, _frame);
+            }
+
+            foreach (var actor in Actors)
+            {
+                if (actor.Peer.HasError)
+                {
+                    actor.Peer.Disconnect();
+                }
+                else
+                {
+                    try { actor.Tick(); }
+                    catch (Exception ex)
+                    {
+                        /* 
+                         * NOTE: This should never happen, but just incase 
+                         * stuff goes wild.
+                         */
+                        Log.Error($"Failed to update {actor.GetDebug()}.", ex);
+                        actor.Peer.Disconnect();
+                        continue;
+                    }
+
+                    var delta = actor.Info.GetViewDelta();
+
+                    /* 
+                     * If the player has changed something since the last tick. 
+                     */
+                    if (delta.Changes.Count > 0)
+                    {
+                        delta.Update();
+                        _actorDeltas.Add(delta);
+                    }
+                }
+            }
+
+            foreach (var actor in Actors)
+                actor.Peer.Events.Game.SendAllPlayerDeltas(_actorDeltas);
+
+            /* Wipe the delta changes. */
+            foreach (var delta in _actorDeltas)
+                delta.Reset();
+
+            _actorDeltas.Clear();
+            _actorMovements.Clear();
+        }
+
+        private void OnTickFailed(Exception ex)
+        {
+            Log.Error("Failed to tick game loop.", ex);
+        }
+
+        /* This is executed on the game room loop thread. */
+        private void DoJoin(GamePeer peer)
+        {
+            Debug.Assert(peer != null);
+
+            try
+            {
+                peer.Handlers.Add(this);
+
+                /* 
+                 * This prepares the client for the game room; that is it 
+                 * creates the game room instance type and registers the
+                 * GameRoom OperationHandler to its photon client.
+                 */
+                peer.Events.SendRoomEntered(View);
+
+                peer.Actor = new GameActor(peer, this);
+                peer.Actor.PlayerId = _nextPlayer++;
+
+                /* Ignore PlayerId change. */
+                peer.Actor.Info.GetViewDelta().Changes.Clear();
+
+                peer.Actor.State.Set(ActorState.Id.Overview);
+            }
+            catch (Exception ex)
+            {
+                peer.Actor = null;
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
+                Log.Error($"Failed to join {GetDebug()}.", ex);
+
+                /* Something went wrong; we dip. */
+                return;
+            }
+
+            _actors.Add(peer.Actor);
+
+            Log.Info($"{peer.Actor.GetDebug()} joined {GetDebug()}.");
+        }
+
+        private void DoLeave(GamePeer peer)
+        {
+            Debug.Assert(peer != null);
+            Debug.Assert(peer.Actor.Room == this);
+
+            var actor = peer.Actor;
+
+            if (_actors.Remove(actor))
+            {
+                OnPlayerLeft(new PlayerLeftEventArgs { Player = peer.Actor});
+
+                /* Clean up. */
+                peer.Actor = null;
+                peer.Handlers.Remove(Id);
+
+                Log.Info($"{actor.GetDebug()} left {GetDebug()}.");
+            }
+        }
+
+        /* Determines if the vicitim can get damaged by the attcker. */
+        protected abstract bool CanDamage(GameActor victim, GameActor attacker);
+
+        /* Does damage and returns true if victim is killed; otherwise false. */
+        protected bool DoDamage(GameActor victim, GameActor attacker, Weapon weapon, short damage, BodyPart part, out Vector3 direction)
+        {
+            bool selfDamage = victim.Cmid == attacker.Cmid;
+
+            /* Calculate the direction of the hit. */
+            var victimPos = victim.Movement.Position;
+            var attackerPos = attacker.Movement.Position;
+            direction = attackerPos - victimPos;
+
+            if (!victim.Info.IsAlive)
+                return false;
+
+            /* Check if we can apply the damage on the players. */
+            if (!CanDamage(victim, attacker))
+                return false;
+
+            float angle = Vector3.Angle(direction, new Vector3(0, 0, -1));
+            if (direction.x < 0)
+                angle = 360 - angle;
+
+            byte byteAngle = Conversions.Angle2Byte(angle);
+
+            /* Check if not self-damage. */
+            if (!selfDamage)
+                victim.Damages.Add(byteAngle, damage, part, 0, 0);
+            else
+                damage /= 2;
+
+            /* Calculate armor absorption. */
+            int armorDamage;
+            int healthDamage;
+            if (victim.Info.ArmorPoints > 0)
+            {
+                armorDamage = (byte)(victim.Info.GetAbsorptionRate() * damage);
+                healthDamage = (short)(damage - armorDamage);
+            }
+            else
+            {
+                armorDamage = 0;
+                healthDamage = damage;
+            }
+
+            int newArmor = victim.Info.ArmorPoints - armorDamage;
+            int newHealth = victim.Info.Health - healthDamage;
+
+            if (newArmor < 0)
+                newHealth += newArmor;
+
+            victim.Info.ArmorPoints = (byte)Math.Max(0, newArmor);
+            victim.Info.Health = (short)Math.Max(0, newHealth);
+
+            /* Record some statistics. */
+            victim.Statistics.RecordDamageReceived(damage);
+            attacker.Statistics.RecordHit(weapon.GetView().ItemClass);
+            attacker.Statistics.RecordDamageDealt(weapon.GetView().ItemClass, damage);
+
+            /* Check if the player is dead. */
+            if (victim.Info.Health <= 0)
+            {
+                if (victim.Damages.Count > 0)
+                {
+                    /* 
+                     * Force a push of damage events to the victim peer, so he
+                     * gets the feedback of where he was hit from aka red hit
+                     * marker HUD.
+                     */
+                    victim.Peer.Events.Game.SendDamageEvent(victim.Damages);
+                    victim.Peer.Flush();
+
+                    victim.Damages.Clear();
+                }
+
+                if (selfDamage)
+                    attacker.Info.Kills--;
+                else
+                    attacker.Info.Kills++;
+
+                victim.Info.Deaths++;
+
+                /* Record statistics. */
+                victim.Statistics.RecordDeath();
+
+                if (selfDamage)
+                {
+                    attacker.Statistics.RecordSuicide();
+                }
+                else
+                {
+                    if (part == BodyPart.Head)
+                        attacker.Statistics.RecordHeadshot();
+                    else if (part == BodyPart.Nuts)
+                        attacker.Statistics.RecordNutshot();
+
+                    attacker.Statistics.RecordKill(weapon.GetView().ItemClass);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        protected virtual void OnPlayerRespawned(PlayerRespawnedEventArgs args)
+        {
+            var respawnActor = args.Player;
+            if (respawnActor.State.Current != ActorState.Id.Killed)
+            {
+                Log.Error($"{respawnActor.GetDebug()} failed to respawned was not in killed state {GetDebug()}");
+            }
+            else
+            {
+                Spawn(respawnActor, out SpawnPoint spawn);
+                respawnActor.State.Previous();
+
+                PlayerRespawned?.Invoke(this, args);
+
+                Log.Debug($"{respawnActor.GetDebug()} respawned {GetDebug()} at {spawn}.");
+            }
+        }
+
+        protected virtual void OnPlayerKilled(PlayerKilledEventArgs args)
+        {
+            args.Victim.State.Set(ActorState.Id.Killed);
+
+            /* Let all actors know that the player has died. */
+            foreach (var otherActor in Actors)
+            {
+                otherActor.Peer.Events.Game.SendPlayerKilled(
+                    args.Attacker.Cmid, 
+                    args.Victim.Cmid, 
+                    args.ItemClass, 
+                    args.Damage, 
+                    args.Part, 
+                    args.Direction
+                );
+            }
+
+            PlayerKilled?.Invoke(this, args);
+        }
+
+        protected virtual void OnPlayerJoined(PlayerJoinedEventArgs args)
+        {
+            _players.Add(args.Player);
+
+            args.Player.DateJoined = Loop.Time;
+
+            /* Let the actors know the player has joined the room. */
+            foreach (var otherActor in Actors)
+            {
+                Debug.Assert(args.Player.Movement.PlayerId == args.Player.PlayerId);
+
+                otherActor.Peer.Events.Game.SendPlayerJoinedGame(
+                    args.Player.Info.GetView(), 
+                    args.Player.Movement
+                );
+            }
+
+            View.ConnectedPlayers = Players.Count;
+            PlayerJoined?.Invoke(this, args);
+
+            Log.Info($"{args.Player.GetDebug()} joined team {args.Team} {GetDebug()}.");
+        }
+
+        protected virtual void OnPlayerLeft(PlayerLeftEventArgs args)
+        {
+            if (_players.Remove(args.Player))
+            {
+                /* Let other actors know that the player has left the room. */
+                foreach (var otherActor in Actors)
+                    otherActor.Peer.Events.Game.SendPlayerLeftGame(args.Player.Cmid);
+
+                View.ConnectedPlayers = Players.Count;
+                PlayerLeft?.Invoke(this, args);
+            }
+        }
+
+        public string GetDebug()
+        {
+            return $"(room \"{View.Name}\":{RoomId} state {State.Current})";
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+                Loop.Dispose();
+
+            _disposed = true;
+        }
+    }
+}

@@ -5,34 +5,61 @@ namespace UberStrok.Core
 {
     public class Weapon
     {
+        private bool _firing;
+        private DateTime _fireTime;
+
+        private readonly UberStrikeItemWeaponView _view;
+
         public int FalsePositiveThreshold { get; }
         public int FalsePositive { get; private set; }
-        public UberStrikeItemWeaponView View { get; }
 
-        public bool CanTrigger => (DateTime.UtcNow - _lastShot).TotalMilliseconds >= View.RateOfFire;
+        public bool CanHit => (DateTime.UtcNow - _lastHit).TotalMilliseconds >= _view.RateOfFire;
 
-        private DateTime _lastShot;
+        private DateTime _lastHit;
 
         public Weapon(UberStrikeItemWeaponView view)
         {
-            View = view ?? throw new ArgumentNullException(nameof(view));
+            _view = view ?? throw new ArgumentNullException(nameof(view));
 
-            FalsePositiveThreshold = CalculateThreshold(View.RateOfFire);
-            _lastShot = DateTime.UtcNow;
+            FalsePositiveThreshold = CalculateThreshold(_view.RateOfFire);
+            _lastHit = DateTime.UtcNow;
         }
 
-        public void Trigger()
+        public void StartFire()
         {
-            if (CanTrigger)
-                _lastShot = DateTime.UtcNow;
+            _fireTime = DateTime.UtcNow;
+            _firing = true;
+        }
+
+        public int StopFire()
+        {
+            if (!_firing)
+                return 0;
+
+            _firing = false;
+            return (int)Math.Ceiling((DateTime.UtcNow - _fireTime).TotalMilliseconds / _view.RateOfFire);
+        }
+
+        public void Hit()
+        {
+            if (CanHit)
+                _lastHit = DateTime.UtcNow;
             else
                 FalsePositive++;
         }
 
         public void Reset()
         {
-            _lastShot = DateTime.UtcNow;
+            _firing = false;
+            _fireTime = DateTime.UtcNow;
+            _lastHit = DateTime.UtcNow;
+
             FalsePositive = 0;
+        }
+
+        public UberStrikeItemWeaponView GetView()
+        {
+            return _view;
         }
 
         private static int CalculateThreshold(int rof)

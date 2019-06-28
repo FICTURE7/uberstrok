@@ -4,7 +4,7 @@ using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public abstract class PeerState : State
+    public abstract class ActorState : State
     {
         public enum Id
         {
@@ -13,16 +13,18 @@ namespace UberStrok.Realtime.Server.Game
             WaitingForPlayers,
             Countdown,
             Playing,
-            Killed
+            Killed,
+            End
         }
 
         protected ILog Log { get; }
-        protected GamePeer Peer { get; }
-        protected BaseGameRoom Room => Peer.Room;
+        protected GameActor Actor { get; }
+        protected GamePeer Peer => Actor.Peer;
+        protected GameRoom Room => Actor.Room;
 
-        public PeerState(GamePeer peer)
+        public ActorState(GameActor actor)
         {
-            Peer = peer ?? throw new ArgumentNullException(nameof(peer));
+            Actor = actor ?? throw new ArgumentNullException(nameof(actor));
             Log = LogManager.GetLogger(GetType().Name);
         }
     }

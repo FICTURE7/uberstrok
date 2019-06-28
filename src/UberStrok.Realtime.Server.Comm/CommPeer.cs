@@ -28,9 +28,9 @@ namespace UberStrok.Realtime.Server.Comm
             Events.SendDisconnectAndDisablePhoton(message);
         }
 
-        public override void Update()
+        public override void Tick()
         {
-            base.Update();
+            base.Tick();
 
             if (Actor.IsMuted && DateTime.UtcNow >= Actor.MuteEndTime)
                 Actor.IsMuted = false;

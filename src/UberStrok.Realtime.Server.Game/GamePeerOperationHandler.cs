@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -8,13 +9,15 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GamePeerOperationHandler : BaseGamePeerOperationHandler
     {
+        public static readonly GamePeerOperationHandler Instance = new GamePeerOperationHandler();
+
         private readonly static List<int> EmptyList = new List<int>(0);
         private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeerOperationHandler));
         private readonly static ILog ReportLog = LogManager.GetLogger("Report");
 
+        /* TODO: Implement some configs or somethings. */
         private readonly static PhotonServerLoadView _loadView = new PhotonServerLoadView
         {
-            /* TODO: Implement some configs or somethings. */
             MaxPlayerCount = 200,
             State = PhotonServerLoadView.Status.Alive,
         };
@@ -35,8 +38,12 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnGetGameListUpdates(GamePeer peer)
         {
-            // TODO: Don't use that, cause apparently there is a FullGameList event which we can send to wipe stuff and things.
-            // Clear the client list of games available.
+            /* 
+             * TODO: Don't use that, cause apparently there is a FullGameList
+             * event which we can send to wipe stuff and things.
+             * 
+             * Clear the client list of games available.
+             */
             peer.Events.SendGameListUpdateEnd();
 
             var rooms = new List<GameRoomDataView>(GameApplication.Instance.Rooms.Count);
@@ -48,11 +55,17 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnGetServerLoad(GamePeer peer)
         {
-            Log.Debug("test");
-            /* UberStrike does not care about this value, it uses its client side value. */
+            /* 
+             * UberStrike does not care about this value, it uses its client
+             * side value.
+             */
             _loadView.Latency = peer.RoundTripTime;
             _loadView.PeersConnected = GameApplication.Instance.PlayerCount;
-            /* UberStrike also does not care about this value, it uses PeersConnected. */
+
+            /*
+             * UberStrike also does not care about this value, it uses
+             * PeersConnected.
+             */
             _loadView.PlayersConnected = GameApplication.Instance.PlayerCount;
             _loadView.RoomsCreated = GameApplication.Instance.Rooms.Count;
             _loadView.TimeStamp = DateTime.UtcNow;
@@ -64,7 +77,10 @@ namespace UberStrok.Realtime.Server.Game
         {
             /* Check the client version. */
             if (clientVersion != "4.7.1")
+            {
                 peer.Disconnect();
+                return;
+            }
 
             try
             {
@@ -80,11 +96,11 @@ namespace UberStrok.Realtime.Server.Game
                 throw;
             }
 
-            BaseGameRoom room;
-
+            GameRoom room;
             try
             {
                 string webServices = GameApplication.Instance.Configuration.WebServices;
+
                 room = GameApplication.Instance.Rooms.Create(roomData, password);
                 room.Shop.Load(webServices, authToken);
             }
@@ -99,23 +115,21 @@ namespace UberStrok.Realtime.Server.Game
                 throw;
             }
 
+            Debug.Assert(room != null);
+
             /* Set quick-switch flag. */
             room.View.GameFlags |= 4;
-
-            try { room.Join(peer); }
-            catch
-            {
-                room.Leave(peer);
-                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
-                throw;
-            }
+            room.Join(peer);
         }
 
         protected override void OnJoinRoom(GamePeer peer, int roomId, string password, string clientVersion, string authToken, string magicHash)
         {
             /* Check the client version. */
             if (clientVersion != "4.7.1")
+            {
                 peer.Disconnect();
+                return;
+            }
 
             try
             {
@@ -131,36 +145,28 @@ namespace UberStrok.Realtime.Server.Game
                 throw;
             }
 
-            BaseGameRoom room = GameApplication.Instance.Rooms.Get(roomId);
+            GameRoom room = GameApplication.Instance.Rooms.Get(roomId);
             if (room == null)
             {
                 peer.Events.SendRoomEnterFailed(string.Empty, 0, "Room does not exist anymore.");
-                return;
-            }
-
-            /* Request password if the room is password protected & check password.*/
-            if (NeedPassword(room, peer.Member) && room.Password != password)
-            {
-                peer.Events.SendRequestPasswordForRoom(room.View.Server.ConnectionString, room.Number);
             }
             else
             {
-                try { room.Join(peer); }
-                catch
-                {
-                    room.Leave(peer);
-                    peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
-                    throw;
-                }
+                /* Request password if the room is password protected & check password.*/
+                if (NeedPassword(room, peer.GetUser(false)) && !CheckPassword(room, password))
+                    peer.Events.SendRequestPasswordForRoom(room.View.Server.ConnectionString, room.RoomId);
+                else
+                    room.Join(peer);
             }
         }
 
         protected override void OnLeaveRoom(GamePeer peer)
         {
-            if (peer.Room != null)
-                peer.Room.Leave(peer);
+            if (peer.Actor != null)
+                peer.Actor.Room.Leave(peer);
             else
-                Log.Error("A client tried to a leave a game room even though it was not in a room."); /* wtf fam? */
+                /* wtf fam? */
+                Log.Error("A client tried to a leave a game room even though it was not in a room.");
         }
 
         protected override void OnUpdatePing(GamePeer peer, ushort ping)
@@ -172,30 +178,58 @@ namespace UberStrok.Realtime.Server.Game
                 ReportLog.Warn($"[Ping] OnUpdatePing False positive reached {peer.Actor.Cmid}");
                 peer.SendError();
                 peer.Ban();
-                return;
             }
-
-            peer.Actor.Info.Ping = (ushort)peer.Actor.Ping.Value;
+            else
+            {
+                peer.Actor.Info.Ping = (ushort)peer.Actor.Ping.Value;
+            }
         }
 
         protected override void OnUpdateKeyState(GamePeer peer, byte state)
         {
-            /* Space */
+            if (peer.Actor != null)
+                peer.Actor.Movement.KeyState = state;
         }
 
         protected override void OnUpdateLoadout(GamePeer peer)
         {
-            try { peer.UpdateLoadout(); }
-            catch
+            var actor = peer.Actor;
+            if (actor == null)
             {
-                peer.Disconnect();
-                throw;
+                Log.Error("Peer attempted to update loadout but was not associated with any Actor.");
+            }
+            else
+            {
+                try
+                {
+                    var shop = actor.Room.Shop;
+                    var loadout = peer.GetLoadout(retrieve: true);
+
+                    actor.Loadout.Update(shop, loadout);
+
+                    actor.Info.Gear = actor.Loadout.Gear.GetAsList();
+                    actor.Info.Weapons = actor.Loadout.Weapons.GetAsList();
+                    actor.Info.QuickItems = actor.Loadout.QuickItems.GetAsList();
+
+                    actor.Info.ArmorPointCapacity = actor.Loadout.Gear.GetArmorCapacity();
+                    actor.Info.ArmorPoints = actor.Info.ArmorPointCapacity;
+                }
+                catch
+                {
+                    peer.Disconnect();
+                    throw;
+                }
             }
         }
 
-        private static bool NeedPassword(BaseGameRoom room, UberstrikeUserView user)
+        private static bool NeedPassword(GameRoom room, UberstrikeUserView user)
         {
             return room.View.IsPasswordProtected && user.CmuneMemberView.PublicProfile.AccessLevel <= MemberAccessLevel.Moderator;
+        }
+
+        private static bool CheckPassword(GameRoom room, string password)
+        {
+            return room.Password == password;
         }
     }
 }

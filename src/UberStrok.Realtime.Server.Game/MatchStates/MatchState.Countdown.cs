@@ -1,0 +1,57 @@
+﻿using UberStrok.Core;
+
+namespace UberStrok.Realtime.Server.Game
+{
+    public sealed class CountdownMatchState : MatchState
+    {
+        private readonly Countdown _countdown;
+
+        public CountdownMatchState(GameRoom room) 
+            : base(room)
+        {
+            _countdown = new Countdown(Room.Loop, 5, 0);
+            _countdown.Counted += OnCountdownCounted;
+            _countdown.Completed += OnCountdownCompleted;
+        }
+
+        public override void OnEnter()
+        {
+            Room.PlayerJoined += OnPlayerJoined;
+
+            /* 
+             * Prepare all players by placing them in a 'prepare for next round state',
+             * and spawning them.
+             */
+            foreach (var actor in Room.Players)
+                actor.State.Set(ActorState.Id.Countdown);
+
+            _countdown.Restart();
+        }
+
+        public override void OnTick()
+        {
+            _countdown.Tick();
+        }
+
+        public override void OnExit()
+        {
+            Room.PlayerJoined -= OnPlayerJoined;
+        }
+
+        private void OnPlayerJoined(object sender, PlayerJoinedEventArgs e)
+        {
+            e.Player.State.Set(ActorState.Id.Countdown);
+        }
+
+        private void OnCountdownCounted(int count)
+        {
+            foreach (var otherActor in Room.Actors)
+                otherActor.Peer.Events.Game.SendMatchStartCountdown(count);
+        }
+
+        private void OnCountdownCompleted()
+        {
+            Room.State.Set(Id.Running);
+        }
+    }
+}

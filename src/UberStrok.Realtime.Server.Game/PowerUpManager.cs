@@ -5,6 +5,8 @@ using UberStrok.Core.Common;
 
 namespace UberStrok.Realtime.Server.Game
 {
+    /* TODO: Move this to UberStrok.Core. */
+
     public class PowerUpManager
     {
         private readonly static ILog Log = LogManager.GetLogger(nameof(PowerUpManager));
@@ -13,9 +15,9 @@ namespace UberStrok.Realtime.Server.Game
         private List<TimeSpan> _respawnTimes;
         private List<int> _respawning;
 
-        private readonly BaseGameRoom _room;
+        private readonly GameRoom _room;
 
-        public PowerUpManager(BaseGameRoom room)
+        public PowerUpManager(GameRoom room)
         {
             _room = room ?? throw new ArgumentNullException(nameof(room));
         }
@@ -53,22 +55,27 @@ namespace UberStrok.Realtime.Server.Game
             _respawnTimes[pickupId] = _respawnTimesOriginal[pickupId];
             _respawning.Add(pickupId);
 
-            foreach (var otherPeer in _room.Peers)
-                otherPeer.Events.Game.SendPowerUpPicked(pickupId, 1);
+            foreach (var otherActor in _room.Actors)
+                otherActor.Peer.Events.Game.SendPowerUpPicked(pickupId, 1);
 
             switch (type)
             {
                 case PickupItemType.Health:
                     peer.Actor.Info.Health = (short)MathUtils.Clamp(peer.Actor.Info.Health + value, 0, 200);
+                    peer.Actor.Statistics.RecordHealthPickedUp();
                     break;
                 case PickupItemType.Armor:
                     peer.Actor.Info.ArmorPoints = (byte)MathUtils.Clamp(peer.Actor.Info.ArmorPoints + value, 0, 200);
+                    peer.Actor.Statistics.RecordArmorPickedUp();
                     break;
             } 
         }
 
-        public void Update()
+        public void Tick()
         {
+            if (!IsLoaded)
+                return;
+
             for (int i = 0; i < _respawning.Count; i++)
             {
                 var time = _respawnTimes[_respawning[i]];
@@ -76,8 +83,8 @@ namespace UberStrok.Realtime.Server.Game
                 if (newTime.TotalMilliseconds <= 0)
                 {
                     _respawnTimes[_respawning[i]] = TimeSpan.FromSeconds(0);
-                    foreach (var otherPeer in _room.Peers)
-                        otherPeer.Events.Game.SendPowerUpPicked(_respawning[i], 0);
+                    foreach (var otherActor in _room.Actors)
+                        otherActor.Peer.Events.Game.SendPowerUpPicked(_respawning[i], 0);
                     
                     Log.Debug($"Respawned power-up with ID: {_respawning[i]}");
                     _respawning.RemoveAt(i);
