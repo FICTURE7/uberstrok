@@ -10,7 +10,8 @@ namespace UberStrok.Realtime.Server.Game
     {
         public GameRoomEvents Game { get; }
 
-        public GamePeerEvents(GamePeer peer) : base(peer)
+        public GamePeerEvents(GamePeer peer) 
+            : base(peer)
         {
             Game = new GameRoomEvents(peer);
         }

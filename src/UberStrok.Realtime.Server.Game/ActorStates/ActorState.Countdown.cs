@@ -9,6 +9,11 @@
 
         public override void OnEnter()
         {
+            /* 
+             * This sets the client's match and player state to 
+             * `prepare for next round` state which is the equivalent of
+             * Countdown state.
+             */
             Peer.Events.Game.SendPrepareNextRound();
 
             /* Reset score board. */
@@ -16,7 +21,7 @@
             Peer.Events.Game.SendKillsRemaining(default, default);
 
             /* Spawn player in a random spot. */
-            Room.Spawn(Actor, out _);
+            Room.Spawn(Actor);
         }
     }
 }

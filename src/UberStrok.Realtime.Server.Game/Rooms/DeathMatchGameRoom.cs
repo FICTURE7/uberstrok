@@ -29,10 +29,17 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnPlayerLeft(PlayerLeftEventArgs e)
         {
             base.OnPlayerLeft(e);
-            
-            int killsRemaining = GetKillsRemaining();
-            foreach (var otherActor in Actors)
-                otherActor.Peer.Events.Game.SendKillsRemaining(killsRemaining, 0);
+
+            if (Players.Count <= 1)
+            {
+                State.Set(MatchState.Id.End);
+            }
+            else
+            {
+                int killsRemaining = GetKillsRemaining();
+                foreach (var otherActor in Actors)
+                    otherActor.Peer.Events.Game.SendKillsRemaining(killsRemaining, 0);
+            }
         }
 
         protected override void OnPlayerKilled(PlayerKilledEventArgs e)
@@ -61,7 +68,7 @@ namespace UberStrok.Realtime.Server.Game
              * NOTE: Possible performance gain by avoiding using LINQ but
              * maintain the leader directly through killed events.
              */
-            return View.KillLimit - Players.Aggregate((a, b) => a.Info.Kills > b.Info.Kills ? a : b).Info.Kills;
+            return GetView().KillLimit - Players.Aggregate((a, b) => a.Info.Kills > b.Info.Kills ? a : b).Info.Kills;
         }
     }
 }

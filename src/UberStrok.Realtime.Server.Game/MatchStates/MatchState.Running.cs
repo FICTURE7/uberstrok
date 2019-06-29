@@ -13,10 +13,9 @@ namespace UberStrok.Realtime.Server.Game
         public override void OnEnter()
         {
             Room.PlayerJoined += OnPlayerJoined;
-            Room.PlayerLeft += OnPlayerLeft;
 
             Room.StartTime = Environment.TickCount;
-            Room.EndTime = Environment.TickCount + Room.View.TimeLimit * 1000;
+            Room.EndTime = Environment.TickCount + Room.GetView().TimeLimit * 1000;
 
             foreach (var player in Room.Players)
                 player.State.Set(ActorState.Id.Playing);
@@ -25,7 +24,6 @@ namespace UberStrok.Realtime.Server.Game
         public override void OnExit()
         {
             Room.PlayerJoined -= OnPlayerJoined;
-            Room.PlayerLeft -= OnPlayerLeft;
         }
 
         public override void OnTick()
@@ -41,13 +39,7 @@ namespace UberStrok.Realtime.Server.Game
             e.Player.Peer.Events.Game.SendSetPowerUpState(Room.PowerUps.Respawning);
             e.Player.State.Set(ActorState.Id.Playing);
 
-            Room.Spawn(e.Player, out _);
-        }
-
-        private void OnPlayerLeft(object sender, PlayerLeftEventArgs e)
-        {
-            if (Room.Players.Count <= 1)
-                Room.State.Set(Id.End);
+            Room.Spawn(e.Player);
         }
     }
 }

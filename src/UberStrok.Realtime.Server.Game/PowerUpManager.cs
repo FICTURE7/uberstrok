@@ -41,7 +41,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public void PickUp(GamePeer peer, int pickupId, PickupItemType type, byte value)
+        public void PickUp(GameActor actor, int pickupId, PickupItemType type, byte value)
         {
             if (pickupId < 0 || pickupId > _respawnTimesOriginal.Count - 1)
             {
@@ -61,12 +61,12 @@ namespace UberStrok.Realtime.Server.Game
             switch (type)
             {
                 case PickupItemType.Health:
-                    peer.Actor.Info.Health = (short)MathUtils.Clamp(peer.Actor.Info.Health + value, 0, 200);
-                    peer.Actor.Statistics.RecordHealthPickedUp();
+                    actor.Info.Health = (short)MathUtils.Clamp(actor.Info.Health + value, 0, 200);
+                    actor.Statistics.RecordHealthPickedUp();
                     break;
                 case PickupItemType.Armor:
-                    peer.Actor.Info.ArmorPoints = (byte)MathUtils.Clamp(peer.Actor.Info.ArmorPoints + value, 0, 200);
-                    peer.Actor.Statistics.RecordArmorPickedUp();
+                    actor.Info.ArmorPoints = (byte)MathUtils.Clamp(actor.Info.ArmorPoints + value, 0, 200);
+                    actor.Statistics.RecordArmorPickedUp();
                     break;
             } 
         }

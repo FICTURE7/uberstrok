@@ -16,8 +16,8 @@ namespace UberStrok.Realtime.Server.Game
         public override void OnEnter()
         {
             /* 
-             * MatchStart event changes the match state of the client to match
-             * running, which in turn changes the player state to playing.
+             * This sets the client's match and player state to `match running`
+             * state which is the equivalent of `playing` state.
              *
              * The client does not care about the roundNumber apparently (in
              * TeamDeathMatch atleast).

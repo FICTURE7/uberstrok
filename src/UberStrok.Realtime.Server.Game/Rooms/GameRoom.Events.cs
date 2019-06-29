@@ -1,0 +1,84 @@
+﻿using System;
+using System.Diagnostics;
+
+namespace UberStrok.Realtime.Server.Game
+{
+    public abstract partial class GameRoom
+    {
+        public event EventHandler<PlayerKilledEventArgs> PlayerKilled;
+        public event EventHandler<PlayerRespawnedEventArgs> PlayerRespawned;
+        public event EventHandler<PlayerJoinedEventArgs> PlayerJoined;
+        public event EventHandler<PlayerLeftEventArgs> PlayerLeft;
+
+        protected virtual void OnPlayerRespawned(PlayerRespawnedEventArgs args)
+        {
+            var respawnActor = args.Player;
+            if (respawnActor.State.Current != ActorState.Id.Killed)
+            {
+                Log.Error($"{respawnActor.GetDebug()} failed to respawned was not in killed state {GetDebug()}");
+            }
+            else
+            {
+                Spawn(respawnActor);
+                respawnActor.State.Previous();
+
+                PlayerRespawned?.Invoke(this, args);
+            }
+        }
+
+        protected virtual void OnPlayerKilled(PlayerKilledEventArgs args)
+        {
+            args.Victim.State.Set(ActorState.Id.Killed);
+
+            /* Let all actors know that the player has died. */
+            foreach (var otherActor in Actors)
+            {
+                otherActor.Peer.Events.Game.SendPlayerKilled(
+                    args.Attacker.Cmid, 
+                    args.Victim.Cmid, 
+                    args.ItemClass, 
+                    args.Damage, 
+                    args.Part, 
+                    args.Direction
+                );
+            }
+
+            Log.Info($"{args.Victim.GetDebug()} was killed by {args.Attacker.GetDebug()}.");
+            PlayerKilled?.Invoke(this, args);
+        }
+
+        protected virtual void OnPlayerJoined(PlayerJoinedEventArgs args)
+        {
+            _players.Add(args.Player);
+
+            args.Player.DateJoined = Loop.Time;
+
+            /* Let the actors know the player has joined the room. */
+            foreach (var otherActor in Actors)
+            {
+                Debug.Assert(otherActor.Movement.PlayerId == otherActor.PlayerId);
+
+                otherActor.Peer.Events.Game.SendPlayerJoinedGame(
+                    args.Player.Info.GetView(), 
+                    args.Player.Movement
+                );
+            }
+
+            Log.Info($"{args.Player.GetDebug()} joined game in team {args.Team}.");
+            PlayerJoined?.Invoke(this, args);
+        }
+
+        protected virtual void OnPlayerLeft(PlayerLeftEventArgs args)
+        {
+            if (_players.Remove(args.Player))
+            {
+                /* Let other actors know that the player has left the room. */
+                foreach (var otherActor in Actors)
+                    otherActor.Peer.Events.Game.SendPlayerLeftGame(args.Player.Cmid);
+
+                Log.Info($"{args.Player.GetDebug()} left game.");
+                PlayerLeft?.Invoke(this, args);
+            }
+        }
+    }
+}

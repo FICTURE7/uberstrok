@@ -32,7 +32,7 @@ namespace UberStrok.Core.Serialization.Views
                 else
                     mask |= 2;
 
-                Int32Proxy.Serialize(bytes, instance.Number);
+                Int32Proxy.Serialize(bytes, instance.RoomId);
                 Int32Proxy.Serialize(bytes, instance.PlayerLimit);
 
                 if (instance.Server != null)
@@ -67,7 +67,7 @@ namespace UberStrok.Core.Serialization.Views
             if ((mask & 2) != 0)
                 view.Name = StringProxy.Deserialize(bytes);
 
-            view.Number = Int32Proxy.Deserialize(bytes);
+            view.RoomId = Int32Proxy.Deserialize(bytes);
             view.PlayerLimit = Int32Proxy.Deserialize(bytes);
 
             if ((mask & 4) != 0)

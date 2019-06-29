@@ -62,6 +62,7 @@
     <Compile Include="GamePeerOperationHandler.cs" />
     <Compile Include="Rooms\GameRoom.cs" />
     <Compile Include="Events\GameRoomEvents.cs" />
+    <Compile Include="Rooms\GameRoom.Events.cs" />
     <Compile Include="Rooms\GameRoom.Handler.cs" />
     <Compile Include="MatchStates\MatchState.Countdown.cs" />
     <Compile Include="ActorStates\ActorState.Killed.cs" />

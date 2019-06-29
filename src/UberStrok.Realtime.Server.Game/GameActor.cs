@@ -49,7 +49,7 @@ namespace UberStrok.Realtime.Server.Game
         public GameActor(GamePeer peer, GameRoom room)
         {
             Peer = peer ?? throw new ArgumentNullException(nameof(peer));
-            Room = room ?? throw new ArgumentNullException(nameof(peer));
+            Room = room ?? throw new ArgumentNullException(nameof(room));
 
             Log = LogManager.GetLogger(nameof(GameActor));
 
@@ -124,7 +124,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public string GetDebug()
         {
-            return $"(actor <{Cmid}> \"{PlayerName}\":{PlayerId} state {State.Current})";
+            return $"(actor <{Cmid}> \"{PlayerName}\":{PlayerId} state {State.Current} in {Room.GetDebug()})";
         }
     }
 }

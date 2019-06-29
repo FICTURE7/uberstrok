@@ -61,6 +61,19 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        protected sealed override void OnPlayerLeft(PlayerLeftEventArgs args)
+        {
+            if (args.Player.Info.TeamID == TeamID.BLUE)
+                BlueTeamPlayer--;
+            else if (args.Player.Info.TeamID == TeamID.RED)
+                RedTeamPlayer--;
+
+            base.OnPlayerLeft(args);
+
+            if (RedTeamPlayer == 0 || BlueTeamPlayer == 0)
+                State.Set(MatchState.Id.End);
+        }
+
         protected sealed override void OnPlayerKilled(PlayerKilledEventArgs args)
         {
             base.OnPlayerKilled(args);
@@ -90,7 +103,7 @@ namespace UberStrok.Realtime.Server.Game
             else
                 Winner = TeamID.RED;
 
-            if (BlueTeamScore >= View.KillLimit || RedTeamScore >= View.KillLimit)
+            if (BlueTeamScore >= GetView().KillLimit || RedTeamScore >= GetView().KillLimit)
                 State.Set(MatchState.Id.End);
         }
     }

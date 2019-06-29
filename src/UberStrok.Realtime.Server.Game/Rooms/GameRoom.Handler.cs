@@ -7,7 +7,7 @@ using UberStrok.Core.Common;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public abstract partial class GameRoom : BaseGameRoomOperationHandler, IRoom<GamePeer>
+    public abstract partial class GameRoom :  BaseGameRoomOperationHandler
     {
         /* Enqueue the work on the loop so processing of operations are serial. */
         protected override void Enqueue(Action action)
@@ -30,6 +30,11 @@ namespace UberStrok.Realtime.Server.Game
 
             actor.Info.TeamID = team;
             actor.Info.PlayerState = PlayerStates.Ready;
+
+            /* 
+             * Ignore these changes, since we'll send the player to the others
+             * through the PlayerJoined event.
+             */
             actor.Info.GetViewDelta().Reset();
 
             OnPlayerJoined(new PlayerJoinedEventArgs
@@ -64,12 +69,12 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnPowerUpPicked(GameActor actor, int pickupId, byte type, byte value)
+        protected override void OnPowerUpPicked(GameActor actor, int pickupId, PickupItemType type, byte value)
         {
             PowerUps.PickUp(
-                actor.Peer, 
-                pickupId, 
-                (PickupItemType)type, 
+                actor, 
+                pickupId,
+                type, 
                 value
             );
         }
@@ -230,6 +235,8 @@ namespace UberStrok.Realtime.Server.Game
                         Part = part,
                         Direction = -(direction.Normalized * weapon.GetView().DamageKnockback)
                     });
+
+                    break;
                 }
             }
         }

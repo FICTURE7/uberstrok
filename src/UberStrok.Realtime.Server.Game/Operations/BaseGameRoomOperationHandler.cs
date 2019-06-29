@@ -11,7 +11,7 @@ namespace UberStrok.Realtime.Server.Game
     {
         public sealed override byte Id => 0;
 
-        protected abstract void OnPowerUpPicked(GameActor actor, int pickupId, byte type, byte value);
+        protected abstract void OnPowerUpPicked(GameActor actor, int pickupId, PickupItemType type, byte value);
         protected abstract void OnRemoveProjectile(GameActor actor, int projectileId, bool explode);
         protected abstract void OnEmitProjectile(GameActor actor, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode);
         protected abstract void OnEmitQuickItem(GameActor actor, Vector3 origin, Vector3 direction, int itemId, byte playerNumber, int projectileId);
@@ -113,7 +113,7 @@ namespace UberStrok.Realtime.Server.Game
             var type = ByteProxy.Deserialize(bytes);
             var value = ByteProxy.Deserialize(bytes);
 
-            Enqueue(() => OnPowerUpPicked(peer.Actor, pickupId, type, value));
+            Enqueue(() => OnPowerUpPicked(peer.Actor, pickupId, (PickupItemType)type, value));
         }
 
         private void IsInSniperMode(GamePeer peer, MemoryStream bytes)

@@ -10,7 +10,8 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameRoomEvents : EventSender
     {
-        public GameRoomEvents(GamePeer peer) : base(peer)
+        public GameRoomEvents(GamePeer peer) 
+            : base(peer)
         {
             /* Space */
         }

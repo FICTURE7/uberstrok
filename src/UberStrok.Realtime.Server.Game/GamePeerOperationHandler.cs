@@ -48,7 +48,7 @@ namespace UberStrok.Realtime.Server.Game
 
             var rooms = new List<GameRoomDataView>(GameApplication.Instance.Rooms.Count);
             foreach (var room in GameApplication.Instance.Rooms)
-                rooms.Add(room.View);
+                rooms.Add(room.GetView());
 
             peer.Events.SendGameListUpdate(rooms, EmptyList);
         }
@@ -118,7 +118,7 @@ namespace UberStrok.Realtime.Server.Game
             Debug.Assert(room != null);
 
             /* Set quick-switch flag. */
-            room.View.GameFlags |= 4;
+            room.GetView().GameFlags |= 4;
             room.Join(peer);
         }
 
@@ -154,7 +154,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 /* Request password if the room is password protected & check password.*/
                 if (NeedPassword(room, peer.GetUser(false)) && !CheckPassword(room, password))
-                    peer.Events.SendRequestPasswordForRoom(room.View.Server.ConnectionString, room.RoomId);
+                    peer.Events.SendRequestPasswordForRoom(room.GetView().Server.ConnectionString, room.RoomId);
                 else
                     room.Join(peer);
             }
@@ -224,7 +224,7 @@ namespace UberStrok.Realtime.Server.Game
 
         private static bool NeedPassword(GameRoom room, UberstrikeUserView user)
         {
-            return room.View.IsPasswordProtected && user.CmuneMemberView.PublicProfile.AccessLevel <= MemberAccessLevel.Moderator;
+            return room.GetView().IsPasswordProtected && user.CmuneMemberView.PublicProfile.AccessLevel <= MemberAccessLevel.Moderator;
         }
 
         private static bool CheckPassword(GameRoom room, string password)

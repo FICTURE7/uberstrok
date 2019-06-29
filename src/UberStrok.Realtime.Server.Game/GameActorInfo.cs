@@ -40,8 +40,6 @@ namespace UberStrok.Realtime.Server.Game
             get => _view.PlayerId;
             set
             {
-                _viewDelta.PlayerId = value;
-
                 /* 
                  * I don't think the client would like it, but whatever; should
                  * also change the PlayerId associated with the 
@@ -50,6 +48,7 @@ namespace UberStrok.Realtime.Server.Game
                 if (value != PlayerId)
                 {
                     _view.PlayerId = value;
+                    _viewDelta.PlayerId = value;
                     _viewDelta.Changes[GameActorInfoDeltaView.Keys.PlayerId] = value;
                 }
             }

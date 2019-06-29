@@ -26,11 +26,15 @@ namespace UberStrok.Realtime.Server.Game
 
                 MostValuablePlayers = Room.GetMvps(),
 
-                MatchGuid = Room.View.Guid,
+                MatchGuid = Room.GetView().Guid,
                 HasWonMatch = Room.Winner == Actor.Info.TeamID,
                 TimeInGameMinutes = (int)Math.Ceiling((Room.Loop.Time - Actor.DateJoined).TotalSeconds),
             };
 
+            /* 
+             * This sets the client's match and player state to `end of match`
+             * state which is the equivalent of End state.
+             */
             Peer.Events.Game.SendMatchEnd(view);
 
             Actor.State.Reset();
