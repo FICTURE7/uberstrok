@@ -20,6 +20,12 @@ namespace UberStrok.Realtime.Server.Game
 
         private readonly GameRoomDataView _view;
 
+        /* 
+         * Dictionary mapping player CMIDs to StatisticsManager instances.
+         * This is used for when a player leaves and joins the game again; so
+         * as to retain his stats.
+         */
+        private readonly Dictionary<int, StatisticsManager> _stats;
         /* List of cached player stats for end game. */
         private List<StatsSummaryView> _mvps;
 
@@ -84,6 +90,8 @@ namespace UberStrok.Realtime.Server.Game
             ReportLog = LogManager.GetLogger("Report");
 
             int capacity = data.PlayerLimit / 2;
+
+            _stats = new Dictionary<int, StatisticsManager>();
 
             _players = new List<GameActor>(capacity);
             _actors = new List<GameActor>(capacity); 
@@ -265,6 +273,7 @@ namespace UberStrok.Realtime.Server.Game
             }
 
             _mvps = null;
+            _stats.Clear();
             _players.Clear();
 
             State.Reset();

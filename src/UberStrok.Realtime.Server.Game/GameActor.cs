@@ -8,6 +8,8 @@ namespace UberStrok.Realtime.Server.Game
 {
     public class GameActor
     {
+        private StatisticsManager _statistics;
+        
         protected ILog Log { get; }
 
         public int Cmid => Info.Cmid;
@@ -30,7 +32,16 @@ namespace UberStrok.Realtime.Server.Game
 
         public DateTime DateJoined { get; set; }
 
-        public StatisticsManager Statistics { get; private set; }
+        public StatisticsManager Statistics
+        {
+            get => _statistics;
+            set
+            {
+                _statistics = value;
+                Info.Kills = (short)_statistics.Total.GetKills();
+                Info.Deaths = (short)_statistics.Total.Deaths;
+            }
+        }
 
         public DamageEventView Damages { get; }
         public PlayerMovement Movement { get; }

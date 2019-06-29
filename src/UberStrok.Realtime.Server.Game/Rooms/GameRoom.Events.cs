@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -49,6 +50,12 @@ namespace UberStrok.Realtime.Server.Game
 
         protected virtual void OnPlayerJoined(PlayerJoinedEventArgs args)
         {
+            /* Try to get the player's old stats in this room, if he had one. */
+            if (_stats.TryGetValue(args.Player.Cmid, out StatisticsManager statistics))
+                args.Player.Statistics = statistics;
+            else
+                _stats.Add(args.Player.Cmid, args.Player.Statistics);
+
             _players.Add(args.Player);
 
             args.Player.DateJoined = Loop.Time;
