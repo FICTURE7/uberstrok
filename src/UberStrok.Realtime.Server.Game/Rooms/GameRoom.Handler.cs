@@ -30,6 +30,7 @@ namespace UberStrok.Realtime.Server.Game
 
             actor.Info.TeamID = team;
             actor.Info.PlayerState = PlayerStates.Ready;
+            actor.PlayerId = _nextPlayer++;
 
             /* 
              * Ignore these changes, since we'll send the player to the others

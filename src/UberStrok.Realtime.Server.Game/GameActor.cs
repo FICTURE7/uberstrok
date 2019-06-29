@@ -130,7 +130,7 @@ namespace UberStrok.Realtime.Server.Game
 
             Statistics = new StatisticsManager();
 
-            Log.Info($"{GetDebug()} rested with armor capacity {Info.ArmorPointCapacity}.");
+            Log.Info($"{GetDebug()} has been reset with armor capacity {Info.ArmorPointCapacity}.");
         }
 
         public string GetDebug()

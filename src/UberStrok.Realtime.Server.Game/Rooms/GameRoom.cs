@@ -278,6 +278,8 @@ namespace UberStrok.Realtime.Server.Game
 
             State.Reset();
             State.Set(MatchState.Id.WaitingForPlayers);
+
+            Log.Info($"{GetDebug()} has been reset.");
         }
 
         private void OnTick()
@@ -410,11 +412,6 @@ namespace UberStrok.Realtime.Server.Game
                 peer.Events.SendRoomEntered(GetView());
 
                 peer.Actor = new GameActor(peer, this);
-                peer.Actor.PlayerId = _nextPlayer++;
-
-                /* Ignore PlayerId change. */
-                peer.Actor.Info.GetViewDelta().Changes.Clear();
-
                 peer.Actor.State.Set(ActorState.Id.Overview);
             }
             catch (Exception ex)
