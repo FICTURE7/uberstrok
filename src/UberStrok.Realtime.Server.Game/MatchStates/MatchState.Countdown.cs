@@ -22,8 +22,14 @@ namespace UberStrok.Realtime.Server.Game
              * Prepare all players by placing them in a 'prepare for next round state',
              * and spawning them.
              */
-            foreach (var actor in Room.Players)
-                actor.State.Set(ActorState.Id.Countdown);
+            foreach (var player in Room.Players)
+                player.State.Set(ActorState.Id.Countdown);
+
+
+            /* Reset all power ups in the map. */
+            Room.PowerUps.Reset();
+            foreach (var actor in Room.Actors)
+                actor.Peer.Events.Game.SendResetAllPowerUps();
 
             _countdown.Restart();
         }

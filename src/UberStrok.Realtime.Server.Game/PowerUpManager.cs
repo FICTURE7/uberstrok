@@ -25,6 +25,17 @@ namespace UberStrok.Realtime.Server.Game
         public bool IsLoaded => _respawnTimesOriginal != null;
         public List<int> Respawning => _respawning;
 
+        public void Reset()
+        {
+            if (!IsLoaded)
+                return;
+
+            for (int i = 0; i < _respawnTimesOriginal.Count; i++)
+                _respawnTimes[i] = _respawnTimesOriginal[i];
+
+            _respawning.Clear();
+        }
+
         public void Load(List<ushort> respawnTimes)
         {
             var length = respawnTimes.Count;

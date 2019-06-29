@@ -276,6 +276,8 @@ namespace UberStrok.Realtime.Server.Game
             _stats.Clear();
             _players.Clear();
 
+            PowerUps.Reset();
+
             State.Reset();
             State.Set(MatchState.Id.WaitingForPlayers);
 
