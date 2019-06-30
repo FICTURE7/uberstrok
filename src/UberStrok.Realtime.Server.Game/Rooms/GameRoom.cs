@@ -508,6 +508,11 @@ namespace UberStrok.Realtime.Server.Game
             var attackerPos = attacker.Movement.Position;
             direction = attackerPos - victimPos;
 
+            /* Chill time, game has ended; we don't do damage. */
+            if (State.Current == MatchState.Id.End)
+                return false;
+
+            /* We can't kill someone who's already dead. */
             if (!victim.Info.IsAlive)
                 return false;
 
