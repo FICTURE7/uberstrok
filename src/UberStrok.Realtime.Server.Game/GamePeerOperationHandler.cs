@@ -215,7 +215,6 @@ namespace UberStrok.Realtime.Server.Game
                     actor.Info.QuickItems = actor.Loadout.QuickItems.GetAsList();
 
                     actor.Info.ArmorPointCapacity = actor.Loadout.Gear.GetArmorCapacity();
-                    actor.Info.ArmorPoints = actor.Info.ArmorPointCapacity;
                 }
                 catch
                 {
