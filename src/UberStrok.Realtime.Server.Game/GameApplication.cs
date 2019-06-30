@@ -7,14 +7,15 @@ namespace UberStrok.Realtime.Server.Game
     {
         public static new GameApplication Instance => (GameApplication)ApplicationBase.Instance;
 
-        public GameRoomManager Rooms { get; private set; }
+        public GameLobby Lobby { get; private set; }
+        public GameRoomManager Rooms => Lobby.Rooms;
 
         public int PlayerCount
         {
             get
             {
                 var count = 0;
-                foreach (var room in Rooms)
+                foreach (var room in Lobby.Rooms)
                     count += room.Players.Count;
 
                 return count;
@@ -23,7 +24,7 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnSetup()
         {
-            Rooms = new GameRoomManager();
+            Lobby = new GameLobby();
         }
 
         protected override void OnTearDown()
@@ -35,7 +36,9 @@ namespace UberStrok.Realtime.Server.Game
         {
             try
             {
-                return new GamePeer(initRequest);
+                var peer = new GamePeer(initRequest);
+                Lobby.Join(peer);
+                return peer;
             }
             catch (Exception ex)
             {

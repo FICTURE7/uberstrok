@@ -37,8 +37,9 @@ namespace UberStrok.Realtime.Server.Game
         private readonly List<GameActor> _actors;
         private readonly List<GameActor> _players;
 
-        protected ILog Log { get; }
         protected ILog ReportLog { get; }
+
+        public DateTime DateCreated { get; }
 
         public Loop Loop { get; }
 
@@ -50,6 +51,8 @@ namespace UberStrok.Realtime.Server.Game
         public ShopManager Shop { get; }
         public SpawnManager Spawns { get; }
         public PowerUpManager PowerUps { get; }
+
+        public bool Updated { get; set; }
 
         public int RoundNumber { get; set; }
         public int StartTime { get; set; }
@@ -86,7 +89,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             _view = data ?? throw new ArgumentNullException(nameof(data));
 
-            Log = LogManager.GetLogger(GetType().Name);
+            DateCreated = DateTime.UtcNow;
             ReportLog = LogManager.GetLogger("Report");
 
             int capacity = data.PlayerLimit / 2;
@@ -613,7 +616,12 @@ namespace UberStrok.Realtime.Server.Game
 
         public GameRoomDataView GetView()
         {
-            _view.ConnectedPlayers = _players.Count;
+            if (_view.ConnectedPlayers != _players.Count)
+            {
+                _view.ConnectedPlayers = _players.Count;
+                Updated = true;
+            }
+
             return _view;
         }
 

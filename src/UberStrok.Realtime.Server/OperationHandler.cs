@@ -1,4 +1,5 @@
-﻿using PhotonHostRuntimeInterfaces;
+﻿using log4net;
+using PhotonHostRuntimeInterfaces;
 using System;
 using System.IO;
 
@@ -7,6 +8,13 @@ namespace UberStrok.Realtime.Server
     public abstract class OperationHandler
     {
         public abstract byte Id { get; }
+
+        protected ILog Log { get; }
+
+        protected OperationHandler()
+        {
+            Log = LogManager.GetLogger(GetType().Name);
+        }
 
         public abstract void OnOperationRequest(Peer peer, byte opCode, MemoryStream bytes);
 

@@ -11,8 +11,6 @@ namespace UberStrok.Realtime.Server.Game
     {
         public static readonly GamePeerOperationHandler Instance = new GamePeerOperationHandler();
 
-        private readonly static List<int> EmptyList = new List<int>(0);
-        private readonly static ILog Log = LogManager.GetLogger(nameof(GamePeerOperationHandler));
         private readonly static ILog ReportLog = LogManager.GetLogger("Report");
 
         /* TODO: Implement some configs or somethings. */
@@ -38,19 +36,11 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnGetGameListUpdates(GamePeer peer)
         {
-            /* 
-             * TODO: Don't use that, cause apparently there is a FullGameList
-             * event which we can send to wipe stuff and things.
-             * 
-             * Clear the client list of games available.
-             */
-            peer.Events.SendGameListUpdateEnd();
-
             var rooms = new List<GameRoomDataView>(GameApplication.Instance.Rooms.Count);
             foreach (var room in GameApplication.Instance.Rooms)
                 rooms.Add(room.GetView());
 
-            peer.Events.SendGameListUpdate(rooms, EmptyList);
+            peer.Events.SendFullGameList(rooms);
         }
 
         protected override void OnGetServerLoad(GamePeer peer)

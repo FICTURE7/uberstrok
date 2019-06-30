@@ -1,8 +1,7 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -11,30 +10,36 @@ namespace UberStrok.Realtime.Server.Game
     public class GameRoomManager : IEnumerable<GameRoom>
     {
         private int _roomId;
-        private readonly ConcurrentDictionary<int, GameRoom> _rooms;
+
+        private readonly object _sync;
+        private readonly Dictionary<int, GameRoom> _rooms;
+
+        private readonly List<int> _removedRooms;
+        private readonly List<GameRoomDataView> _updatedRooms;
+
+        protected ILog Log { get; }
+        public int Count => _rooms.Count;
 
         public GameRoomManager()
         {
-            _rooms = new ConcurrentDictionary<int, GameRoom>();
-        }
+            _rooms = new Dictionary<int, GameRoom>();
 
-        public int Count => _rooms.Count;
+            _sync = new object();
+            _updatedRooms = new List<GameRoomDataView>();
+            _removedRooms = new List<int>();
+
+            Log = LogManager.GetLogger(GetType().Name);
+        }
 
         public GameRoom Get(int roomId)
         {
-            if (_rooms.TryGetValue(roomId, out GameRoom room) && room.Actors.Count == 0)
+            lock (_sync)
             {
-                Remove(roomId);
-                return null;
+                if (_rooms.TryGetValue(roomId, out GameRoom room) && room.Actors.Count == 0)
+                    return null;
+
+                return room;
             }
-
-            return room;
-        }
-
-        public void Remove(int roomId)
-        {
-            if (_rooms.TryRemove(roomId, out GameRoom room))
-                room.Dispose();
         }
 
         public GameRoom Create(GameRoomDataView data, string password)
@@ -63,35 +68,68 @@ namespace UberStrok.Realtime.Server.Game
                     throw new NotSupportedException();
             }
 
-            room.RoomId = Interlocked.Increment(ref _roomId);
-            room.Password = password;
-
-            /* Should never really happen */
-            if (!_rooms.TryAdd(room.RoomId, room))
+            lock (_sync)
             {
-                room.Dispose();
-                throw new Exception("Unable to add game room to game room list");
+                room.RoomId = _roomId++;
+                room.Password = password;
+
+                _rooms.Add(room.RoomId, room);
+                _updatedRooms.Add(room.GetView());
             }
 
             return room;
         }
 
+        public void Tick()
+        {
+            lock (_sync)
+            {
+                foreach (var kv in _rooms)
+                {
+                    var room = kv.Value;
+                    var view = room.GetView();
+
+                    if (!view.IsPermanentGame && room.Actors.Count == 0 && 
+                        DateTime.UtcNow >= room.DateCreated.AddSeconds(15))
+                    {
+                        _removedRooms.Add(room.RoomId);
+                    }
+                    else if (room.Updated)
+                    {
+                        _updatedRooms.Add(room.GetView());
+                        room.Updated = false;
+                    }
+                }
+
+                foreach (var peer in GameApplication.Instance.Lobby.Peers)
+                    peer.Events.SendGameListUpdate(_updatedRooms, _removedRooms);
+
+                foreach (var roomId in _removedRooms)
+                {
+                    if (_rooms.TryGetValue(roomId, out GameRoom room))
+                    {
+                        _rooms.Remove(roomId);
+                        room.Dispose();
+                    }
+                }
+
+                _updatedRooms.Clear();
+                _removedRooms.Clear();
+            }
+        }
+
         public IEnumerator<GameRoom> GetEnumerator()
         {
-            var emptyRooms = new List<GameRoom>();
-
-            foreach (var kv in _rooms)
+            lock (_sync)
             {
-                var room = kv.Value;
-                /* Filter out empty rooms. */
-                if (room.Actors.Count == 0)
-                    emptyRooms.Add(room);
-                else
-                    yield return room;
+                foreach (var kv in _rooms)
+                {
+                    var room = kv.Value;
+                    /* Filter out empty rooms. */
+                    if (room.Actors.Count != 0)
+                        yield return room;
+                }
             }
-
-            foreach (var room in emptyRooms)
-                Remove(room.RoomId);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

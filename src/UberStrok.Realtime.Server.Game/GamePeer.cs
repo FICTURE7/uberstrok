@@ -1,6 +1,5 @@
 ﻿using Photon.SocketServer;
-using System;
-using System.Collections.Generic;
+using PhotonHostRuntimeInterfaces;
 using UberStrok.Core.Views;
 using UberStrok.WebServices.Client;
 
@@ -45,6 +44,13 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnAuthenticate(UberstrikeUserView userView)
         {
             GetLoadout(retrieve: true);
+        }
+
+        protected override void OnDisconnect(DisconnectReason reasonCode, string reasonDetail)
+        {
+            base.OnDisconnect(reasonCode, reasonDetail);
+
+            GameApplication.Instance.Lobby.Leave(this);
         }
     }
 }

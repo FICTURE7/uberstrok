@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorStates\ActorState.End.cs" />
+    <Compile Include="GameLobby.cs" />
     <Compile Include="Operations\BaseGamePeerOperationHandler.cs" />
     <Compile Include="Operations\BaseGameRoomOperationHandler.cs" />
     <Compile Include="MatchStates\MatchState.End.cs" />

@@ -33,6 +33,15 @@ namespace UberStrok.Realtime.Server.Game
                 SendEvent((byte)IGamePeerEventsType.GameListUpdateEnd, bytes);
         }
 
+        public void SendFullGameList(List<GameRoomDataView> gameList)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                ListProxy<GameRoomDataView>.Serialize(bytes, gameList, GameRoomDataViewProxy.Serialize);
+                SendEvent((byte)IGamePeerEventsType.FullGameList, bytes);
+            }
+        }
+
         public void SendServerLoadData(PhotonServerLoadView view)
         {
             using (var bytes = new MemoryStream())
