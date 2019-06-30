@@ -615,7 +615,30 @@ namespace UberStrok.Realtime.Server.Game
                 return;
 
             if (disposing)
+            {
+                /* Best effort clean up. */
+                foreach (var player in Players)
+                {
+                    foreach (var otherActor in Actors)
+                        otherActor.Peer.Events.Game.SendPlayerLeftGame(player.Cmid);
+                }
+
                 Loop.Dispose();
+
+                /* Clean up actors. */
+                foreach (var actor in Actors)
+                {
+                    var peer = actor.Peer;
+                    peer.Actor = null;
+                    peer.Handlers.Remove(Id);
+
+                    peer.Disconnect();
+                }
+
+                /* Clear to lose refs to GameActor objects. */
+                _actors.Clear();
+                _players.Clear();
+            }
 
             _disposed = true;
         }

@@ -139,7 +139,6 @@ namespace UberStrok.Core
                     /* Wait to get the signal first. */
                     _pauseWaitHandle.WaitOne();
 
-
                     /* Execute all the actions enqueued after updating. */
                     DoActions();
                     /* Do an update; calling the user code. */
@@ -174,6 +173,7 @@ namespace UberStrok.Core
                     continue;
 
                 try { action(); }
+                catch (ThreadAbortException) { throw; }
                 catch (Exception e) { _exceptionHandler(e); }
             }
         }
@@ -197,6 +197,7 @@ namespace UberStrok.Core
              * pass it back to user exception handler.
              */
             try { _handler(); }
+            catch (ThreadAbortException) { throw; }
             catch (Exception e) { _exceptionHandler(e); }
         }
 
