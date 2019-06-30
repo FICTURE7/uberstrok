@@ -14,6 +14,8 @@ namespace UberStrok.Realtime.Server.Game
         {
             /* Reset the player statistics when the countdown starts. */
             Actor.Statistics.Reset(hard: true);
+            Actor.Info.Health = 100;
+            Actor.Info.ArmorPoints = Actor.Info.ArmorPointCapacity;
             Actor.Info.Kills = 0;
             Actor.Info.Deaths = 0;
 
