@@ -38,8 +38,8 @@ namespace UberStrok.Realtime.Server.Game
             set
             {
                 _statistics = value;
-                Info.Kills = (short)_statistics.Total.GetKills();
-                Info.Deaths = (short)_statistics.Total.Deaths;
+                Info.Kills = (short)(_statistics.Total.GetKills() - _statistics.Total.Suicides);
+                Info.Deaths = (short)(_statistics.Total.Deaths + _statistics.Total.Suicides);
             }
         }
 
