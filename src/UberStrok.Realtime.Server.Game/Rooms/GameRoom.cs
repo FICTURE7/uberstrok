@@ -419,9 +419,12 @@ namespace UberStrok.Realtime.Server.Game
             catch (Exception ex)
             {
                 peer.Actor = null;
-                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
-                Log.Error($"Failed to join {GetDebug()}.", ex);
+                peer.Handlers.Remove(Id);
 
+                /* The client doesn't care about `server` and `roomId`. */
+                peer.Events.SendRoomEnterFailed(default, default, "Failed to join room.");
+
+                Log.Error($"Failed to join {GetDebug()}.", ex);
                 /* Something went wrong; we dip. */
                 return;
             }
