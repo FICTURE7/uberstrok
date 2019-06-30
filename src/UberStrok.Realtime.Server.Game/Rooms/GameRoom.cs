@@ -325,7 +325,7 @@ namespace UberStrok.Realtime.Server.Game
                          * NOTE: This should never happen, but just incase 
                          * stuff goes wild.
                          */
-                        Log.Error($"Failed to update {actor.GetDebug()}.", ex);
+                        Log.Error($"Failed to tick {actor.GetDebug()}.", ex);
                         actor.Peer.Disconnect();
 
                         /* Something happened; we dip. */

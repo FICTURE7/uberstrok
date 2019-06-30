@@ -70,6 +70,7 @@ namespace UberStrok.Realtime.Server.Game
 
             Ping = new PingManager();
             Projectiles = new ProjectileManager();
+            Statistics = new StatisticsManager();
 
             Trust = new TrustManager();
             Loadout = new LoadoutManager();
@@ -128,7 +129,7 @@ namespace UberStrok.Realtime.Server.Game
             State.Reset();
             Loadout.Reset();
 
-            Statistics = new StatisticsManager();
+            Statistics.Reset(hard: true);
 
             Log.Info($"{GetDebug()} has been reset with armor capacity {Info.ArmorPointCapacity}.");
         }

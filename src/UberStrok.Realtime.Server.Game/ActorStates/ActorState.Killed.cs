@@ -27,7 +27,7 @@ namespace UberStrok.Realtime.Server.Game
             Actor.Info.PlayerState |= PlayerStates.Dead;
 
             /* Reset current statistics view. */
-            Actor.Statistics.Reset();
+            Actor.Statistics.Reset(hard: false);
 
             _respawnCountdown.Restart();
         }

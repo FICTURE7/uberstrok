@@ -17,8 +17,8 @@ namespace UberStrok.Core
         public int MostConsecutiveKills { get; set; }
         public int CurrentConsecutiveKills { get; set; }
 
-        public StatsCollectionView Total { get; }
-        public StatsCollectionView Best { get; }
+        public StatsCollectionView Total { get; private set; }
+        public StatsCollectionView Best { get; private set; }
         public StatsCollectionView Current { get; private set; }
 
         public StatisticsManager()
@@ -26,7 +26,7 @@ namespace UberStrok.Core
             Total = new StatsCollectionView();
             Best = new StatsCollectionView();
 
-            Reset();
+            Reset(hard: false);
         }
 
         public void RecordHeadshot(int count = 1)
@@ -179,8 +179,15 @@ namespace UberStrok.Core
             }
         }
 
-        public void Reset()
+        public void Reset(bool hard)
         {
+            if (hard)
+            {
+                Total = new StatsCollectionView();
+                Best = new StatsCollectionView();
+                MostConsecutiveKills = 0;
+            }
+
             Current = new StatsCollectionView();
             CurrentConsecutiveKills = 0;
         }

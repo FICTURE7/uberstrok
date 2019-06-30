@@ -1,4 +1,6 @@
-﻿namespace UberStrok.Realtime.Server.Game
+﻿using UberStrok.Core;
+
+namespace UberStrok.Realtime.Server.Game
 {
     public sealed class CountdownActorState : ActorState
     {
@@ -10,6 +12,11 @@
 
         public override void OnEnter()
         {
+            /* Reset the player statistics when the countdown starts. */
+            Actor.Statistics.Reset(hard: true);
+            Actor.Info.Kills = 0;
+            Actor.Info.Deaths = 0;
+
             /* 
              * This sets the client's match and player state to 
              * `prepare for next round` state which is the equivalent of

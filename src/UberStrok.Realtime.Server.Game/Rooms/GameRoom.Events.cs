@@ -13,15 +13,14 @@ namespace UberStrok.Realtime.Server.Game
 
         protected virtual void OnPlayerRespawned(PlayerRespawnedEventArgs args)
         {
-            var respawnActor = args.Player;
-            if (respawnActor.State.Current != ActorState.Id.Killed)
+            if (args.Player.State.Current != ActorState.Id.Killed)
             {
-                Log.Error($"{respawnActor.GetDebug()} failed to respawned was not in killed state {GetDebug()}");
+                Log.Error($"{args.Player.GetDebug()} failed to respawned was not in killed state.");
             }
             else
             {
-                Spawn(respawnActor);
-                respawnActor.State.Previous();
+                Spawn(args.Player);
+                args.Player.State.Previous();
 
                 PlayerRespawned?.Invoke(this, args);
             }
