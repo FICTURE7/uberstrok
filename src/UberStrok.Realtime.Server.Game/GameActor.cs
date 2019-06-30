@@ -103,6 +103,8 @@ namespace UberStrok.Realtime.Server.Game
 
             Loadout.Update(Room.Shop, loadoutView);
 
+            PlayerId = 0;
+            
             Info.PlayerName = profileView.Name;
             Info.PlayerState = PlayerStates.None;
             Info.TeamID = TeamID.NONE;
