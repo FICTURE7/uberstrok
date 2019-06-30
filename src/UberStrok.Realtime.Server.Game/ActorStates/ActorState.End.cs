@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game

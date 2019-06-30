@@ -2,7 +2,8 @@
 {
     public sealed class WaitingForPlayersActorState : ActorState
     {
-        public WaitingForPlayersActorState(GameActor actor) : base(actor)
+        public WaitingForPlayersActorState(GameActor actor) 
+            : base(actor)
         {
             /* Space */
         }

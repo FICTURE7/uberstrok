@@ -7,7 +7,8 @@ namespace UberStrok.Realtime.Server.Game
     {
         private readonly Timer _overflowTimer;
 
-        public PlayingActorState(GameActor actor) : base(actor)
+        public PlayingActorState(GameActor actor) 
+            : base(actor)
         {
             _overflowTimer = new Timer(Room.Loop, TimeSpan.FromSeconds(1));
             _overflowTimer.Tick += OnOverflowTick;
