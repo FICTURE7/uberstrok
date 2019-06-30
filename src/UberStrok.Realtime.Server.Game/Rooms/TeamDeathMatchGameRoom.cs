@@ -70,7 +70,7 @@ namespace UberStrok.Realtime.Server.Game
 
             base.OnPlayerLeft(args);
 
-            if (RedTeamPlayer == 0 || BlueTeamPlayer == 0)
+            if (State.Current != MatchState.Id.WaitingForPlayers && (RedTeamPlayer == 0 || BlueTeamPlayer == 0))
                 State.Set(MatchState.Id.End);
         }
 
