@@ -406,15 +406,29 @@ namespace UberStrok.Realtime.Server.Game
             {
                 peer.Handlers.Add(this);
 
-                /* 
-                 * This prepares the client for the game room; that is it 
-                 * creates the game room instance type and registers the
-                 * GameRoom OperationHandler to its photon client.
-                 */
-                peer.Events.SendRoomEntered(GetView());
+                var view = GetView();
+                var actor = new GameActor(peer, this);
 
-                peer.Actor = new GameActor(peer, this);
-                peer.Actor.State.Set(ActorState.Id.Overview);
+                if (view.IsFull && actor.Info.AccessLevel < MemberAccessLevel.QA)
+                {
+                    peer.Events.SendRoomEnterFailed(default, default, "The game is full.");
+                }
+                else
+                {
+                    /* 
+                     * This prepares the client for the game room; that is it 
+                     * creates the game room instance type and registers the
+                     * GameRoom OperationHandler to its photon client.
+                     */
+                    peer.Events.SendRoomEntered(view);
+
+                    peer.Actor = actor;
+                    peer.Actor.State.Set(ActorState.Id.Overview);
+
+                    _actors.Add(peer.Actor);
+
+                    Log.Info($"{peer.Actor.GetDebug()} joined.");
+                }
             }
             catch (Exception ex)
             {
@@ -425,13 +439,7 @@ namespace UberStrok.Realtime.Server.Game
                 peer.Events.SendRoomEnterFailed(default, default, "Failed to join room.");
 
                 Log.Error($"Failed to join {GetDebug()}.", ex);
-                /* Something went wrong; we dip. */
-                return;
             }
-
-            _actors.Add(peer.Actor);
-
-            Log.Info($"{peer.Actor.GetDebug()} joined.");
         }
 
         private void DoLeave(GamePeer peer)
