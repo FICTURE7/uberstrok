@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using UberStrok.Core;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
@@ -257,6 +258,8 @@ namespace UberStrok.Realtime.Server.Game
 
                     tuple.Item1.Achievements.Add((byte)achievement, tuple.Item2);
                 }
+
+                _mvps = _mvps.OrderByDescending(x => x.Kills).ToList();
             }
 
             return _mvps;
