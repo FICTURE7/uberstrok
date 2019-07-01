@@ -57,8 +57,6 @@ namespace UberStrok.Realtime.Server.Game
 
             _players.Add(args.Player);
 
-            args.Player.DateJoined = Loop.Time;
-
             /* Let the actors know the player has joined the room. */
             foreach (var otherActor in Actors)
             {

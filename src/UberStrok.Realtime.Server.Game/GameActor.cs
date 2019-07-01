@@ -42,7 +42,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public DateTime DateJoined { get; set; }
+        public DateTime DatePlayed { get; set; }
 
         public StatisticsManager Statistics
         {

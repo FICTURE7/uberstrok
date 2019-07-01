@@ -16,6 +16,8 @@ namespace UberStrok.Realtime.Server.Game
 
         public override void OnEnter()
         {
+            Actor.DatePlayed = Room.Loop.Time;
+
             /* 
              * This sets the client's match and player state to `match running`
              * state which is the equivalent of `playing` state.

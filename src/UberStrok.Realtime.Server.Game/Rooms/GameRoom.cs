@@ -292,9 +292,6 @@ namespace UberStrok.Realtime.Server.Game
 
         private void OnTick()
         {
-            State.Tick();
-            PowerUps.Tick();
-
             /* 
              * Expected interval between ticks by the client is 100ms (10tick/s),
              *
@@ -312,6 +309,9 @@ namespace UberStrok.Realtime.Server.Game
                 _frameTime %= UBZ_INTERVAL;
                 _frame++;
             }
+
+            State.Tick();
+            PowerUps.Tick();
 
             foreach (var actor in Actors)
             {
@@ -346,7 +346,7 @@ namespace UberStrok.Realtime.Server.Game
                         var delta = actor.Info.GetViewDelta();
 
                         /* 
-                         * If the actor has changed something since the last tick.
+                         * If the player has changed something since the last tick.
                          */
                         if (delta.Changes.Count > 0)
                         {

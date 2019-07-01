@@ -13,6 +13,10 @@ namespace UberStrok.Realtime.Server.Game
 
         public override void OnEnter()
         {
+            var playTime = 0;
+            if (Room.Players.Contains(Actor))
+                playTime = (int)Math.Ceiling((Room.Loop.Time - Actor.DatePlayed).TotalSeconds);
+
             var view = new EndOfMatchDataView
             {
                 PlayerStatsTotal = Actor.Statistics.Total,
@@ -27,7 +31,7 @@ namespace UberStrok.Realtime.Server.Game
 
                 MatchGuid = Room.GetView().Guid,
                 HasWonMatch = Room.Winner == Actor.Info.TeamID,
-                TimeInGameMinutes = (int)Math.Ceiling((Room.Loop.Time - Actor.DateJoined).TotalSeconds),
+                TimeInGameMinutes = playTime,
             };
 
             /* 
