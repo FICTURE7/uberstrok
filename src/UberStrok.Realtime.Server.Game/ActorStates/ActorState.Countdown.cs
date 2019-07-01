@@ -1,6 +1,4 @@
-﻿using UberStrok.Core;
-
-namespace UberStrok.Realtime.Server.Game
+﻿namespace UberStrok.Realtime.Server.Game
 {
     public sealed class CountdownActorState : ActorState
     {

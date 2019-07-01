@@ -338,22 +338,22 @@ namespace UberStrok.Realtime.Server.Game
                         continue;
                     }
 
-                    var delta = actor.Info.GetViewDelta();
-
-                    /* 
-                     * If the actor has changed something since the last tick.
-                     */
-                    if (delta.Changes.Count > 0)
-                    {
-                        delta.Update();
-                        _actorDeltas.Add(delta);
-                    }
-
                     /* 
                      * If the actor is a player.
                      */
                     if (Players.Contains(actor))
                     {
+                        var delta = actor.Info.GetViewDelta();
+
+                        /* 
+                         * If the actor has changed something since the last tick.
+                         */
+                        if (delta.Changes.Count > 0)
+                        {
+                            delta.Update();
+                            _actorDeltas.Add(delta);
+                        }
+
                         /* 
                          * If the player has any damage events, we send them.
                          */
