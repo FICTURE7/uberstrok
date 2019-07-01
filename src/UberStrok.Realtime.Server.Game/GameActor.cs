@@ -30,6 +30,18 @@ namespace UberStrok.Realtime.Server.Game
             set => Info.PlayerName = value;
         }
 
+        public string FullPlayerName
+        {
+            get
+            {
+                var name = PlayerName;
+                if (Info.ClanTag != null)
+                    name = $"[{Info.ClanTag}] {name}";
+
+                return name;
+            }
+        }
+
         public DateTime DateJoined { get; set; }
 
         public StatisticsManager Statistics
