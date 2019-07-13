@@ -30,7 +30,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             base.OnPlayerLeft(e);
 
-            if (State.Current == MatchState.Id.WaitingForPlayers && Players.Count <= 1)
+            if (State.Current != MatchState.Id.WaitingForPlayers && Players.Count <= 1)
             {
                 State.Set(MatchState.Id.End);
             }
