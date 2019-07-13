@@ -109,94 +109,78 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnExplosionDamage(GameActor actor, int targetCmid, byte slot, byte distance, Vector3 force)
         {
-            int weaponSlot = slot;
-            if (weaponSlot < 0 || weaponSlot >= actor.Info.Weapons.Count)
-            {
-                ReportLog.Warn($"[Weapon] OnExplosionDamage Could not find a Weapon ID in that slot {actor.Cmid}");
-                actor.Peer.Disconnect();
-                return;
-            }
-
-            int weaponId = actor.Info.Weapons[weaponSlot];
-
             GameActor attacker = actor;
-            Weapon weapon = attacker.Loadout.Weapons[weaponId];
 
-            if (weapon == null)
-            {
-                ReportLog.Warn($"[Weapon] OnExplosionDamage Could not find a Weapon in that slot {actor.Cmid}");
+            int weaponSlot = slot;
+            if (weaponSlot >= attacker.Info.Weapons.Count)
                 return;
-            }
+
+            int weaponId = attacker.Info.Weapons[weaponSlot];
+            var weapon = attacker.Loadout.Weapons[weaponId];
+            if (weapon == null)
+                return;
 
             var itemClass = weapon.GetView().ItemClass;
             if (itemClass != UberStrikeItemClass.WeaponCannon && itemClass != UberStrikeItemClass.WeaponLauncher)
-            {
-                ReportLog.Warn($"[Weapon] OnExplosionDamage ItemClass mismatch {actor.Cmid}");
                 return;
-            }
 
             /* Calculate damage amount. */
-            float damage = weapon.GetView().DamagePerProjectile;
+            float floatDamage = weapon.GetView().DamagePerProjectile;
             float radius = weapon.GetView().SplashRadius / 100f;
-            float damageExplosion = damage * (radius - distance) / radius;
-            short shortDamage = (short)damageExplosion;
+            float damageExplosion = floatDamage * (radius - distance) / radius;
+            short damage = (short)Math.Min(damageExplosion, short.MaxValue);
 
             actor.Projectiles.Explode();
+
             if (actor.Projectiles.FalsePositive >= 10)
             {
                 ReportLog.Warn($"[Weapon] OnExplosionDamage False positive reached {actor.Cmid}");
                 actor.Peer.Disconnect();
-                return;
             }
-
-            foreach (var victim in Players)
+            else
             {
-                if (victim.Cmid != targetCmid)
-                    continue;
-
-                if (DoDamage(victim, attacker, weapon, shortDamage, BodyPart.Body, out Vector3 direction))
+                foreach (var victim in Players)
                 {
-                    OnPlayerKilled(new PlayerKilledEventArgs
+                    if (victim.Cmid != targetCmid)
+                        continue;
+
+                    if (DoDamage(victim, attacker, weapon, damage, BodyPart.Body, out Vector3 direction))
                     {
-                        Attacker = attacker,
-                        Victim = victim,
-                        ItemClass = weapon.GetView().ItemClass,
-                        Damage = (ushort)shortDamage,
-                        Part = BodyPart.Body,
-                        Direction = -direction
-                    });
+                        OnPlayerKilled(new PlayerKilledEventArgs
+                        {
+                            Attacker = attacker,
+                            Victim = victim,
+                            ItemClass = weapon.GetView().ItemClass,
+                            Damage = (ushort)damage,
+                            Part = BodyPart.Body,
+                            Direction = -direction
+                        });
+
+                        break;
+                    }
                 }
             }
         }
 
         protected override void OnDirectHitDamage(GameActor actor, int target, byte bodyPart, byte bullets)
         {
-            int currentWeaponSlot = actor.Info.CurrentWeaponSlot;
-            if (currentWeaponSlot < 0 || currentWeaponSlot >= actor.Info.Weapons.Count)
-            {
-                ReportLog.Warn($"[Weapon] OnDirectHitDamage Could not find a Weapon ID in the current slot {actor.Cmid}");
-                actor.Peer.Disconnect();
-                return;
-            }
-
-            int currentWeaponId = actor.Info.Weapons[currentWeaponSlot];
-
             GameActor attacker = actor;
-            Weapon weapon = attacker.Loadout.Weapons[currentWeaponId];
 
-            if (weapon == null)
-            {
-                ReportLog.Warn($"[Weapon] OnDirectHitDamage Could not find a Weapon in the current slot {actor.Cmid}");
+            int currentWeaponSlot = attacker.Info.CurrentWeaponSlot;
+            if (currentWeaponSlot >= attacker.Info.Weapons.Count)
                 return;
-            }
+
+            int currentWeaponId = attacker.Info.Weapons[currentWeaponSlot];
+            var weapon = attacker.Loadout.Weapons[currentWeaponId];
+            if (weapon == null)
+                return;
 
             Debug.Assert(currentWeaponId == weapon.GetView().ID);
 
-            if (!attacker.Info.IsAlive)
-            {
-                Log.Info("Attacker is dead. Not registering direct hit");
+            if (bullets > weapon.GetView().ProjectilesPerShot)
                 return;
-            }
+            if (!attacker.Info.IsAlive)
+                return;
 
             weapon.Hit();
 
@@ -204,43 +188,38 @@ namespace UberStrok.Realtime.Server.Game
             {
                 ReportLog.Warn($"[Weapon] OnDirectHitDamage FalsePositive reached {actor.Cmid}");
                 actor.Peer.Disconnect();
-                return;
             }
-
-            if (bullets > weapon.GetView().ProjectilesPerShot)
+            else
             {
-                ReportLog.Warn($"[Weapon] OnDirectHitDamage Fired more bullet than in stats {actor.Cmid}");
-                return;
-            }
+                int intDamage = weapon.GetView().DamagePerProjectile * bullets;
 
-            /* TODO: Clamp value. */
-            int damage = weapon.GetView().DamagePerProjectile * bullets;
+                /* Calculate the critical hit damage. */
+                var part = (BodyPart)bodyPart;
+                int bonus = weapon.GetView().CriticalStrikeBonus;
+                if (bonus > 0 && (part == BodyPart.Head || part == BodyPart.Nuts))
+                    intDamage += (int)Math.Round(bonus / 100f * intDamage);
 
-            /* Calculate the critical hit damage. */
-            var part = (BodyPart)bodyPart;
-            int bonus = weapon.GetView().CriticalStrikeBonus;
-            if (bonus > 0 && (part == BodyPart.Head || part == BodyPart.Nuts))
-                damage = (int)Math.Round(damage + (damage * (bonus / 100f)));
-            var shortDamage = (short)damage;
+                var damage = (short)Math.Min(intDamage, short.MaxValue);
 
-            foreach (var victim in Players)
-            {
-                if (victim.Cmid != target)
-                    continue;
-
-                if (DoDamage(victim, attacker, weapon, shortDamage, part, out Vector3 direction))
+                foreach (var victim in Players)
                 {
-                    OnPlayerKilled(new PlayerKilledEventArgs
-                    {
-                        Attacker = attacker,
-                        Victim = victim,
-                        ItemClass = weapon.GetView().ItemClass,
-                        Damage = (ushort)shortDamage,
-                        Part = part,
-                        Direction = -(direction.Normalized * weapon.GetView().DamageKnockback)
-                    });
+                    if (victim.Cmid != target)
+                        continue;
 
-                    break;
+                    if (DoDamage(victim, attacker, weapon, damage, part, out Vector3 direction))
+                    {
+                        OnPlayerKilled(new PlayerKilledEventArgs
+                        {
+                            Attacker = attacker,
+                            Victim = victim,
+                            ItemClass = weapon.GetView().ItemClass,
+                            Damage = (ushort)damage,
+                            Part = part,
+                            Direction = -(direction.Normalized * weapon.GetView().DamageKnockback)
+                        });
+
+                        break;
+                    }
                 }
             }
         }
@@ -300,31 +279,20 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnEmitProjectile(GameActor actor, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
         {
+            GameActor emitter = actor;
+
             int weaponSlot = slot - 7;
-            if (weaponSlot < 0 || weaponSlot >= actor.Info.Weapons.Count)
-            {
-                ReportLog.Warn($"[Weapon] OnEmitProjectile Could not find a Weapon ID in the current slot {actor.Cmid}");
-                actor.Peer.Disconnect();
+            if (weaponSlot < 0 || weaponSlot >= emitter.Info.Weapons.Count)
                 return;
-            }
 
-            int weaponId = actor.Info.Weapons[weaponSlot];
-
-            GamePeer emitter = actor.Peer;
-            Weapon weapon = emitter.Actor.Loadout.Weapons[weaponId];
-
+            int weaponId = emitter.Info.Weapons[weaponSlot];
+            var weapon = emitter.Loadout.Weapons[weaponId];
             if (weapon == null)
-            {
-                ReportLog.Warn($"[Weapon] OnEmitProjectile Could not find a Weapon in that slot {actor.Cmid}");
                 return;
-            }
 
             var itemClass = weapon.GetView().ItemClass;
             if (itemClass != UberStrikeItemClass.WeaponCannon && itemClass != UberStrikeItemClass.WeaponLauncher)
-            {
-                ReportLog.Warn($"[Weapon] OnEmitProjectile ItemClass mismatch {actor.Cmid}");
                 return;
-            }
 
             weapon.Hit();
 
@@ -335,19 +303,21 @@ namespace UberStrok.Realtime.Server.Game
                 return;
             }
 
-            emitter.Actor.Projectiles.Emit(projectileId);
-            if (emitter.Actor.Projectiles.FalsePositive >= 10)
+            emitter.Projectiles.Emit(projectileId);
+
+            if (emitter.Projectiles.FalsePositive >= 10)
             {
                 ReportLog.Warn($"[Projectiles] OnEmitProjectile FalsePositive reached {actor.Cmid}");
                 actor.Peer.Disconnect();
-                return;
             }
-
-            var shooterCmid = actor.Cmid;
-            foreach (var otherActor in Actors)
+            else
             {
-                if (otherActor.Cmid != shooterCmid)
-                    otherActor.Peer.Events.Game.SendEmitProjectile(shooterCmid, origin, direction, slot, projectileId, explode);
+                var emitterCmid = emitter.Cmid;
+                foreach (var otherActor in Actors)
+                {
+                    if (otherActor.Cmid != emitterCmid)
+                        otherActor.Peer.Events.Game.SendEmitProjectile(emitterCmid, origin, direction, slot, projectileId, explode);
+                }
             }
         }
 
@@ -368,11 +338,12 @@ namespace UberStrok.Realtime.Server.Game
             {
                 ReportLog.Warn($"[Projectiles] OnRemoveProjectile FalsePositive reached {actor.Cmid}");
                 actor.Peer.Disconnect();
-                return;
             }
-
-            foreach (var otherActor in Actors)
-                otherActor.Peer.Events.Game.SendRemoveProjectile(projectileId, explode);
+            else
+            {
+                foreach (var otherActor in Actors)
+                    otherActor.Peer.Events.Game.SendRemoveProjectile(projectileId, explode);
+            }
         }
 
         protected override void OnJump(GameActor actor, Vector3 position)
