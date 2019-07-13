@@ -27,8 +27,11 @@ namespace UberStrok.Core
 
         public void StartFire()
         {
-            _fireTime = DateTime.UtcNow;
-            _firing = true;
+            if (!_firing)
+            {
+                _fireTime = DateTime.UtcNow;
+                _firing = true;
+            }
         }
 
         public int StopFire()
