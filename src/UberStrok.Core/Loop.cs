@@ -139,11 +139,8 @@ namespace UberStrok.Core
                     /* Wait to get the signal first. */
                     _pauseWaitHandle.WaitOne();
 
-                    /* Execute all the actions enqueued after updating. */
                     DoActions();
-                    /* Do an update; calling the user code. */
                     DoUpdate();
-                    /* Do time calculations such as delta time. */
                     DoTime();
 
                     /* Catch up if we've lagged more than the a tick interval. */
@@ -165,9 +162,10 @@ namespace UberStrok.Core
             }
         }
 
+        /* Execute all the actions enqueued. */
         private void DoActions()
         {
-            while (!_workQueue.IsEmpty)
+            while (!_workQueue.IsEmpty && _started)
             {
                 if (!_workQueue.TryDequeue(out Action action))
                     continue;
@@ -178,6 +176,7 @@ namespace UberStrok.Core
             }
         }
 
+        /* Do time calculations. */
         private void DoTime()
         {
             var now = DateTime.UtcNow;
@@ -190,6 +189,7 @@ namespace UberStrok.Core
                 _lag += DeltaTime.TotalMilliseconds;
         }
 
+        /* Call the handler. */
         private void DoUpdate()
         {
             /*
