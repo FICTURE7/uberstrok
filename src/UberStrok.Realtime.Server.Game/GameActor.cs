@@ -30,7 +30,7 @@ namespace UberStrok.Realtime.Server.Game
             set => Info.PlayerName = value;
         }
 
-        public string FullPlayerName
+        public string PlayerFullName
         {
             get
             {

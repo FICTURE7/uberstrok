@@ -216,7 +216,7 @@ namespace UberStrok.Realtime.Server.Game
                     var summary = new StatsSummaryView
                     {
                         Cmid = player.Cmid,
-                        Name = player.FullPlayerName,
+                        Name = player.PlayerFullName,
                         Kills = player.Info.Kills,
                         Deaths = player.Info.Deaths,
                         Level = player.Info.Level,  
