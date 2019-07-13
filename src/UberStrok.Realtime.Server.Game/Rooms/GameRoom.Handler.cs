@@ -257,8 +257,9 @@ namespace UberStrok.Realtime.Server.Game
             /* Check if the player is dead. */
             if (actor.Info.Health <= 0)
             {
-                actor.Info.PlayerState |= PlayerStates.Dead;
                 actor.Info.Deaths++;
+                actor.Info.Kills--;
+                actor.Statistics.RecordSuicide();
 
                 OnPlayerKilled(new PlayerKilledEventArgs
                 {
@@ -274,27 +275,25 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnDirectDeath(GameActor actor)
         {
-            if (!actor.Info.IsAlive)
+            if (actor.Info.IsAlive)
             {
-                Log.Debug($"Player {actor.Cmid} DirectDeath k: {actor.Info.Kills} d: {actor.Info.Deaths}, but already dead");
-                return;
+                var damage = (ushort)actor.Info.Health;
+
+                actor.Info.Health = 0;
+                actor.Info.Deaths++;
+                actor.Info.Kills--;
+                actor.Statistics.RecordSuicide();
+
+                OnPlayerKilled(new PlayerKilledEventArgs
+                {
+                    Attacker = actor,
+                    Victim = actor,
+                    ItemClass = UberStrikeItemClass.WeaponMelee,
+                    Damage = damage,
+                    Part = BodyPart.Body,
+                    Direction = Vector3.Zero
+                });
             }
-
-            int damage = actor.Info.Health;
-            actor.Info.Health = 0;
-            actor.Info.PlayerState |= PlayerStates.Dead;
-            actor.Info.Deaths++;
-            actor.Info.Kills--;
-
-            OnPlayerKilled(new PlayerKilledEventArgs
-            {
-                Attacker = actor,
-                Victim = actor,
-                ItemClass = UberStrikeItemClass.WeaponMelee,
-                Damage = (ushort)damage,
-                Part = BodyPart.Body,
-                Direction = Vector3.Zero
-            });
         }
 
         protected override void OnEmitProjectile(GameActor actor, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
