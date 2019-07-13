@@ -9,7 +9,10 @@ namespace UberStrok.Realtime.Server.Game
 {
     public abstract partial class GameRoom :  BaseGameRoomOperationHandler
     {
-        /* Enqueue the work on the loop so processing of operations are serial. */
+        /* 
+         * Enqueue the work on the loop so processing of operations are serial
+         * and synchronous.
+         */
         protected override void Enqueue(Action action)
         {
             Loop.Enqueue(action);
@@ -242,34 +245,33 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnDirectDamage(GameActor actor, ushort damage)
+        protected override void OnDirectDamage(GameActor actor, ushort udamage)
         {
-            var actualDamage = (short)damage;
+            var damage = (short)udamage;
             if (damage < 0)
             {
-                Log.Warn($"Negative damage: {damage}. Disconnecting.");
+                Log.Warn($"Negative damage: {damage}; Disconnecting.");
                 actor.Peer.Disconnect();
-                return;
             }
-
-            actor.Info.Health -= actualDamage;
-
-            /* Check if the player is dead. */
-            if (actor.Info.Health <= 0)
+            else
             {
-                actor.Info.Deaths++;
-                actor.Info.Kills--;
-                actor.Statistics.RecordSuicide();
-
-                OnPlayerKilled(new PlayerKilledEventArgs
+                /* Check if the player is dead. */
+                if ((actor.Info.Health -= damage) <= 0)
                 {
-                    Attacker = actor,
-                    Victim = actor,
-                    ItemClass = UberStrikeItemClass.WeaponMachinegun,
-                    Damage = (ushort)actualDamage,
-                    Part = BodyPart.Body,
-                    Direction = Vector3.Zero
-                });
+                    actor.Info.Deaths++;
+                    actor.Info.Kills--;
+                    actor.Statistics.RecordSuicide();
+
+                    OnPlayerKilled(new PlayerKilledEventArgs
+                    {
+                        Attacker = actor,
+                        Victim = actor,
+                        ItemClass = UberStrikeItemClass.WeaponMachinegun,
+                        Damage = (ushort)damage,
+                        Part = BodyPart.Body,
+                        Direction = Vector3.Zero
+                    });
+                }
             }
         }
 
