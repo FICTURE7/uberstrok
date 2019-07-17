@@ -42,7 +42,8 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public DateTime DatePlayed { get; set; }
+        public float TimePlayed { get; set; }
+        public float DurationPlayed => Math.Max(Room.Loop.Time - TimePlayed, 0);
 
         public StatisticsManager Statistics
         {

@@ -4,22 +4,8 @@
     {
         public static void Main()
         {
-            /*
-            var peer = new TestPeer(null);
-
-            peer.Handlers.Add(new GamePeerOperationHandler());
-            peer.Handlers.Add(new TeamDeathMatchGameRoom(null));
-            */
+            //LoopSchedulerTests.Test();
+            BalancingLoopSchedulerTests.Test();
         }
     }
-    
-    /*
-    public class TestPeer : Peer
-    {
-        public TestPeer(InitRequest request) : base(request)
-        {
-
-        }
-    }
-    */
 }

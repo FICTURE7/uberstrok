@@ -15,7 +15,7 @@ namespace UberStrok.Core
         public event Action Completed;
         public event Action<int> Counted;
 
-        public Countdown(Loop loop, int startCount, int endCount)
+        public Countdown(ILoop loop, int startCount, int endCount)
         {
             if (startCount <= endCount)
                 throw new ArgumentOutOfRangeException();

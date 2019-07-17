@@ -13,11 +13,11 @@ namespace UberStrok.Realtime.Server.Game
     {
         private bool _disposed;
 
-        private ushort _frame;
-        private double _frameTime;
-
         private byte _nextPlayer;
         private string _password;
+
+        private ushort _frame;
+        private readonly Timer _frameTimer;
 
         private readonly GameRoomDataView _view;
 
@@ -40,9 +40,8 @@ namespace UberStrok.Realtime.Server.Game
 
         protected ILog ReportLog { get; }
 
-        public DateTime DateCreated { get; }
-
         public Loop Loop { get; }
+        public ILoopScheduler Scheduler { get; }
 
         public ICollection<GameActor> Players { get; }
         public ICollection<GameActor> Actors { get; }
@@ -86,17 +85,16 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        public GameRoom(GameRoomDataView data)
+        public GameRoom(GameRoomDataView data, ILoopScheduler scheduler)
         {
             _view = data ?? throw new ArgumentNullException(nameof(data));
+            Scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
 
-            DateCreated = DateTime.UtcNow;
             ReportLog = LogManager.GetLogger("Report");
-
-            int capacity = data.PlayerLimit / 2;
 
             _stats = new Dictionary<int, StatisticsManager>();
 
+            int capacity = data.PlayerLimit / 2;
             _players = new List<GameActor>(capacity);
             _actors = new List<GameActor>(capacity); 
             _actorDeltas = new List<GameActorInfoDeltaView>(capacity);
@@ -107,9 +105,9 @@ namespace UberStrok.Realtime.Server.Game
 
             /* 
              * Using a high tick rate to push updates to the client faster.
-             * But the player movements are still sent at 10 tps.
+             * But the player movements are still sent at ~10 tick/s.
              */
-            Loop = new Loop(64);
+            Loop = new Loop(OnTick, OnTickError);
 
             Shop = new ShopManager();
             Spawns = new SpawnManager();
@@ -122,10 +120,48 @@ namespace UberStrok.Realtime.Server.Game
             State.Register(MatchState.Id.Running, new RunningMatchState(this));
             State.Register(MatchState.Id.End, new EndMatchState(this));
 
+            /* 
+             * * Expected interval between ticks by the client is 100ms 
+             * (10 tick/s).
+             *
+             * * Lag extrapolation starts when the packets arrive at around
+             * 150ms late assuming the client receives a constant stream of
+             * packets of 100ms intervals. The threshold of 150ms is not
+             * constant and varies according to the measurements done by the
+             * client.
+             * 
+             * * We're actually updating at 9.5 tick/s, because it seems the
+             * client can not truely handle packets at 10 tick/s. This is
+             * likely because sometimes packets gets "clogged" in the client's
+             * packet queue and since packets don't have a timestamp of when
+             * they were sent; it appears to be have been sent faster than
+             * 10 tick/s. This therefore causes the client to update the
+             * position of the players with little to no interpolation in an
+             * attempt to catch up.
+             * 
+             * So we use a tick rate lower than that expected by the client to
+             * give it some breathing room and reduce the chance of packets
+             * building up in its packet queue to the point where it does hard
+             * position updates.
+             * 
+             * * Of course this behaviour is very likely to be have been
+             * intended, which would then suggest that the original server
+             * implementation used a non-fixed time stemp loop; unlike
+             * UberStrok.
+             * 
+             * * TLDR; 
+             * A lower tick rate gives a smoother motion but more inaccurate
+             * positions.
+             * A higher tick rate gives a choppier motion but more accurate
+             * positions.
+             */
+            const double UBZ_INTERVAL = 1000 / 9.5;
+            _frameTimer = new Timer(Loop, TimeSpan.FromMilliseconds(UBZ_INTERVAL));
+
             Reset();
 
-            /* Start the game room loop. */
-            Loop.Start(OnTick, OnTickFailed);
+            /* Schedule Loop of room. */
+            Scheduler.Schedule(Loop);
         }
 
         public void Join(GamePeer peer)
@@ -135,10 +171,7 @@ namespace UberStrok.Realtime.Server.Game
             if (peer.Actor != null)
                 throw new InvalidOperationException("Peer already in another room");
 
-            if (Loop.IsInLoop)
-                DoJoin(peer);
-            else
-                Enqueue(() => DoJoin(peer));
+            Enqueue(() => DoJoin(peer));
         }
 
         public void Leave(GamePeer peer)
@@ -150,10 +183,7 @@ namespace UberStrok.Realtime.Server.Game
             if (peer.Actor.Room != this)
                 throw new InvalidOperationException("Peer is not leaving the correct room");
 
-            if (Loop.IsInLoop)
-                DoLeave(peer);
-            else
-                Enqueue(() => DoLeave(peer));
+            Enqueue(() => DoLeave(peer));
         }
 
         public void Spawn(GameActor actor)
@@ -161,10 +191,7 @@ namespace UberStrok.Realtime.Server.Game
             if (actor == null)
                 throw new ArgumentNullException(nameof(actor));
 
-            if (Loop.IsInLoop)
-                DoSpawn(actor);
-            else
-                Enqueue(() => DoSpawn(actor));
+            Enqueue(() => DoSpawn(actor));
         }
 
         private struct Achievement
@@ -268,7 +295,8 @@ namespace UberStrok.Realtime.Server.Game
         public virtual void Reset()
         {
             _frame = 0;
-            _frameTime = 0f;
+            _frameTimer.Restart();
+
             _nextPlayer = 0;
 
             /* Reset all the actors in the room's player list. */
@@ -292,23 +320,9 @@ namespace UberStrok.Realtime.Server.Game
 
         private void OnTick()
         {
-            /* 
-             * Expected interval between ticks by the client is 100ms (10tick/s),
-             *
-             * Lag extrapolation starts when the packets arrive at around 150ms
-             * late assuming the client receives a constant stream of packets
-             * of 100ms intervals.
-             */
-            const double UBZ_INTERVAL = 125;
-
-            _frameTime += Loop.DeltaTime.TotalMilliseconds;
-
-            bool updatePositions = _frameTime >= UBZ_INTERVAL;
+            bool updatePositions = _frameTimer.Update();
             if (updatePositions)
-            {
-                _frameTime %= UBZ_INTERVAL;
                 _frame++;
-            }
 
             State.Tick();
             PowerUps.Tick();
@@ -398,7 +412,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        private void OnTickFailed(Exception ex)
+        private void OnTickError(Exception ex)
         {
             Log.Error("Failed to tick game loop.", ex);
         }
@@ -640,14 +654,14 @@ namespace UberStrok.Realtime.Server.Game
 
             if (disposing)
             {
+                Scheduler.Unschedule(Loop);
+
                 /* Best effort clean up. */
                 foreach (var player in Players)
                 {
                     foreach (var otherActor in Actors)
                         otherActor.Peer.Events.Game.SendPlayerLeftGame(player.Cmid);
                 }
-
-                Loop.Dispose();
 
                 /* Clean up actors. */
                 foreach (var actor in Actors)
@@ -657,6 +671,7 @@ namespace UberStrok.Realtime.Server.Game
                     peer.Handlers.Remove(Id);
 
                     peer.Disconnect();
+                    peer.Dispose();
                 }
 
                 /* Clear to lose refs to GameActor objects. */

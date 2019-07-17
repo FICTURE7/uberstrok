@@ -9,10 +9,9 @@ namespace UberStrok.Realtime.Server.Comm
 {
     public partial class LobbyRoom : BaseLobbyRoomOperationHandler, IRoom<CommPeer>, IDisposable
     {
-        private static readonly ILog Log = LogManager.GetLogger(nameof(LobbyRoom));
-
         private bool _disposed;
         private readonly Loop _loop;
+        private readonly LoopScheduler _loopScheduler;
         private readonly List<CommPeer> _peers;
 
         private readonly List<CommPeer> _failedPeers;
@@ -22,15 +21,16 @@ namespace UberStrok.Realtime.Server.Comm
 
         public LobbyRoom()
         {
-            _loop = new Loop(5);
+            _loop = new Loop(OnTick, OnTickError);
+            _loopScheduler = new LoopScheduler(5);
             _peers = new List<CommPeer>();
             _failedPeers = new List<CommPeer>();
 
             Sync = new object();
             Peers = _peers.AsReadOnly();
 
-            /* Start lobby room loop. */
-            _loop.Start(OnTick, OnTickError);
+            _loopScheduler.Schedule(_loop);
+            _loopScheduler.Start();
         }
 
         public void Join(CommPeer peer)

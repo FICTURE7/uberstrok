@@ -2,26 +2,31 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UberStrok.Core;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GameRoomManager : IEnumerable<GameRoom>
+    public class GameRoomManager : IDisposable, IEnumerable<GameRoom>
     {
         private int _roomId;
+        private bool _disposed;
 
         private readonly object _sync;
         private readonly Dictionary<int, GameRoom> _rooms;
 
         private readonly List<int> _removedRooms;
         private readonly List<GameRoomDataView> _updatedRooms;
+        private readonly BalancingLoopScheduler _loopScheduler;
 
         protected ILog Log { get; }
         public int Count => _rooms.Count;
 
         public GameRoomManager()
         {
+            _loopScheduler = new BalancingLoopScheduler(64);
+
             _rooms = new Dictionary<int, GameRoom>();
 
             _sync = new object();
@@ -37,7 +42,6 @@ namespace UberStrok.Realtime.Server.Game
             {
                 if (_rooms.TryGetValue(roomId, out GameRoom room) && room.Actors.Count == 0)
                     return null;
-
                 return room;
             }
         }
@@ -54,18 +58,26 @@ namespace UberStrok.Realtime.Server.Game
                 data.LevelMax = 0;
             }
 
-            GameRoom room;
-            switch (data.GameMode)
+            GameRoom room = null;
+            try
             {
-                case GameModeType.DeathMatch:
-                    room = new DeathMatchGameRoom(data);
-                    break;
-                case GameModeType.TeamDeathMatch:
-                    room = new TeamDeathMatchGameRoom(data);
-                    break;
+                switch (data.GameMode)
+                {
+                    case GameModeType.DeathMatch:
+                        room = new DeathMatchGameRoom(data, _loopScheduler);
+                        break;
+                    case GameModeType.TeamDeathMatch:
+                        room = new TeamDeathMatchGameRoom(data, _loopScheduler);
+                        break;
 
-                default:
-                    throw new NotSupportedException();
+                    default:
+                        throw new NotSupportedException();
+                }
+            }
+            catch
+            {
+                room?.Dispose();
+                throw;
             }
 
             lock (_sync)
@@ -75,6 +87,8 @@ namespace UberStrok.Realtime.Server.Game
 
                 _rooms.Add(room.RoomId, room);
                 _updatedRooms.Add(room.GetView());
+
+                Log.Info($"Created {room.GetDebug()}");
             }
 
             return room;
@@ -89,8 +103,7 @@ namespace UberStrok.Realtime.Server.Game
                     var room = kv.Value;
                     var view = room.GetView();
 
-                    if (!view.IsPermanentGame && room.Actors.Count == 0 && 
-                        DateTime.UtcNow >= room.DateCreated.AddSeconds(15))
+                    if (!view.IsPermanentGame && room.Actors.Count == 0 && room.Loop.Time >= 15 * 1000)
                     {
                         _removedRooms.Add(room.RoomId);
                     }
@@ -110,12 +123,23 @@ namespace UberStrok.Realtime.Server.Game
                     {
                         _rooms.Remove(roomId);
                         room.Dispose();
+
+                        Log.Info($"Removed {room.GetDebug()}");
                     }
                 }
 
                 _updatedRooms.Clear();
                 _removedRooms.Clear();
             }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _loopScheduler.Dispose();
+            _disposed = true;
         }
 
         public IEnumerator<GameRoom> GetEnumerator()

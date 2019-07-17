@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using UberStrok.Core;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -9,7 +10,8 @@ namespace UberStrok.Realtime.Server.Game
     {
         public override bool CanStart => Players.Count > 1;
 
-        public DeathMatchGameRoom(GameRoomDataView data) : base(data)
+        public DeathMatchGameRoom(GameRoomDataView data, ILoopScheduler scheduler) 
+            : base(data, scheduler)
         {
             if (data.GameMode != GameModeType.DeathMatch)
                 throw new ArgumentException("GameRoomDataView is not in deathmatch mode", nameof(data));

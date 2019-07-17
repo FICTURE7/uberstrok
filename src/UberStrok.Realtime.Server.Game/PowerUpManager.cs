@@ -90,7 +90,7 @@ namespace UberStrok.Realtime.Server.Game
             for (int i = 0; i < _respawning.Count; i++)
             {
                 var time = _respawnTimes[_respawning[i]];
-                var newTime = time.Subtract(_room.Loop.DeltaTime);
+                var newTime = time.Subtract(TimeSpan.FromMilliseconds(_room.Loop.DeltaTime));
                 if (newTime.TotalMilliseconds <= 0)
                 {
                     _respawnTimes[_respawning[i]] = TimeSpan.FromSeconds(0);

@@ -17,7 +17,6 @@ namespace UberStrok.Realtime.Server.Game
                 var count = 0;
                 foreach (var room in Lobby.Rooms)
                     count += room.Players.Count;
-
                 return count;
             }
         }
@@ -29,16 +28,14 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnTearDown()
         {
-            /* Space */
+            Lobby.Dispose();
         }
 
         protected override Peer OnCreatePeer(InitRequest initRequest)
         {
             try
             {
-                var peer = new GamePeer(initRequest);
-                Lobby.Join(peer);
-                return peer;
+                return new GamePeer(initRequest);
             }
             catch (Exception ex)
             {

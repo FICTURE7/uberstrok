@@ -1,4 +1,5 @@
 ﻿using System;
+using UberStrok.Core;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
 
@@ -15,7 +16,8 @@ namespace UberStrok.Realtime.Server.Game
         public int BlueTeamPlayer { get; private set; }
         public int RedTeamPlayer { get; private set; }
 
-        public TeamDeathMatchGameRoom(GameRoomDataView data) : base(data)
+        public TeamDeathMatchGameRoom(GameRoomDataView data, ILoopScheduler scheduler) 
+            : base(data, scheduler)
         {
             if (data.GameMode != GameModeType.TeamDeathMatch)
                 throw new ArgumentException("GameRoomDataView is not in team deathmatch mode", nameof(data));

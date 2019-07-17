@@ -5,9 +5,13 @@ using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GameLobby
+    public class GameLobby : IDisposable
     {
+        private bool _disposed;
+
         private readonly Loop _loop;
+        private readonly LoopScheduler _loopScheduler;
+
         private readonly List<GamePeer> _peers;
         private readonly List<GamePeer> _unlockedPeers;
 
@@ -18,15 +22,18 @@ namespace UberStrok.Realtime.Server.Game
 
         public GameLobby()
         {
-            _loop = new Loop(15);
+            _loop = new Loop(OnTick, OnTickError);
+            _loopScheduler = new LoopScheduler(15);
+
             _peers = new List<GamePeer>();
             _unlockedPeers = new List<GamePeer>();
 
             Log = LogManager.GetLogger(GetType().Name);
             Rooms = new GameRoomManager();
-            Peers = _unlockedPeers;
+            Peers = _unlockedPeers.AsReadOnly();
 
-            _loop.Start(OnTick, OnTickError);
+            _loopScheduler.Schedule(_loop);
+            _loopScheduler.Start();
         }
 
         public void Join(GamePeer peer)
@@ -47,6 +54,15 @@ namespace UberStrok.Realtime.Server.Game
                 _peers.Remove(peer);
         }
 
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            _loopScheduler.Dispose();
+            _disposed = true;
+        }
+
         private void OnTick()
         {
             _unlockedPeers.Clear();
@@ -55,6 +71,7 @@ namespace UberStrok.Realtime.Server.Game
             lock (_peers)
                 _unlockedPeers.AddRange(_peers);
 
+            /* Tick room manager. */
             Rooms.Tick();
         }
 

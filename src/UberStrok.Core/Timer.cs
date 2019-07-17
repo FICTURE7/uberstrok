@@ -5,17 +5,19 @@ namespace UberStrok.Core
     public class Timer
     {
         private double _accumulator;
-        private readonly Loop _loop;
+        private readonly ILoop _loop;
 
         public bool IsEnabled { get; set; }
-        public TimeSpan Interval { get; private set; }
+        public float Interval { get; private set; }
 
         public event Action Tick;
 
-        public Timer(Loop loop, TimeSpan interval)
+        public Timer(ILoop loop, TimeSpan interval)
         {
             _loop = loop ?? throw new ArgumentNullException(nameof(loop));
-            Interval = interval >= default(TimeSpan) ? interval : throw new ArgumentOutOfRangeException(nameof(interval));
+            Interval = interval >= default(TimeSpan) ? 
+                        (float)interval.TotalMilliseconds : 
+                        throw new ArgumentOutOfRangeException(nameof(interval));
 
             Reset();
         }
@@ -50,19 +52,24 @@ namespace UberStrok.Core
             IsEnabled = false;
         }
 
-        public void Update()
+        public bool Update()
         {
             if (!IsEnabled)
-                return;
+                return false;
 
-            _accumulator += _loop.DeltaTime.TotalMilliseconds;
-            if (_accumulator >= Interval.TotalMilliseconds)
+            _accumulator += _loop.DeltaTime;
+            if (_accumulator >= Interval)
+            {
                 OnTick();
+                return true;
+            }
+
+            return false;
         }
 
         protected virtual void OnTick()
         {
-            _accumulator -= Interval.TotalMilliseconds;
+            _accumulator -= Interval;
             Tick?.Invoke();
         }
     }

@@ -16,6 +16,8 @@ namespace UberStrok.Realtime.Server.Game
         {
             Events = new GamePeerEvents(this);
             Handlers.Add(GamePeerOperationHandler.Instance);
+
+            GameApplication.Instance.Lobby.Join(this);
         }
 
         public override void SendHeartbeat(string hash)

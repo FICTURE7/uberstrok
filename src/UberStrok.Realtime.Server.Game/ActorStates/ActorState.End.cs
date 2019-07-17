@@ -15,7 +15,7 @@ namespace UberStrok.Realtime.Server.Game
         {
             var playTime = 0;
             if (Room.Players.Contains(Actor))
-                playTime = (int)Math.Ceiling((Room.Loop.Time - Actor.DatePlayed).TotalSeconds);
+                playTime = (int)Math.Ceiling(Actor.DurationPlayed / 1000f);
 
             var view = new EndOfMatchDataView
             {
@@ -31,6 +31,7 @@ namespace UberStrok.Realtime.Server.Game
 
                 MatchGuid = Room.GetView().Guid,
                 HasWonMatch = Room.Winner == Actor.Info.TeamID,
+                /* Play time is not actually in minutes but seconds. */
                 TimeInGameMinutes = playTime,
             };
 
