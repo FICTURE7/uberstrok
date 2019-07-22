@@ -234,8 +234,7 @@ namespace UberStrok.Realtime.Server.Game
             }
             else
             {
-                /* Check if the player is dead. */
-                if ((actor.Info.Health -= damage) <= 0)
+                if (actor.Info.IsAlive && (actor.Info.Health -= damage) <= 0)
                 {
                     actor.Info.Deaths++;
                     actor.Info.Kills--;
