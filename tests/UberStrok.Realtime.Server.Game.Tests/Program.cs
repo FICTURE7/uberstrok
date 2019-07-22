@@ -5,7 +5,8 @@
         public static void Main()
         {
             //LoopSchedulerTests.Test();
-            BalancingLoopSchedulerTests.Test();
+            //BalancingLoopSchedulerTests.Test();
+            TimerTests.Test();
         }
     }
 }

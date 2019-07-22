@@ -1,96 +1,35 @@
-﻿using System;
-
-namespace UberStrok.Core
+﻿namespace UberStrok.Core
 {
-    public class Timer
+    public sealed class Timer : BaseTimer
     {
-        private double _accumulator;
-        private readonly ILoop _loop;
+        private float _nextElapsed;
 
-        public bool IsEnabled { get; set; }
-        public float Interval { get; private set; }
-
-        public event Action Tick;
-
-        public Timer(ILoop loop, TimeSpan interval)
+        public Timer(ILoop loop, float interval)
+            : base(loop, interval)
         {
-            _loop = loop ?? throw new ArgumentNullException(nameof(loop));
-            Interval = interval >= default(TimeSpan) ? 
-                        (float)interval.TotalMilliseconds : 
-                        throw new ArgumentOutOfRangeException(nameof(interval));
-
-            Reset();
+            /* Space. */
         }
 
-        public bool Start()
+        public override void Reset()
         {
-            if (IsEnabled)
-                return false;
-
-            IsEnabled = true;
-            return true;
-        }
-
-        public bool Restart()
-        {
-            Reset();
-            return Start();
-        }
-
-        public bool Stop()
-        {
-            if (!IsEnabled)
-                return false;
-
-            IsEnabled = false;
-            return true;
-        }
-
-        public void Reset()
-        {
-            _accumulator = 0;
+            ResetNextElapsed();
             IsEnabled = false;
         }
 
-        public bool Update()
+        public override bool Tick()
         {
-            if (!IsEnabled)
-                return false;
-
-            _accumulator += _loop.DeltaTime;
-            if (_accumulator >= Interval)
+            if (IsEnabled && Loop.Time >= _nextElapsed)
             {
-                OnTick();
+                OnElapsed();
+                ResetNextElapsed();
                 return true;
             }
 
             return false;
         }
 
-        protected virtual void OnTick()
-        {
-            _accumulator -= Interval;
-            Tick?.Invoke();
-        }
-    }
-
-    public class Timer<T> : Timer
-    {
-        public new event Action<T> Tick;
-
-        public T Data { get; set; }
-
-        public Timer(Loop loop, TimeSpan interval) 
-            : base(loop, interval)
-        {
-            /* Space */
-        }
-
-        protected override void OnTick()
-        {
-            base.OnTick();
-
-            Tick?.Invoke(Data);
-        }
+        /* Calculate the time of when the next Elapsed should happen. */
+        private void ResetNextElapsed()
+            => _nextElapsed = Loop.Time + Interval;
     }
 }

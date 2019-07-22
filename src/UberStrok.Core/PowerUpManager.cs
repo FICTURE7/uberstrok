@@ -6,7 +6,7 @@ namespace UberStrok.Core
 {
     public class PowerUpManager
     {
-        private readonly List<Timer<int>> _respawnTimers;
+        private readonly List<Timer> _respawnTimers;
         private readonly Loop _loop;
         
         public bool IsLoaded { get; private set; }
@@ -18,7 +18,7 @@ namespace UberStrok.Core
         public PowerUpManager(Loop loop)
         {
             _loop = loop ?? throw new ArgumentNullException(nameof(loop));
-            _respawnTimers = new List<Timer<int>>();
+            _respawnTimers = new List<Timer>();
 
             IsLoaded = false;
             Respawning = new List<int>();
@@ -36,10 +36,9 @@ namespace UberStrok.Core
 
             for (int i = 0; i < length; i++)
             {
-                var interval = TimeSpan.FromSeconds(respawnTimes[i]);
-                var timer = new Timer<int>(_loop, interval);
-                timer.Data = i;
-                timer.Tick += OnRespawnTick;
+                var interval = respawnTimes[i] * 1000;
+                var timer = new Timer(_loop, interval);
+                timer.Elapsed += OnRespawnTick;
 
                 _respawnTimers.Add(timer);
             }
@@ -77,10 +76,10 @@ namespace UberStrok.Core
             */
         }
 
-        public void Update()
+        public void Tick()
         {
             foreach (var timer in _respawnTimers)
-                timer.Update();
+                timer.Tick();
 
             /*
             for (int i = 0; i < Respawning.Count; i++)
@@ -104,12 +103,14 @@ namespace UberStrok.Core
             */
         }
 
-        private void OnRespawnTick(int pickupId)
+        private void OnRespawnTick()
         {
+            /*
             Respawning.RemoveAt(pickupId);
             _respawnTimers[pickupId].Stop();
 
             OnSpawned(pickupId);
+            */
         }
 
         protected virtual void OnPicked(int pickupId, PickupItemType type, byte value)

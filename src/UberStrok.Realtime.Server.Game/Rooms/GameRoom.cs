@@ -144,19 +144,14 @@ namespace UberStrok.Realtime.Server.Game
              * building up in its packet queue to the point where it does hard
              * position updates.
              * 
-             * * Of course this behaviour is very likely to be have been
-             * intended, which would then suggest that the original server
-             * implementation used a non-fixed time stemp loop; unlike
-             * UberStrok.
-             * 
              * * TLDR; 
              * A lower tick rate gives a smoother motion but more inaccurate
              * positions.
              * A higher tick rate gives a choppier motion but more accurate
              * positions.
              */
-            const double UBZ_INTERVAL = 1000 / 9.5;
-            _frameTimer = new Timer(Loop, TimeSpan.FromMilliseconds(UBZ_INTERVAL));
+            const float UBZ_INTERVAL = 1000f / 9.5f;
+            _frameTimer = new Timer(Loop, UBZ_INTERVAL);
 
             Reset();
 
@@ -320,8 +315,8 @@ namespace UberStrok.Realtime.Server.Game
 
         private void OnTick()
         {
-            bool updatePositions = _frameTimer.Update();
-            if (updatePositions)
+            bool updateMovements = _frameTimer.Tick();
+            if (updateMovements)
                 _frame++;
 
             State.Tick();
@@ -381,7 +376,7 @@ namespace UberStrok.Realtime.Server.Game
                          * If we need to update positions and the player is 
                          * alive, we register it to the list of movements.
                          */
-                        if (updatePositions && actor.Info.IsAlive)
+                        if (updateMovements && actor.Info.IsAlive)
                         {
                             Debug.Assert(actor.Movement.PlayerId == actor.PlayerId);
                             _actorMovements.Add(actor.Movement);
@@ -402,7 +397,7 @@ namespace UberStrok.Realtime.Server.Game
                 _actorDeltas.Clear();
             }
 
-            if (_actorMovements.Count > 0 && updatePositions)
+            if (_actorMovements.Count > 0 && updateMovements)
             {
                 foreach (var actor in Actors)
                     actor.Peer.Events.Game.SendAllPlayerPositions(_actorMovements, _frame);

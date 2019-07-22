@@ -1,17 +1,15 @@
-﻿using System;
-using UberStrok.Core;
+﻿using UberStrok.Core;
 
 namespace UberStrok.Realtime.Server.Game
 {
     public sealed class PlayingActorState : ActorState
     {
-        private readonly Timer _overflowTimer;
+        private readonly FixedTimer _overflowTimer;
 
-        public PlayingActorState(GameActor actor) 
+        public PlayingActorState(GameActor actor)
             : base(actor)
         {
-            _overflowTimer = new Timer(Room.Loop, TimeSpan.FromSeconds(1));
-            _overflowTimer.Tick += OnOverflowTick;
+            _overflowTimer = new FixedTimer(Room.Loop, 1000f);
         }
 
         public override void OnEnter()
@@ -34,23 +32,19 @@ namespace UberStrok.Realtime.Server.Game
             int armorCapacity = Peer.Actor.Info.ArmorPointCapacity;
 
             _overflowTimer.IsEnabled = Peer.Actor.Info.Health > healthCapacity || Peer.Actor.Info.ArmorPoints > armorCapacity;
-            _overflowTimer.Update();
+
+            while (_overflowTimer.Tick())
+            {
+                if (Peer.Actor.Info.Health > healthCapacity)
+                    Peer.Actor.Info.Health--;
+                if (Peer.Actor.Info.ArmorPoints > armorCapacity)
+                    Peer.Actor.Info.ArmorPoints--;
+            }
         }
 
         public override void OnResume()
         {
             _overflowTimer.Reset();
-        }
-
-        private void OnOverflowTick()
-        {
-            int healthCapacity = 100;
-            int armorCapacity = Peer.Actor.Info.ArmorPointCapacity;
-
-            if (Peer.Actor.Info.Health > healthCapacity)
-                Peer.Actor.Info.Health--;
-            if (Peer.Actor.Info.ArmorPoints > armorCapacity)
-                Peer.Actor.Info.ArmorPoints--;
         }
     }
 }

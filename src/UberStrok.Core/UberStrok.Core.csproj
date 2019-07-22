@@ -35,11 +35,14 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseTimer.cs" />
     <Compile Include="Countdown.cs" />
+    <Compile Include="FixedTimer.cs" />
     <Compile Include="Gear.cs" />
     <Compile Include="GearManager.cs" />
     <Compile Include="ILoop.cs" />
     <Compile Include="ILoopScheduler.cs" />
+    <Compile Include="ITimer.cs" />
     <Compile Include="LoadoutManager.cs" />
     <Compile Include="Loop.cs" />
     <Compile Include="LoopScheduler.cs" />

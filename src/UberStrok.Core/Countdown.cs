@@ -4,11 +4,15 @@ namespace UberStrok.Core
 {
     public class Countdown
     {
-        private readonly Timer _timer;
+        private readonly FixedTimer _timer;
 
-        public bool IsEnabled => _timer.IsEnabled;
+        public bool IsEnabled
+        {
+            get => _timer.IsEnabled;
+            set => _timer.IsEnabled = value;
+        }
 
-        public int CurrentCount { get; private set; }
+        public int Count { get; private set; }
         public int StartCount { get; }
         public int EndCount { get; }
 
@@ -23,8 +27,7 @@ namespace UberStrok.Core
             StartCount = startCount;
             EndCount = endCount;
 
-            _timer = new Timer(loop, TimeSpan.FromSeconds(1));
-            _timer.Tick += OnTick;
+            _timer = new FixedTimer(loop, 1000f);
 
             Reset();
         }
@@ -33,18 +36,16 @@ namespace UberStrok.Core
         {
             _timer.Start();
 
-            /* Tick event on the first count. */
-            OnTick();
+            /* Count first value on Start. */
+            DoCountdown();
         }
 
         public void Stop()
-        {
-            _timer.Stop();
-        }
+            => _timer.Stop();
 
         public void Reset()
         {
-            CurrentCount = StartCount;
+            Count = StartCount;
             _timer.Reset();
         }
 
@@ -56,14 +57,15 @@ namespace UberStrok.Core
 
         public void Tick()
         {
-            _timer.Update();
+            while (_timer.Tick())
+                DoCountdown();
         }
 
-        private void OnTick()
+        private void DoCountdown()
         {
-            Counted?.Invoke(CurrentCount);
+            Counted?.Invoke(Count);
 
-            int newCount = CurrentCount - 1;
+            int newCount = Count - 1;
             if (newCount < EndCount)
             {
                 Stop();
@@ -71,7 +73,7 @@ namespace UberStrok.Core
             }
             else
             {
-                CurrentCount = newCount;
+                Count = newCount;
             }
         }
     }
