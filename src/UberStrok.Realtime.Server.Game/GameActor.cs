@@ -30,17 +30,7 @@ namespace UberStrok.Realtime.Server.Game
             set => Info.PlayerName = value;
         }
 
-        public string PlayerFullName
-        {
-            get
-            {
-                var name = PlayerName;
-                if (Info.ClanTag != null)
-                    name = $"[{Info.ClanTag}] {name}";
-
-                return name;
-            }
-        }
+        public string PlayerFullName => string.IsNullOrEmpty(Info.ClanTag) ? PlayerName : $"[{Info.ClanTag}] {PlayerName}";
 
         public float TimePlayed { get; set; }
         public float DurationPlayed => Math.Max(Room.Loop.Time - TimePlayed, 0);
