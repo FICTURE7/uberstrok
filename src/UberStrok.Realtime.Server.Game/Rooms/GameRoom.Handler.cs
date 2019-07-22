@@ -56,7 +56,7 @@ namespace UberStrok.Realtime.Server.Game
             var chatContext = (ChatContext)context;
 
             if (accessLevel >= MemberAccessLevel.Moderator && message == "?end")
-                State.Set(MatchState.Id.End);
+                State.Set(RoomState.Id.End);
 
             foreach (var otherActor in Actors)
             {

@@ -53,7 +53,7 @@ namespace UberStrok.Realtime.Server.Game
             base.OnPlayerJoined(args);
 
             /* This is to reset the top scoreboard to not display "STARTS IN". */
-            if (State.Current == MatchState.Id.Running)
+            if (State.Current == RoomState.Id.Running)
             {
                 args.Player.Peer.Events.Game.SendUpdateRoundScore(
                     RoundNumber,
@@ -72,8 +72,8 @@ namespace UberStrok.Realtime.Server.Game
 
             base.OnPlayerLeft(args);
 
-            if (State.Current != MatchState.Id.WaitingForPlayers && (RedTeamPlayer == 0 || BlueTeamPlayer == 0))
-                State.Set(MatchState.Id.End);
+            if (State.Current != RoomState.Id.WaitingForPlayers && (RedTeamPlayer == 0 || BlueTeamPlayer == 0))
+                State.Set(RoomState.Id.End);
         }
 
         protected sealed override void OnPlayerKilled(PlayerKilledEventArgs args)
@@ -106,7 +106,7 @@ namespace UberStrok.Realtime.Server.Game
                 Winner = TeamID.RED;
 
             if (BlueTeamScore >= GetView().KillLimit || RedTeamScore >= GetView().KillLimit)
-                State.Set(MatchState.Id.End);
+                State.Set(RoomState.Id.End);
         }
     }
 }

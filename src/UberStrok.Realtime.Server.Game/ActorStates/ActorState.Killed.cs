@@ -56,7 +56,7 @@ namespace UberStrok.Realtime.Server.Game
              * Start disconnect countdown after the respawn countdown is done
              * and is NOT in `waiting for players` match state.
              */
-            if (Room.State.Current != MatchState.Id.WaitingForPlayers)
+            if (Room.State.Current != RoomState.Id.WaitingForPlayers)
                 _disconnectCountdown.Restart();
         }
 

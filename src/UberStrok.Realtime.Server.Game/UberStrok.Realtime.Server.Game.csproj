@@ -50,7 +50,7 @@
     <Compile Include="GameLobby.cs" />
     <Compile Include="Operations\BaseGamePeerOperationHandler.cs" />
     <Compile Include="Operations\BaseGameRoomOperationHandler.cs" />
-    <Compile Include="MatchStates\MatchState.End.cs" />
+    <Compile Include="RoomStates\RoomState.End.cs" />
     <Compile Include="ActorStates\ActorState.Countdown.cs" />
     <Compile Include="GameActor.cs" />
     <Compile Include="GameActorInfo.cs" />
@@ -65,14 +65,14 @@
     <Compile Include="Events\GameRoomEvents.cs" />
     <Compile Include="Rooms\GameRoom.Events.cs" />
     <Compile Include="Rooms\GameRoom.Handler.cs" />
-    <Compile Include="MatchStates\MatchState.Countdown.cs" />
+    <Compile Include="RoomStates\RoomState.Countdown.cs" />
     <Compile Include="ActorStates\ActorState.Killed.cs" />
     <Compile Include="ActorStates\ActorState.Overview.cs" />
     <Compile Include="ActorStates\ActorState.cs" />
     <Compile Include="ActorStates\ActorState.Playing.cs" />
     <Compile Include="PowerUpManager.cs" />
-    <Compile Include="MatchStates\MatchState.Running.cs" />
-    <Compile Include="MatchStates\MatchState.WaitingForPlayers.cs" />
+    <Compile Include="RoomStates\RoomState.Running.cs" />
+    <Compile Include="RoomStates\RoomState.WaitingForPlayers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rooms\TeamDeathMatchGameRoom.cs" />
     <Compile Include="ActorStates\ActorState.WaitingForPlayers.cs" />
@@ -113,7 +113,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MatchStates\MatchState.cs" />
+    <Compile Include="RoomStates\RoomState.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

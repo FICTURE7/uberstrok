@@ -2,11 +2,11 @@
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public sealed class EndMatchState : MatchState
+    public sealed class EndRoomState : RoomState
     {
         private readonly Countdown _restartCountdown;
 
-        public EndMatchState(GameRoom room) 
+        public EndRoomState(GameRoom room) 
             : base(room)
         {
             _restartCountdown = new Countdown(Room.Loop, 5, 0);

@@ -1,8 +1,8 @@
 ﻿namespace UberStrok.Realtime.Server.Game
 {
-    public sealed class WaitingForPlayersMatchState : MatchState
+    public sealed class WaitingForPlayersRoomState : RoomState
     {
-        public WaitingForPlayersMatchState(GameRoom room) 
+        public WaitingForPlayersRoomState(GameRoom room) 
             : base(room)
         {
             /* Space */

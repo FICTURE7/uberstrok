@@ -32,9 +32,9 @@ namespace UberStrok.Realtime.Server.Game
         {
             base.OnPlayerLeft(e);
 
-            if (State.Current != MatchState.Id.WaitingForPlayers && Players.Count <= 1)
+            if (State.Current != RoomState.Id.WaitingForPlayers && Players.Count <= 1)
             {
-                State.Set(MatchState.Id.End);
+                State.Set(RoomState.Id.End);
             }
             else
             {
@@ -61,7 +61,7 @@ namespace UberStrok.Realtime.Server.Game
              * its local data to figure out which player won.
              */
             if (killsRemaining <= 0)
-                State.Set(MatchState.Id.End);
+                State.Set(RoomState.Id.End);
         }
 
         private int GetKillsRemaining()

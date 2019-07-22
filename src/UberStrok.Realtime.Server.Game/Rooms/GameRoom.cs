@@ -46,7 +46,7 @@ namespace UberStrok.Realtime.Server.Game
         public ICollection<GameActor> Players { get; }
         public ICollection<GameActor> Actors { get; }
 
-        public StateMachine<MatchState.Id> State { get; }
+        public StateMachine<RoomState.Id> State { get; }
 
         public ShopManager Shop { get; }
         public SpawnManager Spawns { get; }
@@ -113,12 +113,12 @@ namespace UberStrok.Realtime.Server.Game
             Spawns = new SpawnManager();
             PowerUps = new PowerUpManager(this);
 
-            State = new StateMachine<MatchState.Id>();
-            State.Register(MatchState.Id.None, null);
-            State.Register(MatchState.Id.WaitingForPlayers, new WaitingForPlayersMatchState(this));
-            State.Register(MatchState.Id.Countdown, new CountdownMatchState(this));
-            State.Register(MatchState.Id.Running, new RunningMatchState(this));
-            State.Register(MatchState.Id.End, new EndMatchState(this));
+            State = new StateMachine<RoomState.Id>();
+            State.Register(RoomState.Id.None, null);
+            State.Register(RoomState.Id.WaitingForPlayers, new WaitingForPlayersRoomState(this));
+            State.Register(RoomState.Id.Countdown, new CountdownRoomState(this));
+            State.Register(RoomState.Id.Running, new RunningRoomState(this));
+            State.Register(RoomState.Id.End, new EndRoomState(this));
 
             /* 
              * * Expected interval between ticks by the client is 100ms 
@@ -308,7 +308,7 @@ namespace UberStrok.Realtime.Server.Game
             PowerUps.Reset();
 
             State.Reset();
-            State.Set(MatchState.Id.WaitingForPlayers);
+            State.Set(RoomState.Id.WaitingForPlayers);
 
             Log.Info($"{GetDebug()} has been reset.");
         }
@@ -524,7 +524,7 @@ namespace UberStrok.Realtime.Server.Game
             direction = attackerPos - victimPos;
 
             /* Chill time, game has ended; we don't do damage. */
-            if (State.Current == MatchState.Id.End)
+            if (State.Current == RoomState.Id.End)
                 return false;
 
             /* We can't kill someone who's already dead. */
