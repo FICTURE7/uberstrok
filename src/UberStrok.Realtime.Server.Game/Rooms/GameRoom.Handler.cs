@@ -13,7 +13,7 @@ namespace UberStrok.Realtime.Server.Game
          * Enqueue the work on the loop so processing of operations are serial
          * and synchronous.
          */
-        protected override void Enqueue(Action action)
+        protected sealed override void Enqueue(Action action)
         {
             Loop.Enqueue(action);
         }
@@ -23,7 +23,7 @@ namespace UberStrok.Realtime.Server.Game
             Leave(peer);
         }
 
-        protected override void OnJoinTeam(GameActor actor, TeamID team)
+        protected sealed override void OnJoinTeam(GameActor actor, TeamID team)
         {
             /* 
              * When the client joins a game it resets (pops) its match state
@@ -48,7 +48,7 @@ namespace UberStrok.Realtime.Server.Game
             });
         }
 
-        protected override void OnChatMessage(GameActor actor, string message, byte context)
+        protected sealed override void OnChatMessage(GameActor actor, string message, byte context)
         {
             var cmid = actor.Cmid;
             var playerName = actor.Info.PlayerName;
@@ -73,7 +73,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnPowerUpPicked(GameActor actor, int pickupId, PickupItemType type, byte value)
+        protected sealed override void OnPowerUpPicked(GameActor actor, int pickupId, PickupItemType type, byte value)
         {
             PowerUps.PickUp(
                 actor, 
@@ -83,14 +83,14 @@ namespace UberStrok.Realtime.Server.Game
             );
         }
 
-        protected override void OnPowerUpRespawnTimes(GameActor actor, List<ushort> respawnTimes)
+        protected sealed override void OnPowerUpRespawnTimes(GameActor actor, List<ushort> respawnTimes)
         {
             /* We care only about the first operation sent. */
             if (!PowerUps.IsLoaded)
                 PowerUps.Load(respawnTimes);
         }
 
-        protected override void OnSpawnPositions(GameActor actor, TeamID team, List<Vector3> positions, List<byte> rotations)
+        protected sealed override void OnSpawnPositions(GameActor actor, TeamID team, List<Vector3> positions, List<byte> rotations)
         {
             Debug.Assert(positions.Count == rotations.Count, "Number of spawn positions given and number of rotations given is not equal.");
 
@@ -99,7 +99,7 @@ namespace UberStrok.Realtime.Server.Game
                 Spawns.Load(team, positions, rotations);
         }
 
-        protected override void OnRespawnRequest(GameActor actor)
+        protected sealed override void OnRespawnRequest(GameActor actor)
         {
             actor.Loadout.Reset();
             actor.Ping.Reset();
@@ -107,7 +107,7 @@ namespace UberStrok.Realtime.Server.Game
             OnPlayerRespawned(new PlayerRespawnedEventArgs { Player = actor });
         }
 
-        protected override void OnExplosionDamage(GameActor actor, int targetCmid, byte slot, byte distance, Vector3 force)
+        protected sealed override void OnExplosionDamage(GameActor actor, int targetCmid, byte slot, byte distance, Vector3 force)
         {
             GameActor attacker = actor;
 
@@ -162,7 +162,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnDirectHitDamage(GameActor actor, int target, byte bodyPart, byte bullets)
+        protected sealed override void OnDirectHitDamage(GameActor actor, int target, byte bodyPart, byte bullets)
         {
             GameActor attacker = actor;
 
@@ -224,7 +224,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnDirectDamage(GameActor actor, ushort udamage)
+        protected sealed override void OnDirectDamage(GameActor actor, ushort udamage)
         {
             var damage = (short)udamage;
             if (damage < 0)
@@ -254,7 +254,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnDirectDeath(GameActor actor)
+        protected sealed override void OnDirectDeath(GameActor actor)
         {
             if (actor.Info.IsAlive)
             {
@@ -277,7 +277,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnEmitProjectile(GameActor actor, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
+        protected sealed override void OnEmitProjectile(GameActor actor, Vector3 origin, Vector3 direction, byte slot, int projectileId, bool explode)
         {
             GameActor emitter = actor;
 
@@ -321,7 +321,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnEmitQuickItem(GameActor actor, Vector3 origin, Vector3 direction, int itemId, byte playerNumber, int projectileId)
+        protected sealed override void OnEmitQuickItem(GameActor actor, Vector3 origin, Vector3 direction, int itemId, byte playerNumber, int projectileId)
         {
             var emitterCmid = actor.Cmid;
             foreach (var otherActor in Actors)
@@ -331,7 +331,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnRemoveProjectile(GameActor actor, int projectileId, bool explode)
+        protected sealed override void OnRemoveProjectile(GameActor actor, int projectileId, bool explode)
         {
             actor.Projectiles.Destroy(projectileId);
             if (actor.Projectiles.FalsePositive >= 10)
@@ -346,7 +346,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnJump(GameActor actor, Vector3 position)
+        protected sealed override void OnJump(GameActor actor, Vector3 position)
         {
             foreach (var otherPeer in Actors)
             {
@@ -355,7 +355,7 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
-        protected override void OnUpdatePositionAndRotation(GameActor actor, Vector3 position, Vector3 velocity,
+        protected sealed override void OnUpdatePositionAndRotation(GameActor actor, Vector3 position, Vector3 velocity,
                                 byte horizontalRotation, byte verticalRotation, byte moveState)
         {
             actor.Movement.Position = position;
@@ -365,12 +365,12 @@ namespace UberStrok.Realtime.Server.Game
             actor.Movement.MovementState = moveState;
         }
 
-        protected override void OnSwitchWeapon(GameActor actor, byte slot)
+        protected sealed override void OnSwitchWeapon(GameActor actor, byte slot)
         {
             actor.Info.CurrentWeaponSlot = slot;
         }
 
-        protected override void OnSingleBulletFire(GameActor actor)
+        protected sealed override void OnSingleBulletFire(GameActor actor)
         {
             var weapon = actor.Loadout.Weapons[actor.Info.CurrentWeaponID];
             
@@ -381,7 +381,7 @@ namespace UberStrok.Realtime.Server.Game
             actor.Statistics.RecordShot(weapon.GetView().ItemClass, 1);
         }
 
-        protected override void OnIsInSniperMode(GameActor actor, bool on)
+        protected sealed override void OnIsInSniperMode(GameActor actor, bool on)
         {
             var state = actor.Info.PlayerState;
             if (on)
@@ -392,7 +392,7 @@ namespace UberStrok.Realtime.Server.Game
             actor.Info.PlayerState = state;
         }
 
-        protected override void OnIsFiring(GameActor actor, bool on)
+        protected sealed override void OnIsFiring(GameActor actor, bool on)
         {
             var weapon = actor.Loadout.Weapons[actor.Info.CurrentWeaponID];
             var state = actor.Info.PlayerState;
@@ -413,7 +413,7 @@ namespace UberStrok.Realtime.Server.Game
             actor.Info.PlayerState = state;
         }
 
-        protected override void OnIsPaused(GameActor actor, bool on)
+        protected sealed override void OnIsPaused(GameActor actor, bool on)
         {
             var state = actor.Info.PlayerState;
             if (on)
@@ -424,7 +424,7 @@ namespace UberStrok.Realtime.Server.Game
             actor.Info.PlayerState = state;
         }
 
-        protected override void OnOpenDoor(GameActor actor, int doorId)
+        protected sealed override void OnOpenDoor(GameActor actor, int doorId)
         {
             foreach (var otherActor in Actors)
                 otherActor.Peer.Events.Game.SendDoorOpen(doorId);

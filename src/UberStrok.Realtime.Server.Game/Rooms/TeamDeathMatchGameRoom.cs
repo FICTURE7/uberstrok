@@ -5,7 +5,7 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class TeamDeathMatchGameRoom : GameRoom
+    public sealed class TeamDeathMatchGameRoom : GameRoom
     {
         public override bool CanStart => BlueTeamPlayer > 0 && RedTeamPlayer > 0;
 

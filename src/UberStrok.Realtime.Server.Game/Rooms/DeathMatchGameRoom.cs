@@ -6,7 +6,7 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class DeathMatchGameRoom : GameRoom
+    public sealed class DeathMatchGameRoom : GameRoom
     {
         public override bool CanStart => Players.Count > 1;
 

@@ -5,12 +5,12 @@ using UberStrok.WebServices.Client;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GamePeer : Peer
+    public sealed class GamePeer : Peer
     {
         public GameActor Actor { get; set; }
         public GamePeerEvents Events { get; }
 
-        protected LoadoutView LoadoutView { get; set; }
+        private LoadoutView LoadoutView { get; set; }
 
         public GamePeer(InitRequest initRequest) : base(initRequest)
         {

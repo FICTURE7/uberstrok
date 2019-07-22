@@ -7,7 +7,7 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Realtime.Server.Game
 {
-    public class GamePeerOperationHandler : BaseGamePeerOperationHandler
+    public sealed class GamePeerOperationHandler : BaseGamePeerOperationHandler
     {
         public static readonly GamePeerOperationHandler Instance = new GamePeerOperationHandler();
 
