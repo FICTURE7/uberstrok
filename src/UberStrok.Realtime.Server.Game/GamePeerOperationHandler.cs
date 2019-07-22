@@ -18,6 +18,17 @@ namespace UberStrok.Realtime.Server.Game
         {
             MaxPlayerCount = 200,
             State = PhotonServerLoadView.Status.Alive,
+
+            /* 
+             * UberStrike does not care about this value, it uses its client
+             * side measurement.
+             */
+            Latency = default,
+            /*
+             * UberStrike also does not care about this value, it uses
+             * PeersConnected.
+             */
+            PlayersConnected = default
         };
 
         protected override void OnSendHeartbeatResponse(GamePeer peer, string authToken, string responseHash)
@@ -45,19 +56,8 @@ namespace UberStrok.Realtime.Server.Game
 
         protected override void OnGetServerLoad(GamePeer peer)
         {
-            /* 
-             * UberStrike does not care about this value, it uses its client
-             * side value.
-             */
-            _loadView.Latency = peer.RoundTripTime;
-            _loadView.PeersConnected = GameApplication.Instance.PlayerCount;
-
-            /*
-             * UberStrike also does not care about this value, it uses
-             * PeersConnected.
-             */
-            _loadView.PlayersConnected = GameApplication.Instance.PlayerCount;
-            _loadView.RoomsCreated = GameApplication.Instance.Rooms.Count;
+            _loadView.PeersConnected = GameApplication.Instance.Lobby.Peers.Count;
+            _loadView.RoomsCreated = GameApplication.Instance.Lobby.Rooms.Count;
             _loadView.TimeStamp = DateTime.UtcNow;
 
             peer.Events.SendServerLoadData(_loadView);
