@@ -571,9 +571,12 @@ namespace UberStrok.Realtime.Server.Game
             victim.Info.Health = (short)Math.Max(0, newHealth);
 
             /* Record some statistics. */
-            victim.Statistics.RecordDamageReceived(damage);
-            attacker.Statistics.RecordHit(weapon.GetView().ItemClass);
-            attacker.Statistics.RecordDamageDealt(weapon.GetView().ItemClass, damage);
+            if (!selfDamage)
+            {
+                victim.Statistics.RecordDamageReceived(damage);
+                attacker.Statistics.RecordHit(weapon.GetView().ItemClass);
+                attacker.Statistics.RecordDamageDealt(weapon.GetView().ItemClass, damage);
+            }
 
             /* Check if the player is dead. */
             if (victim.Info.Health <= 0)
