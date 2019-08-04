@@ -80,7 +80,7 @@ namespace UberStrok.Realtime.Server.Comm
             if (_disposed)
                 return;
 
-            _loop.Dispose();
+            _loopScheduler.Dispose();
             _disposed = true;
         }
 
