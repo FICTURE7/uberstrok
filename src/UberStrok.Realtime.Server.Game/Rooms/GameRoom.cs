@@ -639,7 +639,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public string GetDebug()
         {
-            return $"(room \"{GetView().Name}\":{RoomId} state {State.Current})";
+            return $"(room \"{GetView().Name}\":{RoomId} {GetView().ConnectedPlayers}/{GetView().PlayerLimit} state {State.Current})";
         }
 
         public GameRoomDataView GetView()

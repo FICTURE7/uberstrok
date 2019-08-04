@@ -187,11 +187,7 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnUpdateLoadout(GamePeer peer)
         {
             var actor = peer.Actor;
-            if (actor == null)
-            {
-                Log.Error("Peer attempted to update loadout but was not associated with any Actor.");
-            }
-            else
+            if (actor != null)
             {
                 try
                 {
