@@ -197,7 +197,7 @@ namespace UberStrok.Realtime.Server.Game
                 var part = (BodyPart)bodyPart;
                 int bonus = weapon.GetView().CriticalStrikeBonus;
                 if (bonus > 0 && (part == BodyPart.Head || part == BodyPart.Nuts))
-                    intDamage += (int)Math.Round(bonus / 100f * intDamage);
+                    intDamage += (int)Math.Truncate(bonus / 100f * intDamage);
 
                 var damage = (short)Math.Min(intDamage, short.MaxValue);
 
