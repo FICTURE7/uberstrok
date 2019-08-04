@@ -7,8 +7,6 @@ namespace UberStrok.Realtime.Server.Game
 {
     public sealed class TeamDeathMatchGameRoom : GameRoom
     {
-        public override bool CanStart => BlueTeamPlayer > 0 && RedTeamPlayer > 0;
-
         public bool FriendlyFire { get; set; }
         public int BlueTeamScore { get; private set; }
         public int RedTeamScore { get; private set; }
@@ -35,7 +33,12 @@ namespace UberStrok.Realtime.Server.Game
             RedTeamScore = 0;
         }
 
-        protected sealed override bool CanJoin(GameActor actor, TeamID team)
+        public override bool CanStart()
+        {
+            return BlueTeamPlayer > 0 && RedTeamPlayer > 0;
+        }
+
+        public sealed override bool CanJoin(GameActor actor, TeamID team)
         {
             /*
              * There is a client side bug in TeamDeathMatchRoom where the
@@ -59,7 +62,7 @@ namespace UberStrok.Realtime.Server.Game
                 return false;
         }
 
-        protected sealed override bool CanDamage(GameActor victim, GameActor attacker)
+        public sealed override bool CanDamage(GameActor victim, GameActor attacker)
         {
             if (FriendlyFire)
                 return true;

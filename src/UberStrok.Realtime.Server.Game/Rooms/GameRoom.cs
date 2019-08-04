@@ -59,7 +59,6 @@ namespace UberStrok.Realtime.Server.Game
         public int EndTime { get; set; }
 
         public TeamID Winner { get; protected set; }
-        public abstract bool CanStart { get; }
 
         /* 
          * Room ID but we call it number since we already defined Id &
@@ -510,6 +509,9 @@ namespace UberStrok.Realtime.Server.Game
             Log.Debug($"{actor.GetDebug()} spawned at {spawn}.");
         }
 
+        /* Determine if state of the room can be switched to RunningRoomState. */
+        public abstract bool CanStart();
+
         /*
          * Determines if the actor can join the specified team.
          * 
@@ -519,10 +521,10 @@ namespace UberStrok.Realtime.Server.Game
          * the BaseGameRoom instance, so this results in HUDJoinButtons being
          * broken.
          */
-        protected abstract bool CanJoin(GameActor actor, TeamID team);
+        public abstract bool CanJoin(GameActor actor, TeamID team);
 
         /* Determines if the vicitim can get damaged by the attcker. */
-        protected abstract bool CanDamage(GameActor victim, GameActor attacker);
+        public abstract bool CanDamage(GameActor victim, GameActor attacker);
 
         /* Does damage and returns true if victim is killed; otherwise false. */
         protected bool DoDamage(GameActor victim, GameActor attacker, Weapon weapon, short damage, BodyPart part, out Vector3 direction)

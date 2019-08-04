@@ -8,8 +8,6 @@ namespace UberStrok.Realtime.Server.Game
 {
     public sealed class DeathMatchGameRoom : GameRoom
     {
-        public override bool CanStart => Players.Count > 1;
-
         public DeathMatchGameRoom(GameRoomDataView data, ILoopScheduler scheduler) 
             : base(data, scheduler)
         {
@@ -17,14 +15,19 @@ namespace UberStrok.Realtime.Server.Game
                 throw new ArgumentException("GameRoomDataView is not in deathmatch mode", nameof(data));
         }
 
-        protected override bool CanJoin(GameActor actor, TeamID team)
+        public override bool CanStart()
+        {
+            return Players.Count > 1;
+        }
+
+        public override bool CanJoin(GameActor actor, TeamID team)
         {
             if (actor.Info.AccessLevel >= MemberAccessLevel.Moderator)
                 return true;
             return team == TeamID.NONE && !GetView().IsFull;
         }
 
-        protected override bool CanDamage(GameActor victim, GameActor attacker)
+        public override bool CanDamage(GameActor victim, GameActor attacker)
         {
             return true;
         }

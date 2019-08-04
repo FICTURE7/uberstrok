@@ -24,7 +24,7 @@
              * If we got more than 1 player we start the countdown; else set
              * the player in the `waiting for players` state.
              */
-            if (Room.CanStart)
+            if (Room.CanStart())
                 Room.State.Set(Id.Countdown);
             else
                 e.Player.State.Set(ActorState.Id.WaitingForPlayers);
