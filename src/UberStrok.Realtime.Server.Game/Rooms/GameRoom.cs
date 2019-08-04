@@ -510,6 +510,17 @@ namespace UberStrok.Realtime.Server.Game
             Log.Debug($"{actor.GetDebug()} spawned at {spawn}.");
         }
 
+        /*
+         * Determines if the actor can join the specified team.
+         * 
+         * It would seem there is a client side bug where the client uses
+         * GameRoomData.ConnectedPlayers to determined if the room is full or
+         * not, however it never updates ConntectedPlayers once it has created
+         * the BaseGameRoom instance, so this results in HUDJoinButtons being
+         * broken.
+         */
+        protected abstract bool CanJoin(GameActor actor, TeamID team);
+
         /* Determines if the vicitim can get damaged by the attcker. */
         protected abstract bool CanDamage(GameActor victim, GameActor attacker);
 

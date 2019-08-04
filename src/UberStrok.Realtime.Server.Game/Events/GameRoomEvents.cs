@@ -223,6 +223,15 @@ namespace UberStrok.Realtime.Server.Game
             }
         }
 
+        public void SendJoinGameFailed(string message)
+        {
+            using (var bytes = new MemoryStream())
+            {
+                StringProxy.Serialize(bytes, message);
+                SendEvent((byte)IGameRoomEventsType.JoinGameFailed, bytes);
+            }
+        }
+
         public void SendUpdateRoundScore(int round, short blue, short red)
         {
             using (var bytes = new MemoryStream())

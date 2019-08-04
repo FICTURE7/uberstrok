@@ -35,11 +35,34 @@ namespace UberStrok.Realtime.Server.Game
             RedTeamScore = 0;
         }
 
+        protected sealed override bool CanJoin(GameActor actor, TeamID team)
+        {
+            /*
+             * There is a client side bug in TeamDeathMatchRoom where the
+             * client does not restore the MatchState to PregameLoadout in
+             * OnJoinGameFailed, unlike in DeathMatchRoom where it properly
+             * restores MatchState.
+             */
+
+            if (actor.Info.AccessLevel >= MemberAccessLevel.Moderator)
+                return true;
+
+            if (GetView().IsFull)
+                return false;
+
+            var diff = BlueTeamPlayer - RedTeamPlayer;
+            if (team == TeamID.BLUE)
+                return diff <= 0;
+            else if (team == TeamID.RED)
+                return diff >= 0;
+            else
+                return false;
+        }
+
         protected sealed override bool CanDamage(GameActor victim, GameActor attacker)
         {
             if (FriendlyFire)
                 return true;
-
             return victim == attacker || victim.Info.TeamID != attacker.Info.TeamID;
         }
 
@@ -81,32 +104,32 @@ namespace UberStrok.Realtime.Server.Game
             base.OnPlayerKilled(args);
 
             /* If player killed himself, don't update round score. */
-            if (args.Attacker == args.Victim)
-                return;
-
-            if (args.Attacker.Info.TeamID == TeamID.BLUE)
-                BlueTeamScore++;
-            else if (args.Attacker.Info.TeamID == TeamID.RED)
-                RedTeamScore++;
-
-            foreach (var otherActor in Actors)
+            if (args.Attacker != args.Victim)
             {
-                otherActor.Peer.Events.Game.SendUpdateRoundScore(
-                    RoundNumber, 
-                    (short)BlueTeamScore, 
-                    (short)RedTeamScore
-                );
+                if (args.Attacker.Info.TeamID == TeamID.BLUE)
+                    BlueTeamScore++;
+                else if (args.Attacker.Info.TeamID == TeamID.RED)
+                    RedTeamScore++;
+
+                foreach (var otherActor in Actors)
+                {
+                    otherActor.Peer.Events.Game.SendUpdateRoundScore(
+                        RoundNumber,
+                        (short)BlueTeamScore,
+                        (short)RedTeamScore
+                    );
+                }
+
+                if (BlueTeamScore == RedTeamScore)
+                    Winner = TeamID.NONE;
+                else if (BlueTeamScore > RedTeamScore)
+                    Winner = TeamID.BLUE;
+                else
+                    Winner = TeamID.RED;
+
+                if (BlueTeamScore >= GetView().KillLimit || RedTeamScore >= GetView().KillLimit)
+                    State.Set(RoomState.Id.End);
             }
-
-            if (BlueTeamScore == RedTeamScore)
-                Winner = TeamID.NONE;
-            else if (BlueTeamScore > RedTeamScore)
-                Winner = TeamID.BLUE;
-            else
-                Winner = TeamID.RED;
-
-            if (BlueTeamScore >= GetView().KillLimit || RedTeamScore >= GetView().KillLimit)
-                State.Set(RoomState.Id.End);
         }
     }
 }

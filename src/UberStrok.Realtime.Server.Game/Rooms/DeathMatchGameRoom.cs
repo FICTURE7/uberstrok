@@ -17,6 +17,13 @@ namespace UberStrok.Realtime.Server.Game
                 throw new ArgumentException("GameRoomDataView is not in deathmatch mode", nameof(data));
         }
 
+        protected override bool CanJoin(GameActor actor, TeamID team)
+        {
+            if (actor.Info.AccessLevel >= MemberAccessLevel.Moderator)
+                return true;
+            return team == TeamID.NONE && !GetView().IsFull;
+        }
+
         protected override bool CanDamage(GameActor victim, GameActor attacker)
         {
             return true;
@@ -25,7 +32,7 @@ namespace UberStrok.Realtime.Server.Game
         protected override void OnPlayerJoined(PlayerJoinedEventArgs e)
         {
             base.OnPlayerJoined(e);
-            e.Player.Peer.Events.Game.SendKillsRemaining(GetKillsRemaining(), 0);
+            e.Player.Peer.Events.Game.SendKillsRemaining(GetKillsRemaining(), default);
         }
 
         protected override void OnPlayerLeft(PlayerLeftEventArgs e)
@@ -40,7 +47,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 int killsRemaining = GetKillsRemaining();
                 foreach (var otherActor in Actors)
-                    otherActor.Peer.Events.Game.SendKillsRemaining(killsRemaining, 0);
+                    otherActor.Peer.Events.Game.SendKillsRemaining(killsRemaining, default);
             }
         }
 

@@ -18,34 +18,41 @@ namespace UberStrok.Realtime.Server.Game
             Loop.Enqueue(action);
         }
 
-        public override void OnDisconnect(GamePeer peer, DisconnectReason reasonCode, string reasonDetail)
+        public sealed override void OnDisconnect(GamePeer peer, DisconnectReason reasonCode, string reasonDetail)
         {
             Leave(peer);
         }
 
         protected sealed override void OnJoinTeam(GameActor actor, TeamID team)
         {
-            /* 
-             * When the client joins a game it resets (pops) its match state
-             * to 'none'.
-             */
-            actor.Reset();
-
-            actor.Info.TeamID = team;
-            actor.Info.PlayerState = PlayerStates.Ready;
-            actor.PlayerId = _nextPlayer++;
-
-            /* 
-             * Ignore these changes, since we'll send the player to the others
-             * through the PlayerJoined event.
-             */
-            actor.Info.GetViewDelta().Reset();
-
-            OnPlayerJoined(new PlayerJoinedEventArgs
+            if (!CanJoin(actor, team))
             {
-                Player = actor,
-                Team = team
-            });
+                actor.Peer.Events.Game.SendJoinGameFailed("Room or team is full.");
+            }
+            else
+            {
+                /* 
+                 * When the client joins a game it resets (pops) its match state
+                 * to 'none'.
+                 */
+                actor.Reset();
+
+                actor.Info.TeamID = team;
+                actor.Info.PlayerState = PlayerStates.Ready;
+                actor.PlayerId = _nextPlayer++;
+
+                /* 
+                 * Ignore these changes, since we'll send the player to the others
+                 * through the PlayerJoined event.
+                 */
+                actor.Info.GetViewDelta().Reset();
+
+                OnPlayerJoined(new PlayerJoinedEventArgs
+                {
+                    Player = actor,
+                    Team = team
+                });
+            }
         }
 
         protected sealed override void OnChatMessage(GameActor actor, string message, byte context)
