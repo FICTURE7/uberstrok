@@ -30,6 +30,7 @@ namespace UberStrok.Realtime.Server.Game
             Actor.Statistics.Reset(hard: false);
 
             _respawnCountdown.Restart();
+            _disconnectCountdown.Restart();
         }
 
         public override void OnTick()
