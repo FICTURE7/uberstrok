@@ -109,7 +109,13 @@ namespace UberStrok.Realtime.Server.Game
 
             /* Set quick-switch flag. */
             room.GetView().GameFlags |= 4;
-            room.Join(peer);
+
+            try { room.Join(peer); }
+            catch
+            {
+                peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
+                throw;
+            }
         }
 
         protected override void OnJoinRoom(GamePeer peer, int roomId, string password, string clientVersion, string authToken, string magicHash)
@@ -144,9 +150,18 @@ namespace UberStrok.Realtime.Server.Game
             {
                 /* Request password if the room is password protected & check password.*/
                 if (NeedPassword(room, peer.GetUser(false)) && !CheckPassword(room, password))
+                {
                     peer.Events.SendRequestPasswordForRoom(room.GetView().Server.ConnectionString, room.RoomId);
+                }
                 else
-                    room.Join(peer);
+                {
+                    try { room.Join(peer); }
+                    catch
+                    {
+                        peer.Events.SendRoomEnterFailed(string.Empty, 0, "Failed to join room.");
+                        throw;
+                    }
+                }
             }
         }
 

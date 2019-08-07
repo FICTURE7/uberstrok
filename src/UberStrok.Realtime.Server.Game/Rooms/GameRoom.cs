@@ -463,23 +463,27 @@ namespace UberStrok.Realtime.Server.Game
 
             var actor = peer.Actor;
 
-            if (_actors.Remove(actor))
+            try
             {
-                if (_players.Contains(actor)) 
-                    OnPlayerLeft(new PlayerLeftEventArgs { Player = peer.Actor });
+                if (_actors.Remove(actor))
+                {
+                    if (_players.Contains(actor))
+                        OnPlayerLeft(new PlayerLeftEventArgs { Player = peer.Actor });
 
-                /* OnPlayerLeft should remove it. */
-                Debug.Assert(!_players.Contains(actor));
-
+                    /* OnPlayerLeft should remove it. */
+                    Debug.Assert(!_players.Contains(actor));
+                    Log.Info($"{actor.GetDebug()} left.");
+                }
+                else
+                {
+                    Log.Warn($"{actor.GetDebug()} tried to leave but was not in the list of Actors.");
+                }
+            }
+            finally
+            {
                 /* Clean up. */
                 peer.Actor = null;
                 peer.Handlers.Remove(Id);
-
-                Log.Info($"{actor.GetDebug()} left.");
-            }
-            else
-            {
-                Log.Warn($"{actor.GetDebug()} tried to leave but was not in the list of Actors.");
             }
         }
 
