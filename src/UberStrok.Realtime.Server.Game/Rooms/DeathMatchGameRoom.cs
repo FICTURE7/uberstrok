@@ -46,7 +46,7 @@ namespace UberStrok.Realtime.Server.Game
             {
                 State.Set(RoomState.Id.End);
             }
-            else
+            else if (State.Current == RoomState.Id.Running)
             {
                 int killsRemaining = GetKillsRemaining();
                 foreach (var otherActor in Actors)
@@ -80,7 +80,7 @@ namespace UberStrok.Realtime.Server.Game
              * NOTE: Possible performance gain by avoiding using LINQ but
              * maintain the leader directly through killed events.
              */
-            return GetView().KillLimit - Players.Aggregate((a, b) => a.Info.Kills > b.Info.Kills ? a : b).Info.Kills;
+            return GetView().KillLimit - (Players.Count > 0 ? Players.Aggregate((a, b) => a.Info.Kills > b.Info.Kills ? a : b).Info.Kills : 0);
         }
     }
 }
