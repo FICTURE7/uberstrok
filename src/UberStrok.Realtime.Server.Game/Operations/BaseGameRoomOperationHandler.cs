@@ -32,6 +32,7 @@ namespace UberStrok.Realtime.Server.Game
         protected abstract void OnSpawnPositions(GameActor actor, TeamID team, List<Vector3> positions, List<byte> rotations);
         protected abstract void OnJoinTeam(GameActor actor, TeamID team);
         protected abstract void OnOpenDoor(GameActor actor, int doorId);
+        protected abstract void OnHitFeedback(GameActor actor, int targetCmid, Vector3 force);
 
         public override void OnOperationRequest(GamePeer peer, byte opCode, MemoryStream bytes)
         {
@@ -100,6 +101,9 @@ namespace UberStrok.Realtime.Server.Game
                     break;
                 case IGameRoomOperationsType.OpenDoor:
                     OpenDoor(peer, bytes);
+                    break;
+                case IGameRoomOperationsType.HitFeedback:
+                    HitFeedback(peer, bytes);
                     break;
 
                 default:
@@ -269,6 +273,14 @@ namespace UberStrok.Realtime.Server.Game
             var doorId = Int32Proxy.Deserialize(bytes);
 
             Enqueue(() => OnOpenDoor(peer.Actor, doorId));
+        }
+
+        private void HitFeedback(GamePeer peer, MemoryStream bytes)
+        {
+            var targetCmid = Int32Proxy.Deserialize(bytes);
+            var force = Vector3Proxy.Deserialize(bytes);
+
+            Enqueue(() => OnHitFeedback(peer.Actor, targetCmid, force));
         }
     }
 }

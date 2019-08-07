@@ -435,5 +435,17 @@ namespace UberStrok.Realtime.Server.Game
             foreach (var otherActor in Actors)
                 otherActor.Peer.Events.Game.SendDoorOpen(doorId);
         }
+
+        protected sealed override void OnHitFeedback(GameActor actor, int targetCmid, Vector3 force)
+        {
+            foreach (var otherActor in Actors)
+            {
+                if (otherActor.Cmid == targetCmid)
+                {
+                    otherActor.Peer.Events.Game.SendPlayerHit(force);
+                    break;
+                }
+            }
+        }
     }
 }
