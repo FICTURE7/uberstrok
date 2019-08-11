@@ -288,7 +288,7 @@ namespace UberStrok.Realtime.Server.Game
 
         public virtual void Reset()
         {
-            _frame = 0;
+            _frame = 6;
             _frameTimer.Restart();
 
             _nextPlayer = 0;
