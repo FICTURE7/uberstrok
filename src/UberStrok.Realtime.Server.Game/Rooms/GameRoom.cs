@@ -297,7 +297,11 @@ namespace UberStrok.Realtime.Server.Game
             foreach (var player in Players)
             {
                 foreach (var otherActor in Actors)
+                {
                     otherActor.Peer.Events.Game.SendPlayerLeftGame(player.Cmid);
+                    otherActor.Peer.GetStats(out int rtt, out int rttVar, out int numFailures);
+                    Log.Info($"{otherActor.GetDebug()} RTT: {rtt} var<RTT>: {rttVar} NumFailures: {numFailures}");
+                }
             }
 
             _mvps = null;

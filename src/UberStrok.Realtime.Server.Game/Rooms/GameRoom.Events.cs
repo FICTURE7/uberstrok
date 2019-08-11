@@ -80,7 +80,8 @@ namespace UberStrok.Realtime.Server.Game
                 foreach (var otherActor in Actors)
                     otherActor.Peer.Events.Game.SendPlayerLeftGame(args.Player.Cmid);
 
-                Log.Info($"{args.Player.GetDebug()} left game.");
+                args.Player.Peer.GetStats(out int rtt, out int rttVar, out int numFailures);
+                Log.Info($"{args.Player.GetDebug()} left game. RTT: {rtt} var<RTT>: {rttVar} NumFailures: {numFailures}");
                 PlayerLeft?.Invoke(this, args);
             }
         }
