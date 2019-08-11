@@ -151,14 +151,10 @@ namespace UberStrok.Core
                     _pauseHandle.Wait();
                     _stopwatch.Start();
 
-                    int loopCount = _loops.Count;
-                    while (_lag >= TickInterval && _started)
-                    {
-                        for (int i = 0; i < loopCount; i++)
-                            _loops[i].Tick();
-                        _lag -= TickInterval;
-                        _loadTick++;
-                    }
+                    for (int i = 0; i < _loops.Count; i++)
+                        _loops[i].Tick();
+
+                    _loadTick++;
 
                     Thread.Sleep(interval);
 
