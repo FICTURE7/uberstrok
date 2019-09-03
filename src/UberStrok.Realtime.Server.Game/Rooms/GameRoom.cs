@@ -325,8 +325,9 @@ namespace UberStrok.Realtime.Server.Game
             State.Tick();
             PowerUps.Tick();
 
-            foreach (var actor in Actors)
+            for (int i = 0; i < _actors.Count; i++)
             {
+                var actor = _actors[i];
                 if (actor.Peer.HasError)
                 {
                     actor.Peer.Disconnect();
@@ -390,20 +391,20 @@ namespace UberStrok.Realtime.Server.Game
 
             if (_actorDeltas.Count > 0)
             {
-                foreach (var actor in Actors)
-                    actor.Peer.Events.Game.SendAllPlayerDeltas(_actorDeltas);
+                for (int i = 0; i < _actors.Count; i++)
+                    _actors[i].Peer.Events.Game.SendAllPlayerDeltas(_actorDeltas);
 
                 /* Wipe actor delta changes. */
-                foreach (var delta in _actorDeltas)
-                    delta.Reset();
+                for (int i = 0; i < _actorDeltas.Count; i++)
+                    _actorDeltas[i].Reset();
 
                 _actorDeltas.Clear();
             }
 
             if (_actorMovements.Count > 0 && updateMovements)
             {
-                foreach (var actor in Actors)
-                    actor.Peer.Events.Game.SendAllPlayerPositions(_actorMovements, _frame);
+                for (int i = 0; i < _actors.Count; i++)
+                    _actors[i].Peer.Events.Game.SendAllPlayerPositions(_actorMovements, _frame);
 
                 /* Wipe player movements. */
                 _actorMovements.Clear();
