@@ -1,0 +1,10 @@
+{
+  "Account": {
+    "Points": 10000,
+    "Credits": 10000,
+    "Items": [
+      "TheSplatbat",
+      "MachineGun"
+    ]
+  }
+}

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UberStrok.Core.Views;
-using UberStrok.WebServices.Client;
 
 namespace UberStrok.Core
 {
@@ -13,16 +12,10 @@ namespace UberStrok.Core
         public Dictionary<int, UberStrikeItemQuickView> QuickItems { get; private set; }
         public Dictionary<int, UberStrikeItemWeaponView> WeaponItems { get; private set; }
 
-        public void Load(string webServices, string authToken)
+        public void Load(UberStrikeItemShopClientView shopView)
         {
-            if (webServices == null)
-                throw new ArgumentNullException(nameof(webServices));
-            if (authToken == null)
-                throw new ArgumentNullException(nameof(authToken));
-
-            /* Retrieve loadout data from the web server. */
-            var client = new ShopWebServiceClient(webServices);
-            var shopView = client.GetShop();
+            if (shopView == null)
+                throw new ArgumentNullException(nameof(shopView));
 
             FunctionalItems = LoadDictionary(shopView.FunctionalItems);
             GearItems = LoadDictionary(shopView.GearItems);

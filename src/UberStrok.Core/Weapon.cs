@@ -3,26 +3,22 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.Core
 {
-    public class Weapon
+    public class Weapon : Item<UberStrikeItemWeaponView>
     {
         private bool _firing;
         private DateTime _fireTime;
-
-        private readonly UberStrikeItemWeaponView _view;
+        private DateTime _lastHit;
 
         public int FalsePositiveThreshold { get; }
         public int FalsePositive { get; private set; }
 
-        public bool CanHit => (DateTime.UtcNow - _lastHit).TotalMilliseconds >= _view.RateOfFire;
+        public bool CanHit => (DateTime.UtcNow - _lastHit).TotalMilliseconds >= GetView().RateOfFire;
 
-        private DateTime _lastHit;
-
-        public Weapon(UberStrikeItemWeaponView view)
+        public Weapon(UberStrikeItemWeaponView view) 
+            : base(view)
         {
-            _view = view ?? throw new ArgumentNullException(nameof(view));
-
-            FalsePositiveThreshold = CalculateThreshold(_view.RateOfFire);
             _lastHit = DateTime.UtcNow;
+            FalsePositiveThreshold = CalculateThreshold(GetView().RateOfFire);
         }
 
         public void StartFire()
@@ -40,7 +36,7 @@ namespace UberStrok.Core
                 return 0;
 
             _firing = false;
-            return (int)Math.Ceiling((DateTime.UtcNow - _fireTime).TotalMilliseconds / _view.RateOfFire);
+            return (int)Math.Ceiling((DateTime.UtcNow - _fireTime).TotalMilliseconds / GetView().RateOfFire);
         }
 
         public void Hit()
@@ -58,11 +54,6 @@ namespace UberStrok.Core
             _lastHit = DateTime.UtcNow;
 
             FalsePositive = 0;
-        }
-
-        public UberStrikeItemWeaponView GetView()
-        {
-            return _view;
         }
 
         private static int CalculateThreshold(int rof)

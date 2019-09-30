@@ -29,6 +29,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -42,6 +45,8 @@
     <Compile Include="BundleItemView.cs" />
     <Compile Include="CommActorInfoView.cs" />
     <Compile Include="ConnectionAddressView.cs" />
+    <Compile Include="ContactGroupView.cs" />
+    <Compile Include="ContactRequestView.cs" />
     <Compile Include="DamageEventView.cs" />
     <Compile Include="EndOfMatchDataView.cs" />
     <Compile Include="GameActorInfoDeltaView.cs" />
@@ -50,20 +55,27 @@
     <Compile Include="GameRoomView.cs" />
     <Compile Include="ItemInventoryView.cs" />
     <Compile Include="ItemPriceView.cs" />
+    <Compile Include="ItemTransactionPageView.cs" />
+    <Compile Include="ItemTransactionView.cs" />
     <Compile Include="LoadoutView.cs" />
     <Compile Include="LuckyDrawSetUnityView.cs" />
     <Compile Include="LuckyDrawUnityView.cs" />
     <Compile Include="MapSettingsView.cs" />
     <Compile Include="MapView.cs" />
     <Compile Include="MemberAuthenticationResultView.cs" />
+    <Compile Include="MemberSessionDataView.cs" />
     <Compile Include="MemberView.cs" />
     <Compile Include="MemberWalletView.cs" />
+    <Compile Include="MessageThreadView.cs" />
     <Compile Include="PhotonServerLoadView.cs" />
     <Compile Include="PhotonView.cs" />
     <Compile Include="PlayerCardView.cs" />
     <Compile Include="PlayerPersonalRecordStatisticsView.cs" />
     <Compile Include="PlayerStatisticsView.cs" />
     <Compile Include="PlayerWeaponStatisticsView.cs" />
+    <Compile Include="PointsDepositPageView.cs" />
+    <Compile Include="PointsDepositView.cs" />
+    <Compile Include="PrivateMessageView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicProfileView.cs" />
     <Compile Include="RoomDataView.cs" />

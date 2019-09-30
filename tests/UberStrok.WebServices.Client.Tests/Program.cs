@@ -8,8 +8,8 @@ namespace UberStrok.WebServices.Client.Tests
 
         public static void Main(string[] args)
         {
-            var userServiceClient = new UserWebServiceClient("http://localhost/2.0");
-            var authenticationServiceClient = new AuthenticationWebServiceClient("http://localhost/2.0");
+            var userServiceClient = new UserWebServiceClient("http://localhost:5000/2.0");
+            var authenticationServiceClient = new AuthenticationWebServiceClient("http://localhost:5000/2.0");
 
             var loginResult = authenticationServiceClient.LoginSteam("test", "", "");
             var member = userServiceClient.GetMember(loginResult.AuthToken);

@@ -54,6 +54,8 @@
     <Compile Include="Views\BundleItemViewProxy.cs" />
     <Compile Include="Views\CommActorInfoViewProxy.cs" />
     <Compile Include="Views\ConnectionAddressViewProxy.cs" />
+    <Compile Include="Views\ContactGroupViewProxy.cs" />
+    <Compile Include="Views\ContactRequestViewProxy.cs" />
     <Compile Include="Views\DamageEventViewProxy.cs" />
     <Compile Include="Views\EndOfMatchDataViewProxy.cs" />
     <Compile Include="Views\GameActorInfoDeltaViewProxy.cs" />
@@ -62,6 +64,8 @@
     <Compile Include="Views\GameRoomViewProxy.cs" />
     <Compile Include="Views\ItemInventoryViewProxy.cs" />
     <Compile Include="Views\ItemPriceViewProxy.cs" />
+    <Compile Include="Views\ItemTransactionPageViewProxy.cs" />
+    <Compile Include="Views\ItemTransactionViewProxy.cs" />
     <Compile Include="Views\LoadoutViewProxy.cs" />
     <Compile Include="Views\LuckyDrawSetUnityViewProxy.cs" />
     <Compile Include="Views\LuckyDrawUnityViewProxy.cs" />
@@ -72,14 +76,19 @@
     <Compile Include="StringProxy.cs" />
     <Compile Include="UInt16Proxy.cs" />
     <Compile Include="Views\MemberAuthenticationResultViewProxy.cs" />
+    <Compile Include="Views\MemberSessionDataViewProxy.cs" />
     <Compile Include="Views\MemberViewProxy.cs" />
     <Compile Include="Views\MemberWalletViewProxy.cs" />
+    <Compile Include="Views\MessageThreadViewProxy.cs" />
     <Compile Include="Views\PhotonServerLoadViewProxy.cs" />
     <Compile Include="Views\PhotonViewProxy.cs" />
     <Compile Include="Views\PlayerCardViewProxy.cs" />
     <Compile Include="Views\PlayerPersonalRecordStatisticsViewProxy.cs" />
     <Compile Include="Views\PlayerStatisticsViewProxy.cs" />
     <Compile Include="Views\PlayerWeaponStatisticsViewProxy.cs" />
+    <Compile Include="Views\PointsDepositPageViewProxy.cs" />
+    <Compile Include="Views\PointsDepositViewProxy.cs" />
+    <Compile Include="Views\PrivateMessageViewProxy.cs" />
     <Compile Include="Views\PublicProfileViewProxy.cs" />
     <Compile Include="Views\ServerConnectionViewProxy.cs" />
     <Compile Include="Views\StatsCollectionViewProxy.cs" />

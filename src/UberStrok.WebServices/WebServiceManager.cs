@@ -31,7 +31,7 @@ namespace UberStrok.WebServices
                 _users = new UserManager(_ctx);
                 _items = new ItemManager(_ctx);
                 _servers = new ServerManager(_ctx);
-                _maps = new MapManager(_ctx);
+                _maps = new OldMapManager(_ctx);
                 _services = new WebServiceCollection(_ctx);
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace UberStrok.WebServices
         public UserManager Users => _users;
         public ItemManager Items => _items;
         public ServerManager Servers => _servers;
-        public MapManager Maps => _maps;
+        public OldMapManager Maps => _maps;
 
         public WebServiceConfiguration Configuration => _config;
         public WebServiceCollection Services => _services;
@@ -58,7 +58,7 @@ namespace UberStrok.WebServices
         private readonly UserManager _users;
         private readonly ItemManager _items;
         private readonly ServerManager _servers;
-        private readonly MapManager _maps;
+        private readonly OldMapManager _maps;
 
         private readonly WebServiceConfiguration _config;
         private readonly WebServiceCollection _services;

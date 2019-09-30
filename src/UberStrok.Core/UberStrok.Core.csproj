@@ -35,18 +35,21 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseTimer.cs" />
-    <Compile Include="Countdown.cs" />
-    <Compile Include="FixedTimer.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="ItemManager.cs" />
+    <Compile Include="MapManager.cs" />
+    <Compile Include="Timers\BaseTimer.cs" />
+    <Compile Include="Timers\Countdown.cs" />
+    <Compile Include="Timers\FixedTimer.cs" />
     <Compile Include="Gear.cs" />
     <Compile Include="GearManager.cs" />
-    <Compile Include="ILoop.cs" />
-    <Compile Include="ILoopScheduler.cs" />
-    <Compile Include="ITimer.cs" />
+    <Compile Include="Scheduling\ILoop.cs" />
+    <Compile Include="Scheduling\ILoopScheduler.cs" />
+    <Compile Include="Timers\ITimer.cs" />
     <Compile Include="LoadoutManager.cs" />
-    <Compile Include="Loop.cs" />
-    <Compile Include="LoopScheduler.cs" />
-    <Compile Include="BalancingLoopScheduler.cs" />
+    <Compile Include="Scheduling\Loop.cs" />
+    <Compile Include="Scheduling\LoopScheduler.cs" />
+    <Compile Include="Scheduling\BalancingLoopScheduler.cs" />
     <Compile Include="PingManager.cs" />
     <Compile Include="PowerUpManager.cs" />
     <Compile Include="ProjectileManager.cs" />
@@ -58,7 +61,7 @@
     <Compile Include="State.cs" />
     <Compile Include="StateMachine.cs" />
     <Compile Include="StatisticsManager.cs" />
-    <Compile Include="Timer.cs" />
+    <Compile Include="Timers\Timer.cs" />
     <Compile Include="TrustManager.cs" />
     <Compile Include="Weapon.cs" />
     <Compile Include="WeaponManager.cs" />
@@ -71,10 +74,6 @@
     <ProjectReference Include="..\UberStrok.Core.Views\UberStrok.Core.Views.csproj">
       <Project>{3BAAA4FD-1AF2-4C32-B059-ABF0E111693D}</Project>
       <Name>UberStrok.Core.Views</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UberStrok.WebServices.Client\UberStrok.WebServices.Client.csproj">
-      <Project>{F9FA508B-417F-4863-B19D-B7CF3D771B0F}</Project>
-      <Name>UberStrok.WebServices.Client</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

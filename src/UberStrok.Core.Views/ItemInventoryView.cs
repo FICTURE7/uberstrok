@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace UberStrok.Core.Views
 {
@@ -11,45 +12,27 @@ namespace UberStrok.Core.Views
 		}
 
 		public ItemInventoryView(int itemId, DateTime? expirationDate, int amountRemaining)
+            : this(itemId, expirationDate, amountRemaining, default)
+		{
+            // Space
+		}
+
+		public ItemInventoryView(int itemId, DateTime? expirationDate, int amountRemaining, int cmid) 
 		{
             ItemId = itemId;
             ExpirationDate = expirationDate;
             AmountRemaining = amountRemaining;
-		}
-
-		public ItemInventoryView(int itemId, DateTime? expirationDate, int amountRemaining, int cmid) : this(itemId, expirationDate, amountRemaining)
-		{
             Cmid = cmid;
 		}
 
 		public override string ToString()
 		{
-			string text = "[LiveInventoryView: ";
-			string text2 = text;
-			text = string.Concat(new object[]
-			{
-				text2,
-				"[Item Id: ",
-				this.ItemId,
-				"]"
-			});
-			text2 = text;
-			text = string.Concat(new object[]
-			{
-				text2,
-				"[Expiration date: ",
-				this.ExpirationDate,
-				"]"
-			});
-			text2 = text;
-			text = string.Concat(new object[]
-			{
-				text2,
-				"[Amount remaining:",
-				this.AmountRemaining,
-				"]"
-			});
-			return text + "]";
+            var builder = new StringBuilder().Append("[LiveInventoryView: ")
+                .Append("[Item Id: ").Append(ItemId)
+                .Append("][Expiration date: ").Append(ExpirationDate)
+                .Append("][Amount remaining:").Append(AmountRemaining)
+            .Append("]]");
+            return builder.ToString();
 		}
 
 		public int AmountRemaining { get; set; }

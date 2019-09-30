@@ -11,7 +11,23 @@ namespace UberStrok.Core.Views
             // Space
 		}
 
-		public PlayerPersonalRecordStatisticsView(int mostHeadshots, int mostNutshots, int mostConsecutiveSnipes, int mostXPEarned, int mostSplats, int mostDamageDealt, int mostDamageReceived, int mostArmorPickedUp, int mostHealthPickedUp, int mostMeleeSplats, int mostMachinegunSplats, int mostShotgunSplats, int mostSniperSplats, int mostSplattergunSplats, int mostCannonSplats, int mostLauncherSplats)
+		public PlayerPersonalRecordStatisticsView(
+            int mostHeadshots,
+            int mostNutshots,
+            int mostConsecutiveSnipes,
+            int mostXPEarned,
+            int mostSplats,
+            int mostDamageDealt,
+            int mostDamageReceived,
+            int mostArmorPickedUp,
+            int mostHealthPickedUp,
+            int mostMeleeSplats,
+            int mostMachinegunSplats,
+            int mostShotgunSplats,
+            int mostSniperSplats,
+            int mostSplattergunSplats,
+            int mostCannonSplats,
+            int mostLauncherSplats)
 		{
 			MostArmorPickedUp = mostArmorPickedUp;
 			MostCannonSplats = mostCannonSplats;
@@ -33,41 +49,24 @@ namespace UberStrok.Core.Views
 
 		public override string ToString()
 		{
-			var builder = new StringBuilder();
-			builder.Append("[PlayerPersonalRecordStatisticsView: ");
-			builder.Append("[MostArmorPickedUp: ");
-			builder.Append(MostArmorPickedUp);
-			builder.Append("][MostCannonSplats: ");
-			builder.Append(MostCannonSplats);
-			builder.Append("][MostConsecutiveSnipes: ");
-			builder.Append(MostConsecutiveSnipes);
-			builder.Append("][MostDamageDealt: ");
-			builder.Append(MostDamageDealt);
-			builder.Append("][MostDamageReceived: ");
-			builder.Append(MostDamageReceived);
-			builder.Append("][MostHeadshots: ");
-			builder.Append(MostHeadshots);
-			builder.Append("][MostHealthPickedUp: ");
-			builder.Append(MostHealthPickedUp);
-			builder.Append("][MostLauncherSplats: ");
-			builder.Append(MostLauncherSplats);
-			builder.Append("][MostMachinegunSplats: ");
-			builder.Append(MostMachinegunSplats);
-			builder.Append("][MostMeleeSplats: ");
-			builder.Append(MostMeleeSplats);
-			builder.Append("][MostNutshots: ");
-			builder.Append(MostNutshots);
-			builder.Append("][MostShotgunSplats: ");
-			builder.Append(MostShotgunSplats);
-			builder.Append("][MostSniperSplats: ");
-			builder.Append(MostSniperSplats);
-			builder.Append("][MostSplats: ");
-			builder.Append(MostSplats);
-			builder.Append("][MostSplattergunSplats: ");
-			builder.Append(MostSplattergunSplats);
-			builder.Append("][MostXPEarned: ");
-			builder.Append(MostXPEarned);
-			builder.Append("]]");
+			var builder = new StringBuilder().Append("[PlayerPersonalRecordStatisticsView: ")
+                .Append("[MostArmorPickedUp: ").Append(MostArmorPickedUp)
+                .Append("][MostCannonSplats: ").Append(MostCannonSplats)
+                .Append("][MostConsecutiveSnipes: ").Append(MostConsecutiveSnipes)
+                .Append("][MostDamageDealt: ").Append(MostDamageDealt)
+                .Append("][MostDamageReceived: ").Append(MostDamageReceived)
+                .Append("][MostHeadshots: ").Append(MostHeadshots)
+                .Append("][MostHealthPickedUp: ").Append(MostHealthPickedUp)
+                .Append("][MostLauncherSplats: ").Append(MostLauncherSplats)
+                .Append("][MostMachinegunSplats: ").Append(MostMachinegunSplats)
+                .Append("][MostMeleeSplats: ").Append(MostMeleeSplats)
+                .Append("][MostNutshots: ").Append(MostNutshots)
+                .Append("][MostShotgunSplats: ").Append(MostShotgunSplats)
+                .Append("][MostSniperSplats: ").Append(MostSniperSplats)
+                .Append("][MostSplats: ").Append(MostSplats)
+                .Append("][MostSplattergunSplats: ").Append(MostSplattergunSplats)
+                .Append("][MostXPEarned: ").Append(MostXPEarned)
+			.Append("]]");
 			return builder.ToString();
 		}
 

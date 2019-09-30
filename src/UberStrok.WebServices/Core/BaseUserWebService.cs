@@ -54,7 +54,7 @@ namespace UberStrok.WebServices.Core
             }
         }
 
-        byte[] IUserWebServiceContract.GetCurrentDeposits(byte[] data)
+        byte[] IUserWebServiceContract.GetCurrencyDeposits(byte[] data)
         {
             try
             {

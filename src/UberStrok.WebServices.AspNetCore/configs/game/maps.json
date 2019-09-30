@@ -1,0 +1,563 @@
+{
+  "Maps": [
+    {
+      "DisplayName": "Lost Paradise 2",
+      "Description": "Map Description",
+      "SceneName": "LostParadise2",
+      "MapId": 12,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "The Warehouse",
+      "Description": "Map Description",
+      "SceneName": "TheWarehouse",
+      "MapId": 11,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "Monkey Island 2",
+      "Description": "Map Description",
+      "SceneName": "MonkeyIsland",
+      "MapId": 10,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "Temple of the Raven",
+      "Description": "Map Description",
+      "SceneName": "TempleOfTheRaven",
+      "MapId": 9,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "Gideons Tower",
+      "Description": "Map Description",
+      "SceneName": "GideonsTower",
+      "MapId": 9,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "Fort Winter",
+      "Description": "Map Description",
+      "SceneName": "FortWinter",
+      "MapId": 8,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "CuberStrike",
+      "Description": "Map Description",
+      "SceneName": "CuberStrike",
+      "MapId": 1,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "CuberSpace",
+      "Description": "Map Description",
+      "SceneName": "CuberSpace",
+      "MapId": 2,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "Sky Garden",
+      "Description": "Map Description",
+      "SceneName": "SkyGarden",
+      "MapId": 3,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "Aqualab Research Hub",
+      "Description": "Map Description",
+      "SceneName": "AqualabResearchHub",
+      "MapId": 4,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "SuperPRISM Reactor",
+      "Description": "Map Description",
+      "SceneName": "SuperPRISMReactor",
+      "MapId": 5,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "Apex Twin",
+      "Description": "Map Description",
+      "SceneName": "ApexTwin",
+      "MapId": 6,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    },
+    {
+      "DisplayName": "Catalyst",
+      "Description": "Map Description",
+      "SceneName": "Catalyst",
+      "MapId": 7,
+      "IsBlueBox": false,
+      "MaxPlayer": 32,
+      "Settings": {
+        "1": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "2": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        },
+        "3": {
+          "KillsMin": 1,
+          "KillsMax": 200,
+          "KillsCurrent": 100,
+          "PlayersMin": 2,
+          "PlayersMax": 32,
+          "PlayersCurrent": 10,
+          "TimeMin": 60,
+          "TimeMax": 600,
+          "TimeCurrent": 300
+        }
+      }
+    }
+  ]
+}

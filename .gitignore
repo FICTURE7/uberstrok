@@ -28,3 +28,6 @@ photon/
 
 # VIM
 *.swp
+
+# LiteDB store
+*.db

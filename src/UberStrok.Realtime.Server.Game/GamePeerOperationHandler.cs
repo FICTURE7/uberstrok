@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UberStrok.Core.Common;
 using UberStrok.Core.Views;
+using UberStrok.WebServices.Client;
 
 namespace UberStrok.Realtime.Server.Game
 {
@@ -91,8 +92,12 @@ namespace UberStrok.Realtime.Server.Game
             {
                 string webServices = GameApplication.Instance.Configuration.WebServices;
 
+                /* Retrieve loadout data from the web server. */
+                var client = new ShopWebServiceClient(webServices);
+                var shopView = client.GetShop();
+
                 room = GameApplication.Instance.Rooms.Create(roomData, password);
-                room.Shop.Load(webServices, authToken);
+                room.Shop.Load(shopView);
             }
             catch (NotSupportedException)
             {

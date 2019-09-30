@@ -5,9 +5,9 @@ using UberStrok.Core.Views;
 
 namespace UberStrok.WebServices
 {
-    public class MapManager
+    public class OldMapManager
     {
-        public MapManager(WebServiceContext ctx)
+        public OldMapManager(WebServiceContext ctx)
         {
             if (ctx == null)
                 throw new ArgumentNullException(nameof(ctx));

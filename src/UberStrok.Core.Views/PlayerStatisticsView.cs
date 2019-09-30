@@ -12,7 +12,16 @@ namespace UberStrok.Core.Views
             WeaponStatistics = new PlayerWeaponStatisticsView();
 		}
 
-		public PlayerStatisticsView(int cmid, int splats, int splatted, long shots, long hits, int headshots, int nutshots, PlayerPersonalRecordStatisticsView personalRecord, PlayerWeaponStatisticsView weaponStatistics)
+		public PlayerStatisticsView(
+            int cmid, 
+            int splats,
+            int splatted,
+            long shots,
+            long hits,
+            int headshots,
+            int nutshots,
+            PlayerPersonalRecordStatisticsView personalRecord,
+            PlayerWeaponStatisticsView weaponStatistics)
 		{
             Cmid = cmid;
             Hits = hits;
@@ -27,7 +36,18 @@ namespace UberStrok.Core.Views
 			WeaponStatistics = weaponStatistics;
 		}
 
-		public PlayerStatisticsView(int cmid, int splats, int splatted, long shots, long hits, int headshots, int nutshots, int xp, int level, PlayerPersonalRecordStatisticsView personalRecord, PlayerWeaponStatisticsView weaponStatistics)
+		public PlayerStatisticsView(
+            int cmid,
+            int splats,
+            int splatted,
+            long shots,
+            long hits,
+            int headshots,
+            int nutshots,
+            int xp,
+            int level,
+            PlayerPersonalRecordStatisticsView personalRecord,
+            PlayerWeaponStatisticsView weaponStatistics)
 		{
 			Cmid = cmid;
 			Hits = hits;
@@ -44,30 +64,20 @@ namespace UberStrok.Core.Views
 
 		public override string ToString()
 		{
-			var builder = new StringBuilder();
-			builder.Append("[PlayerStatisticsView: ");
-			builder.Append("[Cmid: ");
-			builder.Append(Cmid);
-			builder.Append("][Hits: ");
-			builder.Append(Hits);
-			builder.Append("][Level: ");
-			builder.Append(Level);
-			builder.Append("][Shots: ");
-			builder.Append(Shots);
-			builder.Append("][Splats: ");
-			builder.Append(Splats);
-			builder.Append("][Splatted: ");
-			builder.Append(Splatted);
-			builder.Append("][Headshots: ");
-			builder.Append(Headshots);
-			builder.Append("][Nutshots: ");
-			builder.Append(Nutshots);
-			builder.Append("][Xp: ");
-			builder.Append(Xp);
-			builder.Append("]");
-			builder.Append(PersonalRecord);
-			builder.Append(WeaponStatistics);
-			builder.Append("]");
+            var builder = new StringBuilder().Append("[PlayerStatisticsView: ")
+                .Append("[Cmid: ").Append(Cmid)
+                .Append("][Hits: ").Append(Hits)
+                .Append("][Level: ").Append(Level)
+                .Append("][Shots: ").Append(Shots)
+                .Append("][Splats: ").Append(Splats)
+                .Append("][Splatted: ").Append(Splatted)
+                .Append("][Headshots: ").Append(Headshots)
+                .Append("][Nutshots: ").Append(Nutshots)
+                .Append("][Xp: ").Append(Xp)
+                .Append("]")
+                .Append(PersonalRecord)
+                .Append(WeaponStatistics)
+            .Append("]");
 			return builder.ToString();
 		}
 

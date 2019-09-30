@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace UberStrok.Core.Views
 {
@@ -41,24 +42,14 @@ namespace UberStrok.Core.Views
 
 		public override string ToString()
 		{
-			string text = "[Wallet: ";
-			string text2 = text;
-			text = string.Concat(new object[]
-			{
-				text2,
-				"[CMID:",
-				this.Cmid,
-				"][Credits:",
-				this.Credits,
-				"][Credits Expiration:",
-				this.CreditsExpiration,
-				"][Points:",
-				this.Points,
-				"][Points Expiration:",
-				this.PointsExpiration,
-				"]"
-			});
-			return text + "]";
+            var builder = new StringBuilder().Append("[Wallet:")
+                .Append("[CMID:").Append(Cmid)
+                .Append("][Credits:").Append(Credits)
+                .Append("][Credits Expiration:").Append(CreditsExpiration)
+                .Append("][Points:").Append(Points)
+                .Append("][Points Expiration:").Append(PointsExpiration)
+                .Append("]]");
+            return builder.ToString();
 		}
 
 		public int Cmid { get; set; }
